@@ -1,5 +1,5 @@
 module SpgLib
 
-greet() = print("Hello World!")
+include("DataModel.jl")
 
 end # module
