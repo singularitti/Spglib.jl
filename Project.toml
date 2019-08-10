@@ -3,6 +3,11 @@ uuid = "e77a6fe8-bb58-11e9-2584-436ec1627d69"
 authors = ["Qi Zhang <singularitti@outlook.com>"]
 version = "0.1.0"
 
+[deps]
+CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
+
 [compat]
 julia = "1"
 
