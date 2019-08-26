@@ -23,6 +23,12 @@ export get_symmetry, get_international, get_schoenflies,
 
 include(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
 
+const LIBVERSION = VersionNumber(
+  ccall((:spg_get_major_version, spglib), Cint, ()),
+  ccall((:spg_get_minor_version, spglib), Cint, ()),
+  ccall((:spg_get_micro_version, spglib), Cint, ()),
+)
+
 function getfields(obj, fields...)
     Tuple(getfield(obj, name) for name in fields)
 end
