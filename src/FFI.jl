@@ -54,8 +54,8 @@ end
 cchars_to_string(s::Vector{Cchar}) = map(Char, s) |> join |> x -> split(x, "\0") |> first
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
-    size(cell.positions, 2) != length(cell.numbers) && throw(DimensionMismatch("The number of positions and atomic types do not match!"))
-    size(cell.positions, 1) != 3 && error("Operations in 3D space is supported here!")
+    size(cell.positions, 1) != length(cell.numbers) && throw(DimensionMismatch("The number of positions and atomic types do not match!"))
+    size(cell.positions, 2) != 3 && error("Operations in 3D space is supported here!")
 
     maxsize = 52
     rotations = Array{Cint}(undef, 3, 3, maxsize)
