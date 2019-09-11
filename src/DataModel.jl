@@ -21,5 +21,6 @@ export Cell
     numbers::N
     magmoms::M = nothing
 end
+Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
 end
