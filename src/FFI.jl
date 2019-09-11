@@ -13,7 +13,7 @@ module FFI
 
 using CoordinateTransformations
 using DataStructures: counter
-using ExtractMacro: @extract
+using Parameters: @unpack
 using Setfield: @set
 
 using SpgLib.DataModel: Cell
@@ -40,7 +40,7 @@ function getfields(obj, fields...)
 end
 
 function get_ccell(cell::Cell)::Cell
-    @extract cell : lattice, positions, numbers
+    @unpack lattice, positions, numbers = cell
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
     cnumbers = convert(
@@ -62,7 +62,7 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     translations = Array{Cdouble}(undef, 3, maxsize)
 
     ccell = get_ccell(cell)
-    @extract ccell : lattice, positions, numbers
+    @unpack lattice, positions, numbers = ccell
 
     numops = ccall(
         (:spg_get_symmetry, spglib),
@@ -95,7 +95,7 @@ function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
 
     ccell = get_ccell(cell)
-    @extract ccell : lattice, positions, numbers
+    @unpack lattice, positions, numbers = ccell
 
     numops = ccall(
         (:spg_get_international, spglib),
@@ -117,7 +117,7 @@ function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
 
     ccell = get_ccell(cell)
-    @extract ccell : lattice, positions, numbers
+    @unpack lattice, positions, numbers = ccell
 
     numops = ccall(
         (:spg_get_schoenflies, spglib),
