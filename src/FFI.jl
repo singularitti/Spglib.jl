@@ -142,24 +142,24 @@ function standardize_cell(
     symprec::Real = 1e-5
 )
     ccell = get_ccell(cell)
-    clattice, cpositions, cnumbers = getfields(ccell, :lattice, :positions, :numbers)
+    @unpack lattice, positions, numbers = ccell
     to_primitive, no_idealize = map(x -> convert(Cint, x), (to_primitive, no_idealize))
 
     atoms_amount = ccall(
         (:spg_standardize_cell, spglib),
         Cint,
         (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cint, Cdouble),
-        clattice,
-        cpositions,
-        cnumbers,
-        length(cnumbers),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
         to_primitive,
         no_idealize,
         symprec
     )
     atoms_amount == 0 && error("Standardizing cell failed!")
 
-    Cell(clattice, cpositions, cnumbers)
+    Cell(lattice, positions, numbers)
 end
 
 find_primitive(cell::Cell; symprec::Real = 1e-5) =
