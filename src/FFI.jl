@@ -62,7 +62,7 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     translations = Array{Cdouble}(undef, 3, maxsize)
 
     ccell = get_ccell(cell)
-    @extract cell : lattice, positions, numbers
+    @extract ccell : lattice, positions, numbers
 
     numops = ccall(
         (:spg_get_symmetry, spglib),
@@ -95,7 +95,7 @@ function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
 
     ccell = get_ccell(cell)
-    @extract cell : lattice, positions, numbers
+    @extract ccell : lattice, positions, numbers
 
     numops = ccall(
         (:spg_get_international, spglib),
