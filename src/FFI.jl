@@ -216,7 +216,7 @@ function get_ir_reciprocal_mesh(
     grid_address = Array{Cint}(undef, qpoints_amount, 3)
     mapping = Array{Cint}(undef, qpoints_amount)
     ccell = get_ccell(cell)
-    clattice, cpositions, cnumbers = getfields(ccell, :lattice, :positions, :numbers)
+    @unpack lattice, positions, numbers = ccell
 
     ret = ccall(
         (:spg_get_ir_reciprocal_mesh, spglib),
@@ -238,10 +238,10 @@ function get_ir_reciprocal_mesh(
         grid,
         shift,
         is_time_reversal,
-        clattice,
-        cpositions,
-        cnumbers,
-        length(cnumbers),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
         symprec
     )
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
