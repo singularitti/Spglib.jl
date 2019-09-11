@@ -11,6 +11,7 @@ julia>
 """
 module FFI
 
+using Compat: isnothing
 using CoordinateTransformations
 using DataStructures: counter
 using Parameters: @unpack
@@ -282,7 +283,7 @@ function get_stabilized_reciprocal_mesh(
     qpoints_amount = prod(grid)
     grid_address = Array{Cint}(undef, qpoints_amount, 3)
     mapping_table = Array{Cint}(undef, qpoints_amount)
-    qpoints == nothing ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
+    isnothing(qpoints) ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
 
     ret = ccall(
         (:spg_get_stabilized_reciprocal_mesh, spglib),
