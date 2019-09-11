@@ -13,6 +13,7 @@ module FFI
 
 using CoordinateTransformations
 using DataStructures: counter
+using ExtractMacro: @extract
 using Setfield: @set
 
 using SpgLib.DataModel: Cell
@@ -39,12 +40,12 @@ function getfields(obj, fields...)
 end
 
 function get_ccell(cell::Cell)::Cell
-    lattice, positions, types = getfields(cell, :lattice, :positions, :numbers)
+    @extract cell : lattice, positions, numbers
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
     cnumbers = convert(
         Vector{Cint},
-        [repeat([i], v) for (i, v) in (enumerate ∘ values ∘ counter)(types)] |>
+        [repeat([i], v) for (i, v) in (enumerate ∘ values ∘ counter)(numbers)] |>
         Iterators.flatten |> collect
     )
     return Cell(clattice, cpositions, cnumbers)
