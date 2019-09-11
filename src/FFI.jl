@@ -16,9 +16,10 @@ using DataStructures: counter
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib.DataModel: Cell
+using SpgLib.DataModel
 
 export get_symmetry,
+       get_dataset,
        get_international,
        get_schoenflies,
        standardize_cell,
@@ -87,6 +88,30 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
 
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
 end
+
+function get_dataset(cell::Cell; symprec::Real = 1e-8)
+    ccell = get_ccell(cell)
+    @unpack lattice, positions, numbers = ccell
+
+    dataset = ccall(
+        (:spg_get_dataset, spglib),
+        Dataset,
+        (
+         Ptr{Cdouble},
+         Ptr{Cdouble},
+         Ptr{Cint},
+         Cint,
+         Cdouble
+        ),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec
+    )
+
+    return dataset
+end # function get_dataset
 
 function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
