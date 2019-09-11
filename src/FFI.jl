@@ -83,7 +83,7 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine symmetries!")
 
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
-end
+end # function get_symmetry
 
 function get_dataset(cell::Cell; symprec::Real = 1e-8)
     ccell = get_ccell(cell)
@@ -129,7 +129,7 @@ function get_international(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine the international symbol!")
 
     cchars_to_string(result)
-end
+end # function get_international
 
 function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
@@ -151,7 +151,7 @@ function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine the Schoenflies symbol!")
 
     cchars_to_string(result)
-end
+end # function get_schoenflies
 
 function standardize_cell(
     cell::Cell,
@@ -178,7 +178,7 @@ function standardize_cell(
     atoms_amount == 0 && error("Standardizing cell failed!")
 
     Cell(lattice, positions, numbers)
-end
+end # function standardize_cell
 
 find_primitive(cell::Cell; symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
@@ -200,7 +200,7 @@ function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
     ret == 0 && error("Niggli reduce failed!")
 
     @set cell.lattice = clattice
-end
+end # function niggli_reduce
 
 function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     ccell = get_ccell(cell)
@@ -216,7 +216,7 @@ function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     ret == 0 && error("Delaunay reduce failed!")
 
     @set cell.lattice = clattice
-end
+end # function delaunay_reduce
 
 function get_ir_reciprocal_mesh(
     cell::Cell,
@@ -265,7 +265,7 @@ function get_ir_reciprocal_mesh(
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
     mapping, grid_address
-end
+end # function get_ir_reciprocal_mesh
 
 function get_stabilized_reciprocal_mesh(
     rotations::Vector{Matrix{T}},
@@ -311,6 +311,6 @@ function get_stabilized_reciprocal_mesh(
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
     mapping_table, grid_address
-end
+end # function get_stabilized_reciprocal_mesh
 
 end
