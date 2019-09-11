@@ -117,17 +117,17 @@ function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
 
     ccell = get_ccell(cell)
-    clattice, cpositions, cnumbers = getfields(ccell, :lattice, :positions, :numbers)
+    @extract ccell : lattice, positions, numbers
 
     numops = ccall(
         (:spg_get_schoenflies, spglib),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         result,
-        clattice,
-        cpositions,
-        cnumbers,
-        length(cnumbers),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
         symprec
     )
     numops == 0 && error("Could not determine the Schoenflies symbol!")
