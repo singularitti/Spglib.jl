@@ -62,7 +62,7 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     translations = Array{Cdouble}(undef, 3, maxsize)
 
     ccell = get_ccell(cell)
-    clattice, cpositions, cnumbers = getfields(ccell, :lattice, :positions, :numbers)
+    @extract cell : lattice, positions, numbers
 
     numops = ccall(
         (:spg_get_symmetry, spglib),
@@ -80,10 +80,10 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
         rotations,
         translations,
         maxsize,
-        clattice,
-        cpositions,
-        cnumbers,
-        length(cnumbers),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
         symprec
     )
     numops == 0 && error("Could not determine symmetries!")
