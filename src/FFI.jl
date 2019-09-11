@@ -21,6 +21,7 @@ using SpgLib.DataModel
 
 export get_symmetry,
        get_dataset,
+       get_spacegroup_type,
        get_international,
        get_schoenflies,
        standardize_cell,
@@ -109,6 +110,13 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
 
     return dataset
 end # function get_dataset
+
+function get_spacegroup_type(hall_number::Int)
+    spgtype = ccall(
+        (:spg_get_spacegroup_type, spglib), SpacegroupType, (Cint,), hall_number
+    )
+    return spgtype
+end # function get_spacegroup_type
 
 function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
