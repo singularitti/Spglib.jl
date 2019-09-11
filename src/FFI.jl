@@ -28,7 +28,9 @@ export get_symmetry,
        find_primitive,
        refine_cell,
        niggli_reduce,
-       delaunay_reduce
+       delaunay_reduce,
+       get_ir_reciprocal_mesh,
+       get_stabilized_reciprocal_mesh
 
 include(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
 
