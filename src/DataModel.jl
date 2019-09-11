@@ -13,7 +13,7 @@ module DataModel
 
 using Parameters
 
-export Cell, Dataset
+export Cell, Dataset, SpacegroupType
 
 @with_kw struct Cell{L<:AbstractMatrix,P<:AbstractMatrix,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
     lattice::L
@@ -46,6 +46,20 @@ struct Dataset
     std_rotation_matrix::Matrix{Cdouble}
     std_mapping_to_primitive::Ptr{Cint}
     pointgroup_symbol::NTuple{6,Cchar}
+end
+
+struct SpacegroupType
+    number::Cint
+    international_short::Cstring
+    international_full::Cstring
+    international::Cstring
+    schoenflies::Cstring
+    hall_symbol::Cstring
+    choice::Cstring
+    pointgroup_international::Cstring
+    pointgroup_schoenflies::Cstring
+    arithmetic_crystal_class_number::Cint
+    arithmetic_crystal_class_symbol::Cstring
 end
 
 end
