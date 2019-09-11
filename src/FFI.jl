@@ -36,10 +36,6 @@ const LIBVERSION = VersionNumber(
     ccall((:spg_get_micro_version, spglib), Cint, ()),
 )
 
-function getfields(obj, fields...)
-    Tuple(getfield(obj, name) for name in fields)
-end
-
 function get_ccell(cell::Cell)::Cell
     @unpack lattice, positions, numbers = cell
     clattice = convert(Matrix{Cdouble}, lattice)
