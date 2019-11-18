@@ -1,6 +1,6 @@
 using Test
 
-using SpgLib.DataModel
+using SpgLib
 using SpgLib.FFI
 
 @testset "Test rutile structure" begin
@@ -18,6 +18,6 @@ using SpgLib.FFI
         0.8  0.2  0.5
     ]
     numbers = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(lattice, positions, numbers)
+    rutile = Cell(lattice, positions, numbers) |> SpgLib.FFI.get_ccell
     # get_symmetry(rutile; symprec = 1e-5)
 end # testset
