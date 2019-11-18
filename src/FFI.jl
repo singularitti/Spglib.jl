@@ -16,7 +16,8 @@ using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib.DataModel
+import ..Cell
+using ..Wrapper
 
 export get_symmetry,
        get_dataset,
@@ -78,57 +79,56 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
 end # function get_symmetry
 
-function get_dataset(cell::Cell; symprec::Real = 1e-8)
-    ccell = get_ccell(cell)
-    @unpack lattice, positions, numbers = ccell
+# function get_dataset(cell::Cell; symprec::Real = 1e-8)
+#     ccell = get_ccell(cell)
+#     @unpack lattice, positions, numbers = ccell
 
-    dataset = ccall(
-        (:spg_get_dataset, spglib),
-        Dataset,
-        (
-         Ptr{Cdouble},
-         Ptr{Cdouble},
-         Ptr{Cint},
-         Cint,
-         Cdouble
-        ),
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec
-    )
+#     dataset = ccall(
+#         (:spg_get_dataset, spglib),
+#         Dataset,
+#         (
+#          Ptr{Cdouble},
+#          Ptr{Cdouble},
+#          Ptr{Cint},
+#          Cint,
+#          Cdouble
+#         ),
+#         lattice,
+#         positions,
+#         numbers,
+#         length(numbers),
+#         symprec
+#     )
 
-    return dataset
-end # function get_dataset
+#     return dataset
+# end # function get_dataset
 
-function get_spacegroup_type(hall_number::Integer)
-    spgtype = ccall(
-        (:spg_get_spacegroup_type, spglib), SpacegroupType, (Cint,), Int32(hall_number)
-    )
-    return spgtype
-end # function get_spacegroup_type
+# function get_spacegroup_type(hall_number::Integer)
+#     spgtype = ccall(
+#         (:spg_get_spacegroup_type, spglib), SpacegroupType, (Cint,), Int32(hall_number)
+#     )
+#     return spgtype
+# end # function get_spacegroup_type
 
 function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
-
     ccell = get_ccell(cell)
     @unpack lattice, positions, numbers = ccell
-
-    numops = ccall(
-        (:spg_get_international, spglib),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec
-    )
+    # numops = ccall(
+    #     (:spg_get_international, spglib),
+    #     Cint,
+    #     (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
+    #     result,
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec
+    # )
+    println(Iterators.partition(positions', 3) |> collect |> Tuple)
+    numops = Wrapper.spg_get_international(result, Iterators.partition(lattice', 3) |> collect |> Tuple, Iterators.partition(positions', 3) |> collect |> Tuple, numbers, length(numbers), symprec)
     numops == 0 && error("Could not determine the international symbol!")
-
-    cchars_to_string(result)
+    return cchars_to_string(result)
 end # function get_international
 
 function get_schoenflies(cell::Cell; symprec::Real = 1e-8)

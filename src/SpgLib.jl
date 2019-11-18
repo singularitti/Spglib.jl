@@ -13,6 +13,6 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
 include("Wrapper/Wrapper.jl")
-# include("FFI.jl")
+include("FFI.jl")
 
 end # module
