@@ -10,8 +10,8 @@ end
 
 # Skipping MacroDefinition: debug_print ( ... )
 
-const debug_print_matrix_d3 = a
-const debug_print_matrix_i3 = a
+# const debug_print_matrix_d3 = a
+# const debug_print_matrix_i3 = a
 
 # Skipping MacroDefinition: debug_print_vectors_d3 ( ... )
 # Skipping MacroDefinition: debug_print_vectors_with_label ( ... )
