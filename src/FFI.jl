@@ -11,21 +11,26 @@ julia>
 """
 module FFI
 
+using Compat: isnothing
 using CoordinateTransformations
 using DataStructures: counter
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib.DataModel: Cell
+using SpgLib.DataModel
 
 export get_symmetry,
+       get_dataset,
+       get_spacegroup_type,
        get_international,
        get_schoenflies,
        standardize_cell,
        find_primitive,
        refine_cell,
        niggli_reduce,
-       delaunay_reduce
+       delaunay_reduce,
+       get_ir_reciprocal_mesh,
+       get_stabilized_reciprocal_mesh
 
 include(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
 
@@ -34,10 +39,6 @@ const LIBVERSION = VersionNumber(
     ccall((:spg_get_minor_version, spglib), Cint, ()),
     ccall((:spg_get_micro_version, spglib), Cint, ()),
 )
-
-function getfields(obj, fields...)
-    Tuple(getfield(obj, name) for name in fields)
-end
 
 function get_ccell(cell::Cell)::Cell
     @unpack lattice, positions, numbers = cell
@@ -54,15 +55,12 @@ end
 cchars_to_string(s::Vector{Cchar}) = map(Char, s) |> join |> x -> split(x, "\0") |> first
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
-    size(cell.positions, 1) != length(cell.numbers) && throw(DimensionMismatch("The number of positions and atomic types do not match!"))
-    size(cell.positions, 2) != 3 && error("Operations in 3D space is supported here!")
-
-    maxsize = 52
-    rotations = Array{Cint}(undef, 3, 3, maxsize)
-    translations = Array{Cdouble}(undef, 3, maxsize)
-
     ccell = get_ccell(cell)
     @unpack lattice, positions, numbers = ccell
+
+    maxsize = 48 * length(positions)
+    rotations = Array{Cint}(undef, 3, 3, maxsize)
+    translations = Array{Cdouble}(undef, 3, maxsize)
 
     numops = ccall(
         (:spg_get_symmetry, spglib),
@@ -89,7 +87,38 @@ function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine symmetries!")
 
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
-end
+end # function get_symmetry
+
+function get_dataset(cell::Cell; symprec::Real = 1e-8)
+    ccell = get_ccell(cell)
+    @unpack lattice, positions, numbers = ccell
+
+    dataset = ccall(
+        (:spg_get_dataset, spglib),
+        Dataset,
+        (
+         Ptr{Cdouble},
+         Ptr{Cdouble},
+         Ptr{Cint},
+         Cint,
+         Cdouble
+        ),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec
+    )
+
+    return dataset
+end # function get_dataset
+
+function get_spacegroup_type(hall_number::Integer)
+    spgtype = ccall(
+        (:spg_get_spacegroup_type, spglib), SpacegroupType, (Cint,), Int32(hall_number)
+    )
+    return spgtype
+end # function get_spacegroup_type
 
 function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
@@ -111,7 +140,7 @@ function get_international(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine the international symbol!")
 
     cchars_to_string(result)
-end
+end # function get_international
 
 function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
@@ -133,7 +162,7 @@ function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     numops == 0 && error("Could not determine the Schoenflies symbol!")
 
     cchars_to_string(result)
-end
+end # function get_schoenflies
 
 function standardize_cell(
     cell::Cell,
@@ -160,7 +189,7 @@ function standardize_cell(
     atoms_amount == 0 && error("Standardizing cell failed!")
 
     Cell(lattice, positions, numbers)
-end
+end # function standardize_cell
 
 find_primitive(cell::Cell; symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
@@ -182,7 +211,7 @@ function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
     ret == 0 && error("Niggli reduce failed!")
 
     @set cell.lattice = clattice
-end
+end # function niggli_reduce
 
 function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     ccell = get_ccell(cell)
@@ -198,7 +227,7 @@ function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     ret == 0 && error("Delaunay reduce failed!")
 
     @set cell.lattice = clattice
-end
+end # function delaunay_reduce
 
 function get_ir_reciprocal_mesh(
     cell::Cell,
@@ -247,7 +276,7 @@ function get_ir_reciprocal_mesh(
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
     mapping, grid_address
-end
+end # function get_ir_reciprocal_mesh
 
 function get_stabilized_reciprocal_mesh(
     rotations::Vector{Matrix{T}},
@@ -264,7 +293,7 @@ function get_stabilized_reciprocal_mesh(
     qpoints_amount = prod(grid)
     grid_address = Array{Cint}(undef, qpoints_amount, 3)
     mapping_table = Array{Cint}(undef, qpoints_amount)
-    qpoints == nothing ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
+    isnothing(qpoints) ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
 
     ret = ccall(
         (:spg_get_stabilized_reciprocal_mesh, spglib),
@@ -293,6 +322,6 @@ function get_stabilized_reciprocal_mesh(
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
     mapping_table, grid_address
-end
+end # function get_stabilized_reciprocal_mesh
 
 end
