@@ -31,7 +31,7 @@ export get_symmetry,
        get_ir_reciprocal_mesh,
        get_stabilized_reciprocal_mesh
 
-function get_ccell(cell::Cell)::Cell
+function get_ccell(cell::Cell)
     @unpack lattice, positions, numbers = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
     clattice = convert(Matrix{Cdouble}, lattice)
@@ -41,7 +41,7 @@ function get_ccell(cell::Cell)::Cell
 end
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
-cchars_to_string(s::Vector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
+cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     ccell = get_ccell(cell)
