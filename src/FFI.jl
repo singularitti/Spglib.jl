@@ -33,12 +33,14 @@ export get_symmetry,
 
 function get_ccell(cell::Cell)::Cell
     @unpack lattice, positions, numbers = cell
+    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
     cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
 
+# Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 cchars_to_string(s::Vector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
