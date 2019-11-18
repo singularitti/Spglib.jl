@@ -13,7 +13,6 @@ module FFI
 
 using Compat: isnothing
 using CoordinateTransformations
-using DataStructures: counter
 using Parameters: @unpack
 using Setfield: @set
 
@@ -36,11 +35,7 @@ function get_ccell(cell::Cell)::Cell
     @unpack lattice, positions, numbers = cell
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
-    cnumbers = convert(
-        Vector{Cint},
-        [repeat([i], v) for (i, v) in (enumerate ∘ values ∘ counter)(numbers)] |>
-        Iterators.flatten |> collect
-    )
+    cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
 
