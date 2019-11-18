@@ -13,7 +13,6 @@ module FFI
 
 using Compat: isnothing
 using CoordinateTransformations
-using DataStructures: counter
 using Parameters: @unpack
 using Setfield: @set
 
@@ -32,27 +31,17 @@ export get_symmetry,
        get_ir_reciprocal_mesh,
        get_stabilized_reciprocal_mesh
 
-include(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
-
-const LIBVERSION = VersionNumber(
-    ccall((:spg_get_major_version, spglib), Cint, ()),
-    ccall((:spg_get_minor_version, spglib), Cint, ()),
-    ccall((:spg_get_micro_version, spglib), Cint, ()),
-)
-
-function get_ccell(cell::Cell)::Cell
+function get_ccell(cell::Cell)
     @unpack lattice, positions, numbers = cell
+    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
-    cnumbers = convert(
-        Vector{Cint},
-        [repeat([i], v) for (i, v) in (enumerate ∘ values ∘ counter)(numbers)] |>
-        Iterators.flatten |> collect
-    )
+    cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
 
-cchars_to_string(s::Vector{Cchar}) = map(Char, s) |> join |> x -> split(x, "\0") |> first
+# Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
+cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     ccell = get_ccell(cell)
