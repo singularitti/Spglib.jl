@@ -32,14 +32,6 @@ export get_symmetry,
        get_ir_reciprocal_mesh,
        get_stabilized_reciprocal_mesh
 
-include(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
-
-const LIBVERSION = VersionNumber(
-    ccall((:spg_get_major_version, spglib), Cint, ()),
-    ccall((:spg_get_minor_version, spglib), Cint, ()),
-    ccall((:spg_get_micro_version, spglib), Cint, ()),
-)
-
 function get_ccell(cell::Cell)::Cell
     @unpack lattice, positions, numbers = cell
     clattice = convert(Matrix{Cdouble}, lattice)
@@ -52,7 +44,7 @@ function get_ccell(cell::Cell)::Cell
     return Cell(clattice, cpositions, cnumbers)
 end
 
-cchars_to_string(s::Vector{Cchar}) = map(Char, s) |> join |> x -> split(x, "\0") |> first
+cchars_to_string(s::Vector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
     ccell = get_ccell(cell)
