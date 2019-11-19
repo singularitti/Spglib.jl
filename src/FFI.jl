@@ -47,7 +47,7 @@ get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVe
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
-function get_symmetry(cell::Cell; symprec::Real = 1e-8)
+function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     # ccell = get_ccell(cell)
     @unpack lattice, positions, numbers = cell
 
@@ -113,7 +113,7 @@ end # function get_symmetry
 #     return spgtype
 # end # function get_spacegroup_type
 
-function get_international(cell::Cell; symprec::Real = 1e-8)
+function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
     numops = Wrapper.spg_get_international(result, lattice, positions, numbers, length(numbers), symprec)
@@ -121,7 +121,7 @@ function get_international(cell::Cell; symprec::Real = 1e-8)
     return cchars_to_string(result)
 end # function get_international
 
-function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
+function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
     numops = Wrapper.spg_get_schoenflies(result, lattice, positions, numbers, length(numbers), symprec)
@@ -130,7 +130,7 @@ function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
 end # function get_schoenflies
 
 function standardize_cell(
-    cell::Cell,
+    cell::Cell;
     to_primitive::Bool = false,
     no_idealize::Bool = false,
     symprec::Real = 1e-5
@@ -156,10 +156,10 @@ function standardize_cell(
     Cell(lattice, positions, numbers)
 end # function standardize_cell
 
-find_primitive(cell::Cell; symprec::Real = 1e-5) =
+find_primitive(cell::Cell, symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
 
-refine_cell(cell::Cell; symprec::Real = 1e-5) =
+refine_cell(cell::Cell, symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
 function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
@@ -185,7 +185,7 @@ end # function delaunay_reduce
 function get_ir_reciprocal_mesh(
     cell::Cell,
     grid::Vector{T},
-    shift::Vector{T} = [0, 0, 0],
+    shift::Vector{T} = [0, 0, 0];
     is_time_reversal::Bool = true,
     symprec::Real = 1e-5
 ) where {T<:Integer}
@@ -234,7 +234,7 @@ end # function get_ir_reciprocal_mesh
 function get_stabilized_reciprocal_mesh(
     rotations::Vector{Matrix{T}},
     grid::Vector{T},
-    shift::Vector{T} = [0, 0, 0],
+    shift::Vector{T} = [0, 0, 0];
     qpoints::Vector{} = nothing,
     is_time_reversal::Bool = true
 ) where {T<:Integer}
