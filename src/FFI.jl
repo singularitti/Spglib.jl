@@ -159,14 +159,8 @@ function standardize_cell(
     no_idealize::Bool = false,
     symprec::Real = 1e-5,
 )
-    ccell = get_ccell(cell)
-    @unpack lattice, positions, numbers = ccell
-    to_primitive, no_idealize = map(x -> convert(Cint, x), (to_primitive, no_idealize))
-
-    atoms_amount = ccall(
-        (:spg_standardize_cell, spglib),
-        Cint,
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cint, Cdouble),
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    atoms_amount = Wrapper.spg_standardize_cell(
         lattice,
         positions,
         numbers,
@@ -176,8 +170,7 @@ function standardize_cell(
         symprec,
     )
     atoms_amount == 0 && error("Standardizing cell failed!")
-
-    Cell(lattice, positions, numbers)
+    return Cell(lattice, positions, numbers)
 end # function standardize_cell
 
 find_primitive(cell::Cell, symprec::Real = 1e-5) =
