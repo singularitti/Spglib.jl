@@ -115,21 +115,8 @@ end # function get_symmetry
 
 function get_international(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
-    ccell = get_ccell(cell)
-    @unpack lattice, positions, numbers = ccell
-    # numops = ccall(
-    #     (:spg_get_international, spglib),
-    #     Cint,
-    #     (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-    #     result,
-    #     lattice,
-    #     positions,
-    #     numbers,
-    #     length(numbers),
-    #     symprec
-    # )
-    println(Iterators.partition(positions', 3) |> collect |> Tuple)
-    numops = Wrapper.spg_get_international(result, Iterators.partition(lattice', 3) |> collect |> Tuple, Iterators.partition(positions', 3) |> collect |> Tuple, numbers, length(numbers), symprec)
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    numops = Wrapper.spg_get_international(result, lattice, positions, numbers, length(numbers), symprec)
     numops == 0 && error("Could not determine the international symbol!")
     return cchars_to_string(result)
 end # function get_international
