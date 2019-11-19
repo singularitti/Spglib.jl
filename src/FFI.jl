@@ -48,37 +48,37 @@ get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVe
 cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
 
 function get_symmetry(cell::Cell; symprec::Real = 1e-8)
-    ccell = get_ccell(cell)
-    @unpack lattice, positions, numbers = ccell
+    # ccell = get_ccell(cell)
+    @unpack lattice, positions, numbers = cell
 
     maxsize = 48 * length(positions)
-    rotations = Array{Cint}(undef, 3, 3, maxsize)
-    translations = Array{Cdouble}(undef, 3, maxsize)
+    rotations = Array{Int32}(undef, maxsize, 3, 3)
+    translations = Array{Float64}(undef, maxsize, 3)
 
-    numops = ccall(
-        (:spg_get_symmetry, spglib),
-        Cint,
-        (
-         Ptr{Cint},
-         Ptr{Cdouble},
-         Cint,
-         Ptr{Cdouble},
-         Ptr{Cdouble},
-         Ptr{Cint},
-         Cint,
-         Cdouble
-        ),
-        rotations,
-        translations,
-        maxsize,
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec
-    )
+    # numops = ccall(
+    #     (:spg_get_symmetry, spglib),
+    #     Cint,
+    #     (
+    #      Ptr{Cint},
+    #      Ptr{Cdouble},
+    #      Cint,
+    #      Ptr{Cdouble},
+    #      Ptr{Cdouble},
+    #      Ptr{Cint},
+    #      Cint,
+    #      Cdouble
+    #     ),
+    #     rotations,
+    #     translations,
+    #     maxsize,
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec
+    # )
+    numops = Wrapper.spg_get_symmetry(rotations, translations, maxsize, lattice, positions, numbers, length(numbers), symprec)
     numops == 0 && error("Could not determine symmetries!")
-
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
 end # function get_symmetry
 
@@ -123,24 +123,10 @@ end # function get_international
 
 function get_schoenflies(cell::Cell; symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
-
-    ccell = get_ccell(cell)
-    @unpack lattice, positions, numbers = ccell
-
-    numops = ccall(
-        (:spg_get_schoenflies, spglib),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec
-    )
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    numops = Wrapper.spg_get_schoenflies(result, lattice, positions, numbers, length(numbers), symprec)
     numops == 0 && error("Could not determine the Schoenflies symbol!")
-
-    cchars_to_string(result)
+    return cchars_to_string(result)
 end # function get_schoenflies
 
 function standardize_cell(
