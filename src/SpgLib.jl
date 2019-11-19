@@ -4,7 +4,7 @@ using Parameters: @with_kw
 
 export Cell
 
-@with_kw struct Cell{L<:AbstractMatrix,P<:AbstractMatrix,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
+@with_kw struct Cell{L<:AbstractVecOrMat,P<:AbstractVecOrMat,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
     lattice::L
     positions::P
     numbers::N
