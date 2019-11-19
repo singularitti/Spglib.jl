@@ -45,7 +45,8 @@ end
 get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVec}}) = cell
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
-cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
+cchars_to_string(s::AbstractVector{Cchar}) =
+    convert(Array{Char}, s[1:findfirst(iszero, s)-1]) |> join
 
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     # ccell = get_ccell(cell)
@@ -77,9 +78,18 @@ function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     #     length(numbers),
     #     symprec
     # )
-    numops = Wrapper.spg_get_symmetry(rotations, translations, maxsize, lattice, positions, numbers, length(numbers), symprec)
+    numops = Wrapper.spg_get_symmetry(
+        rotations,
+        translations,
+        maxsize,
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
     numops == 0 && error("Could not determine symmetries!")
-    [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i = 1:numops]
+    [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i in 1:numops]
 end # function get_symmetry
 
 # function get_dataset(cell::Cell; symprec::Real = 1e-8)
@@ -116,7 +126,14 @@ end # function get_symmetry
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    numops = Wrapper.spg_get_international(result, lattice, positions, numbers, length(numbers), symprec)
+    numops = Wrapper.spg_get_international(
+        result,
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
     numops == 0 && error("Could not determine the international symbol!")
     return cchars_to_string(result)
 end # function get_international
@@ -124,7 +141,14 @@ end # function get_international
 function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    numops = Wrapper.spg_get_schoenflies(result, lattice, positions, numbers, length(numbers), symprec)
+    numops = Wrapper.spg_get_schoenflies(
+        result,
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
     numops == 0 && error("Could not determine the Schoenflies symbol!")
     return cchars_to_string(result)
 end # function get_schoenflies
@@ -133,7 +157,7 @@ function standardize_cell(
     cell::Cell;
     to_primitive::Bool = false,
     no_idealize::Bool = false,
-    symprec::Real = 1e-5
+    symprec::Real = 1e-5,
 )
     ccell = get_ccell(cell)
     @unpack lattice, positions, numbers = ccell
@@ -149,7 +173,7 @@ function standardize_cell(
         length(numbers),
         to_primitive,
         no_idealize,
-        symprec
+        symprec,
     )
     atoms_amount == 0 && error("Standardizing cell failed!")
 
@@ -169,7 +193,8 @@ function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
     code = Wrapper.niggli_reduce(lattice, float(symprec))  # The result is reassigned to `lattice`.
     iszero(code) && error("Niggli reduce failed!")
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L876
-    return @set cell.lattice = Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return @set cell.lattice =
+        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end # function niggli_reduce
 
 function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
@@ -179,7 +204,8 @@ function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     code = Wrapper.niggli_reduce(lattice, float(symprec))  # The result is reassigned to `lattice`.
     iszero(code) && error("Delaunay reduce failed!")
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L840
-    return @set cell.lattice = Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return @set cell.lattice =
+        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end # function delaunay_reduce
 
 function get_ir_reciprocal_mesh(
@@ -187,11 +213,11 @@ function get_ir_reciprocal_mesh(
     grid::Vector{T},
     shift::Vector{T} = [0, 0, 0];
     is_time_reversal::Bool = true,
-    symprec::Real = 1e-5
+    symprec::Real = 1e-5,
 ) where {T<:Integer}
     all(
         x -> x in (zero(T), one(T)),
-        shift
+        shift,
     ) || throw(ArgumentError("The shift can be only a vector of ones or zeros!"))
 
     qpoints_amount = prod(grid)
@@ -213,7 +239,7 @@ function get_ir_reciprocal_mesh(
          Ptr{Cdouble},
          Ptr{Cint},
          Cint,
-         Cdouble
+         Cdouble,
         ),
         grid_address,
         mapping,
@@ -224,7 +250,7 @@ function get_ir_reciprocal_mesh(
         positions,
         numbers,
         length(numbers),
-        symprec
+        symprec,
     )
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
@@ -236,11 +262,11 @@ function get_stabilized_reciprocal_mesh(
     grid::Vector{T},
     shift::Vector{T} = [0, 0, 0];
     qpoints::Vector{} = nothing,
-    is_time_reversal::Bool = true
+    is_time_reversal::Bool = true,
 ) where {T<:Integer}
     all(
         x -> x in (zero(T), one(T)),
-        shift
+        shift,
     ) || throw(ArgumentError("The shift can be only a vector of ones or zeros!"))
 
     qpoints_amount = prod(grid)
@@ -260,7 +286,7 @@ function get_stabilized_reciprocal_mesh(
          Cint,
          Ptr{Cint},
          Cint,
-         Ptr{Cint}
+         Ptr{Cint},
         ),
         grid_address,
         mapping_table,
@@ -270,7 +296,7 @@ function get_stabilized_reciprocal_mesh(
         length(rotations),
         rotations,
         length(qpoints),
-        qpoints
+        qpoints,
     )
     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
 
