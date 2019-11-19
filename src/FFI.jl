@@ -32,14 +32,17 @@ export get_symmetry,
        get_ir_reciprocal_mesh,
        get_stabilized_reciprocal_mesh
 
-function get_ccell(cell::Cell)
+const TupleOrVec = Union{Tuple,AbstractVector}
+
+function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     @unpack lattice, positions, numbers = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
-    clattice = convert(Matrix{Cdouble}, lattice)
-    cpositions = convert(Matrix{Cdouble}, positions)
+    clattice = Iterators.partition(Cdouble.(lattice'), 3) |> collect
+    cpositions = Iterators.partition(Cdouble.(positions'), 3) |> collect
     cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
+get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVec}}) = cell
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, s[1:findfirst(iszero, s) - 1]) |> join
