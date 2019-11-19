@@ -187,35 +187,23 @@ refine_cell(cell::Cell; symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
 function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
-    ccell = get_ccell(cell)
-    clattice = getfield(ccell, :lattice)
-
-    ret = ccall(
-        (:spg_niggli_reduce, spglib),
-        Cint,
-        (Ptr{Cdouble}, Cdouble),
-        clattice,
-        symprec
-    )
-    ret == 0 && error("Niggli reduce failed!")
-
-    @set cell.lattice = clattice
+    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L869
+    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
+    # Make sure the `symprec` is a float
+    code = Wrapper.niggli_reduce(lattice, float(symprec))  # The result is reassigned to `lattice`.
+    iszero(code) && error("Niggli reduce failed!")
+    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L876
+    return @set cell.lattice = Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end # function niggli_reduce
 
 function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
-    ccell = get_ccell(cell)
-    clattice = getfield(ccell, :lattice)
-
-    ret = ccall(
-        (:spg_niggli_reduce, spglib),
-        Cint,
-        (Ptr{Cdouble}, Cdouble),
-        clattice,
-        symprec
-    )
-    ret == 0 && error("Delaunay reduce failed!")
-
-    @set cell.lattice = clattice
+    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L832
+    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
+    # Make sure the `symprec` is a float
+    code = Wrapper.niggli_reduce(lattice, float(symprec))  # The result is reassigned to `lattice`.
+    iszero(code) && error("Delaunay reduce failed!")
+    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L840
+    return @set cell.lattice = Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end # function delaunay_reduce
 
 function get_ir_reciprocal_mesh(
