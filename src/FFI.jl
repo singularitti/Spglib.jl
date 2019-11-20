@@ -16,7 +16,7 @@ using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
 
-import ..Cell
+using SpgLib: Cell, SpaceGroup
 using ..Wrapper
 
 export get_symmetry,
@@ -116,12 +116,12 @@ end # function get_symmetry
 #     return dataset
 # end # function get_dataset
 
-# function get_spacegroup_type(hall_number::Integer)
-#     spgtype = ccall(
-#         (:spg_get_spacegroup_type, spglib), SpacegroupType, (Cint,), Int32(hall_number)
-#     )
-#     return spgtype
-# end # function get_spacegroup_type
+function get_spacegroup_type(hall_number::Integer)
+    spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
+    T = Wrapper.SpglibSpacegroupType
+    f = name -> getfield(spgtype, name) |> (fieldtype(T, name) <: Tuple ? (String ∘ collect) : identity)
+    return SpaceGroup(map(f, fieldnames(T))...)
+end # function get_spacegroup_type
 
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
