@@ -18,7 +18,7 @@ using SpgLib.FFI
         0.8  0.2  0.5
     ]
     numbers = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(lattice, positions, numbers) |> SpgLib.FFI.get_ccell
+    rutile = Cell(lattice, positions, numbers)
     # get_symmetry(rutile; symprec = 1e-5)
 end # testset
 
