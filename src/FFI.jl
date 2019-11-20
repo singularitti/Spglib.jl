@@ -130,7 +130,7 @@ end # function get_spacegroup_type
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    numops = Wrapper.spg_get_international(
+    exitcode = Wrapper.spg_get_international(
         result,
         lattice,
         positions,
@@ -138,7 +138,7 @@ function get_international(cell::Cell, symprec::Real = 1e-8)
         length(numbers),
         symprec,
     )
-    numops == 0 && error("Could not determine the international symbol!")
+    exitcode == 0 && error("Could not determine the international symbol!")
     return cchars_to_string(result)
 end # function get_international
 
