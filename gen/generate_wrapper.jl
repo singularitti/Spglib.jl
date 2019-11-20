@@ -1,13 +1,14 @@
 using Clang
 
-HEADER_BASE = "./deps/usr/include" # using system-wide installation of SCIP
-all_headers = readdir(joinpath(HEADER_BASE, "spglib"))
+const LIB_INCLUDE = "deps/usr/include"
+const LIB_HEADERS = [joinpath(LIB_INCLUDE, "spglib", h) for h in readdir(joinpath(LIB_INCLUDE, "spglib"))]
 context = Clang.init(
-    headers = [joinpath(HEADER_BASE, "spglib", h) for h in all_headers],
+    headers = LIB_HEADERS,
     common_file = "spglib_common.jl",
-    output_dir = "./src/Wrapper/",
+    output_dir = "src/Wrapper/",
     output_file = "spglib_api.jl",
-    clang_args = ["-I", HEADER_BASE],
-    header_wrapped = (header, cursorname) -> header == cursorname,
+    clang_args = ["-I", LIB_INCLUDE],
+    header_wrapped = (root, current) -> root == current,
+    clang_diagnostics = true,
 )
 Clang.run(context)
