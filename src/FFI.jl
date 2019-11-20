@@ -44,9 +44,12 @@ function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
 end
 get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVec}}) = cell
 
+# This is an internal function, do not export!
+trunc_till_zero(s) = s[1:findfirst(iszero, s)-1] |> collect
+
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
-cchars_to_string(s::AbstractVector{Cchar}) =
-    convert(Array{Char}, s[1:findfirst(iszero, s)-1]) |> join
+# This is an internal function, do not export!
+cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, trunc_till_zero(s)) |> join
 
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     # ccell = get_ccell(cell)
@@ -119,7 +122,8 @@ end # function get_symmetry
 function get_spacegroup_type(hall_number::Integer)
     spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
     T = Wrapper.SpglibSpacegroupType
-    f = name -> getfield(spgtype, name) |> (fieldtype(T, name) <: Tuple ? (String ∘ collect) : identity)
+    f = name -> getfield(spgtype, name) |> (fieldtype(T, name) <: Tuple ? (String ∘ trunc_till_zero) : identity)
+    # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return SpaceGroup(map(f, fieldnames(T))...)
 end # function get_spacegroup_type
 
