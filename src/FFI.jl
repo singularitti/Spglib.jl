@@ -71,7 +71,19 @@ function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     maxsize = 52 * length(positions)
     rotations = Array{Cint}(undef, maxsize, 3, 3)
     translations = Array{Cdouble}(undef, maxsize, 3)
-    numops = Wrapper.spg_get_symmetry(
+    numops = ccall(
+        (:spg_get_symmetry, libsymspg),
+        Cint,
+        (
+         Ptr{Cint},
+         Ptr{Cdouble},
+         Cint,
+         Ptr{Cdouble},
+         Ptr{Cdouble},
+         Ptr{Cint},
+         Cint,
+         Cdouble,
+        ),
         rotations,
         translations,
         maxsize,
