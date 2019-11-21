@@ -58,6 +58,9 @@ end # function trunc_trailing_zeros
 # This is an internal function, do not export!
 cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, trunc_trailing_zeros(s)) |> join
 
+get_readable_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
+get_readable_field(x::Integer) = convert(Int, x)
+
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     maxsize = 52 * length(positions)
@@ -104,7 +107,7 @@ end # function get_symmetry
 function get_spacegroup_type(hall_number::Integer)
     spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
     T = Wrapper.SpglibSpacegroupType
-    f = name -> getfield(spgtype, name) |> (fieldtype(T, name) <: Tuple ? (String ∘ trunc_till_zero) : identity)
+    f = name -> getfield(spgtype, name) |> get_readable_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return SpaceGroup(map(f, fieldnames(T))...)
 end # function get_spacegroup_type
