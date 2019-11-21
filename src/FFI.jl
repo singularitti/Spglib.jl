@@ -18,7 +18,6 @@ using Setfield: @set
 
 using SpgLib.DataModel: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 using spglib_jll: libsymspg
-using ..Wrapper
 
 export get_symmetry,
        get_dataset,
@@ -29,9 +28,9 @@ export get_symmetry,
        find_primitive,
        refine_cell,
        niggli_reduce,
-       delaunay_reduce,
-       get_ir_reciprocal_mesh,
-       get_stabilized_reciprocal_mesh
+       delaunay_reduce
+    #    get_ir_reciprocal_mesh,
+    #    get_stabilized_reciprocal_mesh
 
 # This is an internal type, do not export!
 const TupleOrVec = Union{Tuple,AbstractVector}
