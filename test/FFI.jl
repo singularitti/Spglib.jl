@@ -1,5 +1,7 @@
 using Test
 
+using Parameters: type2dict
+
 using SpgLib
 using SpgLib.FFI
 
@@ -19,6 +21,9 @@ using SpgLib.FFI
     ]
     numbers = [14, 14, 8, 8, 8, 8]
     rutile = Cell(lattice, positions, numbers)
+    @test type2dict(get_spacegroup_type(419)) == Dict(
+
+    )
     # get_symmetry(rutile; symprec = 1e-5)
 end # testset
 
