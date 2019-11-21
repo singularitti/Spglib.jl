@@ -16,7 +16,7 @@ using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib: Cell, Dataset, Cdataset, SpaceGroup
+using SpgLib: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 using spglib_jll: libsymspg
 using ..Wrapper
 
@@ -108,11 +108,8 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
 end # function get_dataset
 
 function get_spacegroup_type(hall_number::Integer)
-    spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
-    T = Wrapper.SpglibSpacegroupType
-    f = name -> getfield(spgtype, name) |> convert_field
-    # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
-    return SpaceGroup(map(f, fieldnames(T))...)
+    spgtype = ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
+    return convert(SpaceGroup, spgtype)
 end # function get_spacegroup_type
 
 function get_international(cell::Cell, symprec::Real = 1e-8)
@@ -301,6 +298,11 @@ end # function get_stabilized_reciprocal_mesh
 
 function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
     f = name -> getfield(dataset, name) |> convert_field
+    return T(map(f, fieldnames(T))...)
+end # function Base.convert
+function Base.convert(::Type{T}, spgtype::CspaceGroup) where {T<:SpaceGroup}
+    f = name -> getfield(spgtype, name) |> convert_field
+    # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return T(map(f, fieldnames(T))...)
 end # function Base.convert
 
