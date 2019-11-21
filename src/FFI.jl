@@ -48,11 +48,15 @@ end
 get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVec}}) = cell
 
 # This is an internal function, do not export!
-trunc_till_zero(s) = s[1:findfirst(iszero, s)-1] |> collect
+function trunc_trailing_zeros(s)
+    i = findfirst(iszero, s)
+    isnothing(i) && return s
+    return s[1:findfirst(iszero, s)-1]
+end # function trunc_trailing_zeros
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, trunc_till_zero(s)) |> join
+cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, trunc_trailing_zeros(s)) |> join
 
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
