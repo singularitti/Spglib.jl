@@ -15,9 +15,9 @@ using Compat: isnothing
 using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
-
-using SpgLib.DataModel: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 using spglib_jll: libsymspg
+
+using ..DataModel: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 
 export get_symmetry,
        get_dataset,
