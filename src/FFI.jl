@@ -342,14 +342,6 @@ Return the exact number of symmetry operations. An error is thrown when it fails
 """
 function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    # exitcode = Wrapper.spg_get_international(
-    #     result,
-    #     lattice,
-    #     positions,
-    #     numbers,
-    #     length(numbers),
-    #     symprec,
-    # )
     nsymops = ccall(
         (:spg_get_multiplicity, libsymspg),
         Cint,
