@@ -28,7 +28,8 @@ export get_symmetry,
        find_primitive,
        refine_cell,
        niggli_reduce,
-       delaunay_reduce
+       delaunay_reduce,
+       get_multiplicity
     #    get_ir_reciprocal_mesh,
     #    get_stabilized_reciprocal_mesh
 
@@ -333,6 +334,35 @@ end # function delaunay_reduce
 
 #     mapping_table, grid_address
 # end # function get_stabilized_reciprocal_mesh
+
+"""
+    get_multiplicity(cell::Cell, symprec = 1e-8)
+
+Return the exact number of symmetry operations. An error is thrown when it failed.
+"""
+function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    # exitcode = Wrapper.spg_get_international(
+    #     result,
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec,
+    # )
+    nsymops = ccall(
+        (:spg_get_multiplicity, libsymspg),
+        Cint,
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
+    nsymops == 0 && error("Could not determine the multiplicity!")
+    return nsymops
+end # function get_multiplicity
 
 function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
     f = name -> getfield(dataset, name) |> convert_field
