@@ -118,7 +118,18 @@ end # function get_spacegroup_type
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    exitcode = Wrapper.spg_get_international(
+    # exitcode = Wrapper.spg_get_international(
+    #     result,
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec,
+    # )
+    exitcode = ccall(
+        (:spg_get_international, libsymspg),
+        Cint,
+        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cvoid}, Ptr{Cint}, Cint, Cdouble),
         result,
         lattice,
         positions,
