@@ -17,6 +17,7 @@ using Parameters: @unpack
 using Setfield: @set
 
 using SpgLib: Cell, SpaceGroup
+using spglib_jll: libsymspg
 using ..Wrapper
 
 export get_symmetry,
