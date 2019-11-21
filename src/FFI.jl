@@ -16,7 +16,7 @@ using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib: Cell, SpaceGroup
+using SpgLib: Cell, SpglibDataset, SpaceGroup
 using spglib_jll: libsymspg
 using ..Wrapper
 
@@ -40,8 +40,8 @@ const TupleOrVec = Union{Tuple,AbstractVector}
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     @unpack lattice, positions, numbers = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
-    clattice = Iterators.partition(Cdouble.(lattice'), 3) |> collect
-    cpositions = Iterators.partition(Cdouble.(positions'), 3) |> collect
+    clattice = convert(Matrix{Cdouble}, lattice)
+    cpositions = convert(Matrix{Cdouble}, positions)
     cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
@@ -80,29 +80,27 @@ function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i in 1:numops]
 end # function get_symmetry
 
-# function get_dataset(cell::Cell; symprec::Real = 1e-8)
-#     ccell = get_ccell(cell)
-#     @unpack lattice, positions, numbers = ccell
-
-#     dataset = ccall(
-#         (:spg_get_dataset, spglib),
-#         Dataset,
-#         (
-#          Ptr{Cdouble},
-#          Ptr{Cdouble},
-#          Ptr{Cint},
-#          Cint,
-#          Cdouble
-#         ),
-#         lattice,
-#         positions,
-#         numbers,
-#         length(numbers),
-#         symprec
-#     )
-
-#     return dataset
-# end # function get_dataset
+function get_dataset(cell::Cell; symprec::Real = 1e-8)
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    # dataset = Wrapper.spg_get_dataset(
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec,
+    # )
+    dataset = ccall(
+        (:spg_get_dataset, libsymspg),
+        Ptr{SpglibDataset},
+        (Ptr{NTuple{3,Cdouble}}, Ptr{NTuple{3,Cdouble}}, Ptr{Cint}, Cint, Cdouble),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
+    return dataset
+end # function get_dataset
 
 function get_spacegroup_type(hall_number::Integer)
     spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
