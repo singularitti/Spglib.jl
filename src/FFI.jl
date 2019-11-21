@@ -56,9 +56,11 @@ end # function trunc_trailing_zeros
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars_to_string(s::AbstractVector{Cchar}) = convert(Array{Char}, trunc_trailing_zeros(s)) |> join
+cchars_to_string(s::AbstractVector{Cchar}) =
+    convert(Array{Char}, trunc_trailing_zeros(s)) |> join
 
-get_readable_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
+get_readable_field(x::NTuple{N,Integer}) where {N} =
+    String(collect(trunc_trailing_zeros(x)))
 get_readable_field(x::Integer) = convert(Int, x)
 
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
