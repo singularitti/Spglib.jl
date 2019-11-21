@@ -59,12 +59,12 @@ end # function trunc_trailing_zeros
 cchars_to_string(s::AbstractVector{Cchar}) =
     convert(Array{Char}, trunc_trailing_zeros(s)) |> join
 
-get_readable_field(x::NTuple{N,Integer}) where {N} =
-    String(collect(trunc_trailing_zeros(x)))
-get_readable_field(x::Integer) = convert(Int, x)
-get_readable_field(x::Ptr) = unsafe_load(x)
-get_readable_field(x::NTuple{3,NTuple{3,Float64}}) = transpose(reshape(collect(Iterators.flatten(x)), 3, 3))
-get_readable_field(x::NTuple{N,Float64}) where {N} = collect(x)
+convert_field(x) = x  # Integers
+convert_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
+convert_field(x::Ptr) = unsafe_load(x)
+convert_field(x::NTuple{M,NTuple{N,Number}}) where {M,N} =
+    transpose(reshape(collect(Iterators.flatten(x)), N, M))
+convert_field(x::NTuple{N,Number}) where {N} = collect(x)
 
 function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
@@ -110,7 +110,7 @@ end # function get_dataset
 function get_spacegroup_type(hall_number::Integer)
     spgtype = Wrapper.spg_get_spacegroup_type(hall_number)
     T = Wrapper.SpglibSpacegroupType
-    f = name -> getfield(spgtype, name) |> get_readable_field
+    f = name -> getfield(spgtype, name) |> convert_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return SpaceGroup(map(f, fieldnames(T))...)
 end # function get_spacegroup_type
@@ -289,7 +289,7 @@ function get_stabilized_reciprocal_mesh(
 end # function get_stabilized_reciprocal_mesh
 
 function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
-    f = name -> getfield(dataset, name) |> get_readable_field
+    f = name -> getfield(dataset, name) |> convert_field
     return T(map(f, fieldnames(T))...)
 end # function Base.convert
 
