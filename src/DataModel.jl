@@ -12,6 +12,7 @@ export Cell, Dataset, SpaceGroup
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
+# This is an internal type, do not export!
 struct Cdataset
     spacegroup_number::Cint
     hall_number::Cint
@@ -54,6 +55,7 @@ struct Dataset
     pointgroup_symbol::String
 end
 
+# This is an internal type, do not export!
 struct CspaceGroup
     number::Cint
     international_short::NTuple{11, UInt8}
