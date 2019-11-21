@@ -16,7 +16,7 @@ using CoordinateTransformations
 using Parameters: @unpack
 using Setfield: @set
 
-using SpgLib: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
+using SpgLib.DataModel: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 using spglib_jll: libsymspg
 using ..Wrapper
 
@@ -108,7 +108,8 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
 end # function get_dataset
 
 function get_spacegroup_type(hall_number::Integer)
-    spgtype = ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
+    spgtype =
+        ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
     return convert(SpaceGroup, spgtype)
 end # function get_spacegroup_type
 
@@ -126,7 +127,7 @@ function get_international(cell::Cell, symprec::Real = 1e-8)
     exitcode = ccall(
         (:spg_get_international, libsymspg),
         Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cvoid}, Ptr{Cint}, Cint, Cdouble),
+        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         result,
         lattice,
         positions,
@@ -141,7 +142,18 @@ end # function get_international
 function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    numops = Wrapper.spg_get_schoenflies(
+    # exitcode = Wrapper.spg_get_schoenflies(
+    #     result,
+    #     lattice,
+    #     positions,
+    #     numbers,
+    #     length(numbers),
+    #     symprec,
+    # )
+    exitcode = ccall(
+        (:spg_get_schoenflies, libsymspg),
+        Cint,
+        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         result,
         lattice,
         positions,
@@ -149,7 +161,7 @@ function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
         length(numbers),
         symprec,
     )
-    numops == 0 && error("Could not determine the Schoenflies symbol!")
+    exitcode == 0 && error("Could not determine the Schoenflies symbol!")
     return cchars_to_string(result)
 end # function get_schoenflies
 
