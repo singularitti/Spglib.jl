@@ -2,7 +2,7 @@ module SpgLib
 
 using Parameters: @with_kw
 
-export Cell, Dataset, SpaceGroup
+export Cell, Dataset, SpglibDataset, SpaceGroup
 
 @with_kw struct Cell{L<:AbstractVecOrMat,P<:AbstractVecOrMat,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
     lattice::L
@@ -11,6 +11,27 @@ export Cell, Dataset, SpaceGroup
     magmoms::M = nothing
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+
+struct SpglibDataset
+    spacegroup_number::Cint
+    hall_number::Cint
+    international_symbol::NTuple{11, UInt8}
+    hall_symbol::NTuple{17, UInt8}
+    choice::NTuple{6, UInt8}
+    transformation_matrix::NTuple{3, NTuple{3, Cdouble}}
+    origin_shift::NTuple{3, Cdouble}
+    n_operations::Cint
+    rotations::Ptr{Cvoid}
+    translations::Ptr{Cvoid}
+    n_atoms::Cint
+    wyckoffs::Ptr{Cint}
+    equivalent_atoms::Ptr{Cint}
+    n_std_atoms::Cint
+    std_lattice::NTuple{3, NTuple{3, Cdouble}}
+    std_types::Ptr{Cint}
+    std_positions::Ptr{Cvoid}
+    pointgroup_symbol::NTuple{6, UInt8}
+end
 
 struct Dataset
     spacegroup_number::Int
