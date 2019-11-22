@@ -28,12 +28,10 @@ export get_symmetry,
        find_primitive,
        refine_cell,
        niggli_reduce,
-       delaunay_reduce
-    #    get_ir_reciprocal_mesh,
-    #    get_stabilized_reciprocal_mesh
-
-# This is an internal type, do not export!
-const TupleOrVec = Union{Tuple,AbstractVector}
+       delaunay_reduce,
+       get_multiplicity,
+       get_ir_reciprocal_mesh,
+       get_stabilized_reciprocal_mesh
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
@@ -44,7 +42,6 @@ function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
     return Cell(clattice, cpositions, cnumbers)
 end
-get_ccell(cell::Cell{<:AbstractVector{<:TupleOrVec},<:AbstractVector{<:TupleOrVec}}) = cell
 
 # This is an internal function, do not export!
 function trunc_trailing_zeros(s)
@@ -239,100 +236,110 @@ function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
         Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end # function delaunay_reduce
 
-# function get_ir_reciprocal_mesh(
-#     cell::Cell,
-#     grid::Vector{T},
-#     shift::Vector{T} = [0, 0, 0];
-#     is_time_reversal::Bool = true,
-#     symprec::Real = 1e-5,
-# ) where {T<:Integer}
-#     all(
-#         x -> x in (zero(T), one(T)),
-#         shift,
-#     ) || throw(ArgumentError("The shift can be only a vector of ones or zeros!"))
+function get_ir_reciprocal_mesh(
+    cell::Cell,
+    grid::AbstractVector{<:Integer},
+    shift::AbstractVector{<:Integer} = [0, 0, 0];
+    is_time_reversal::Bool = true,
+    symprec::Real = 1e-5,
+)
+    @assert(length(grid) == length(shift) == 3)
+    @assert(all(isone(x) || iszero(x) for x in shift))
+    npoints = prod(grid)
+    grid_address = Matrix{Cint}(undef, npoints, 3)
+    mapping = Vector{Cint}(undef, npoints)
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    exitcode = ccall(
+        (:spg_get_ir_reciprocal_mesh, libsymspg),
+        Cint,
+        (
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Cint,
+         Ptr{Cdouble},
+         Ptr{Cdouble},
+         Ptr{Cint},
+         Cint,
+         Cdouble,
+        ),
+        grid_address,
+        mapping,
+        grid,
+        shift,
+        is_time_reversal,
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
+    @assert(exitcode > 0, "Something wrong happens when finding mesh!")
+    return mapping, grid_address
+end # function get_ir_reciprocal_mesh
 
-#     qpoints_amount = prod(grid)
-#     grid_address = Array{Cint}(undef, qpoints_amount, 3)
-#     mapping = Array{Cint}(undef, qpoints_amount)
-#     ccell = get_ccell(cell)
-#     @unpack lattice, positions, numbers = ccell
+function get_stabilized_reciprocal_mesh(
+    rotations::AbstractVector{AbstractMatrix{<:Integer}},
+    grid::AbstractVector{<:Integer},
+    shift::AbstractVector{<:Integer} = [0, 0, 0];
+    qpoints::AbstractMatrix{<:AbstractFloat} = [[0, 0, 0]],
+    is_time_reversal::Bool = true,
+)
+    @assert(length(grid) == length(shift) == 3)
+    @assert(all(isone(x) || iszero(x) for x in shift))
+    @assert(size(qpoints, 2) == 3)
+    npoints = prod(grid)
+    grid_address = Matrix{Cint}(undef, npoints, 3)
+    mapping = Vector{Cint}(undef, npoints)
+    exitcode = ccall(
+        (:spg_get_stabilized_reciprocal_mesh, libsymspg),
+        Cint,
+        (
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Cint,
+         Cint,
+         Ptr{Cint},
+         Cint,
+         Ptr{Cint},
+        ),
+        grid_address,
+        mapping,
+        grid,
+        shift,
+        is_time_reversal,
+        length(rotations),
+        rotations,
+        length(qpoints),
+        qpoints,
+    )
+    @assert(exitcode > 0, "Something wrong happens when finding mesh!")
+    return mapping, grid_address
+end # function get_stabilized_reciprocal_mesh
 
-#     ret = ccall(
-#         (:spg_get_ir_reciprocal_mesh, spglib),
-#         Cint,
-#         (
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Cint,
-#          Ptr{Cdouble},
-#          Ptr{Cdouble},
-#          Ptr{Cint},
-#          Cint,
-#          Cdouble,
-#         ),
-#         grid_address,
-#         mapping,
-#         grid,
-#         shift,
-#         is_time_reversal,
-#         lattice,
-#         positions,
-#         numbers,
-#         length(numbers),
-#         symprec,
-#     )
-#     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
+"""
+    get_multiplicity(cell::Cell, symprec = 1e-8)
 
-#     mapping, grid_address
-# end # function get_ir_reciprocal_mesh
-
-# function get_stabilized_reciprocal_mesh(
-#     rotations::Vector{Matrix{T}},
-#     grid::Vector{T},
-#     shift::Vector{T} = [0, 0, 0];
-#     qpoints::Vector{} = nothing,
-#     is_time_reversal::Bool = true,
-# ) where {T<:Integer}
-#     all(
-#         x -> x in (zero(T), one(T)),
-#         shift,
-#     ) || throw(ArgumentError("The shift can be only a vector of ones or zeros!"))
-
-#     qpoints_amount = prod(grid)
-#     grid_address = Array{Cint}(undef, qpoints_amount, 3)
-#     mapping_table = Array{Cint}(undef, qpoints_amount)
-#     isnothing(qpoints) ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
-
-#     ret = ccall(
-#         (:spg_get_stabilized_reciprocal_mesh, spglib),
-#         Cint,
-#         (
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Cint,
-#          Cint,
-#          Ptr{Cint},
-#          Cint,
-#          Ptr{Cint},
-#         ),
-#         grid_address,
-#         mapping_table,
-#         grid,
-#         shift,
-#         is_time_reversal,
-#         length(rotations),
-#         rotations,
-#         length(qpoints),
-#         qpoints,
-#     )
-#     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
-
-#     mapping_table, grid_address
-# end # function get_stabilized_reciprocal_mesh
+Return the exact number of symmetry operations. An error is thrown when it fails.
+"""
+function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
+    @unpack lattice, positions, numbers = get_ccell(cell)
+    nsymops = ccall(
+        (:spg_get_multiplicity, libsymspg),
+        Cint,
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
+        lattice,
+        positions,
+        numbers,
+        length(numbers),
+        symprec,
+    )
+    nsymops == 0 && error("Could not determine the multiplicity!")
+    return nsymops
+end # function get_multiplicity
 
 function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
     f = name -> getfield(dataset, name) |> convert_field
