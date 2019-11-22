@@ -30,8 +30,8 @@ export get_symmetry,
        niggli_reduce,
        delaunay_reduce,
        get_multiplicity,
-       get_ir_reciprocal_mesh
-    #    get_stabilized_reciprocal_mesh
+       get_ir_reciprocal_mesh,
+       get_stabilized_reciprocal_mesh
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
