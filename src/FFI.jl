@@ -279,51 +279,46 @@ function get_ir_reciprocal_mesh(
     return mapping, grid_address
 end # function get_ir_reciprocal_mesh
 
-# function get_stabilized_reciprocal_mesh(
-#     rotations::Vector{Matrix{T}},
-#     grid::Vector{T},
-#     shift::Vector{T} = [0, 0, 0];
-#     qpoints::Vector{} = nothing,
-#     is_time_reversal::Bool = true,
-# ) where {T<:Integer}
-#     all(
-#         x -> x in (zero(T), one(T)),
-#         shift,
-#     ) || throw(ArgumentError("The shift can be only a vector of ones or zeros!"))
-
-#     qpoints_amount = prod(grid)
-#     grid_address = Array{Cint}(undef, qpoints_amount, 3)
-#     mapping_table = Array{Cint}(undef, qpoints_amount)
-#     isnothing(qpoints) ? qpoints = Float64[0, 0, 0] : qpoints = Vector(qpoints)
-
-#     ret = ccall(
-#         (:spg_get_stabilized_reciprocal_mesh, spglib),
-#         Cint,
-#         (
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Ptr{Cint},
-#          Cint,
-#          Cint,
-#          Ptr{Cint},
-#          Cint,
-#          Ptr{Cint},
-#         ),
-#         grid_address,
-#         mapping_table,
-#         grid,
-#         shift,
-#         is_time_reversal,
-#         length(rotations),
-#         rotations,
-#         length(qpoints),
-#         qpoints,
-#     )
-#     ret != qpoints_amount && error("Something wrong happens when finding mesh!")
-
-#     mapping_table, grid_address
-# end # function get_stabilized_reciprocal_mesh
+function get_stabilized_reciprocal_mesh(
+    rotations::AbstractVector{AbstractMatrix{<:Integer}},
+    grid::AbstractVector{<:Integer},
+    shift::AbstractVector{<:Integer} = [0, 0, 0];
+    qpoints::AbstractMatrix{<:AbstractFloat} = [[0, 0, 0]],
+    is_time_reversal::Bool = true,
+)
+    @assert(length(grid) == length(shift) == 3)
+    @assert(all(isone(x) || iszero(x) for x in shift))
+    @assert(size(qpoints, 2) == 3)
+    npoints = prod(grid)
+    grid_address = Matrix{Cint}(undef, npoints, 3)
+    mapping = Vector{Cint}(undef, npoints)
+    exitcode = ccall(
+        (:spg_get_stabilized_reciprocal_mesh, libsymspg),
+        Cint,
+        (
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Ptr{Cint},
+         Cint,
+         Cint,
+         Ptr{Cint},
+         Cint,
+         Ptr{Cint},
+        ),
+        grid_address,
+        mapping,
+        grid,
+        shift,
+        is_time_reversal,
+        length(rotations),
+        rotations,
+        length(qpoints),
+        qpoints,
+    )
+    @assert(exitcode > 0, "Something wrong happens when finding mesh!")
+    return mapping, grid_address
+end # function get_stabilized_reciprocal_mesh
 
 """
     get_multiplicity(cell::Cell, symprec = 1e-8)
