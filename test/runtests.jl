@@ -1,6 +1,6 @@
-using SpgLib
+using Spglib
 using Test
 
-@testset "SpgLib.jl" begin
+@testset "Spglib.jl" begin
     # Write your own tests here.
 end
