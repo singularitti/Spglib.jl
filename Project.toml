@@ -1,5 +1,5 @@
-name = "SpgLib"
-uuid = "e77a6fe8-bb58-11e9-2584-436ec1627d69"
+name = "Spglib"
+uuid = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
 authors = ["Qi Zhang <singularitti@outlook.com>"]
 version = "0.1.0"
 

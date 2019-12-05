@@ -27,9 +27,9 @@ version = "0.5.0"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "1fe8fad5fc84686dcbc674aa255bc867a64f8132"
+git-tree-sha1 = "a1b652fb77ae8ca7ea328fa7ba5aa151036e5c10"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.5"
+version = "0.17.6"
 
 [[Dates]]
 deps = ["Printf"]
@@ -61,10 +61,10 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MacroTools]]
-deps = ["Compat", "DataStructures", "Test"]
-git-tree-sha1 = "82921f0e3bde6aebb8e524efc20f4042373c0c06"
+deps = ["DataStructures", "Markdown", "Random"]
+git-tree-sha1 = "e2fc7a55bb2224e203bbd8b59f72b91323233458"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.2"
+version = "0.5.3"
 
 [[Markdown]]
 deps = ["Base64"]
@@ -154,7 +154,5 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 [[spglib_jll]]
 deps = ["Libdl", "Pkg"]
 git-tree-sha1 = "4e4ee09ae784e59419e2d1a4e71cf092b70b1881"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaBinaryWrappers/spglib_jll.jl"
 uuid = "ac4a9f1e-bdb2-5204-990c-47c8b2f70d4e"
 version = "1.14.1+0"
