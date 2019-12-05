@@ -1,8 +1,8 @@
-# SpgLib.jl
+# Spglib.jl
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [SpgLib]
+Modules = [Spglib]
 ```
