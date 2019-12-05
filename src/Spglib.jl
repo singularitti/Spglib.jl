@@ -1,4 +1,4 @@
-module SpgLib
+module Spglib
 
 include("DataModel.jl")
 # include("Wrapper/Wrapper.jl")

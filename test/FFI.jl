@@ -2,8 +2,8 @@ using Test
 
 using Parameters: type2dict
 
-using SpgLib.DataModel: Cell, Dataset, SpaceGroup
-using SpgLib.FFI
+using Spglib.DataModel: Cell, Dataset, SpaceGroup
+using Spglib.FFI
 
 @testset "Test rutile structure" begin
     lattice = [
