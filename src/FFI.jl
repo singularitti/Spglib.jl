@@ -95,13 +95,6 @@ end # function get_symmetry
 
 function get_dataset(cell::Cell; symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    # dataset = Wrapper.spg_get_dataset(
-    #     lattice,
-    #     positions,
-    #     numbers,
-    #     length(numbers),
-    #     symprec,
-    # )
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
         Ptr{Cdataset},
@@ -124,14 +117,6 @@ end # function get_spacegroup_type
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    # exitcode = Wrapper.spg_get_international(
-    #     result,
-    #     lattice,
-    #     positions,
-    #     numbers,
-    #     length(numbers),
-    #     symprec,
-    # )
     exitcode = ccall(
         (:spg_get_international, libsymspg),
         Cint,
@@ -150,14 +135,6 @@ end # function get_international
 function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
-    # exitcode = Wrapper.spg_get_schoenflies(
-    #     result,
-    #     lattice,
-    #     positions,
-    #     numbers,
-    #     length(numbers),
-    #     symprec,
-    # )
     exitcode = ccall(
         (:spg_get_schoenflies, libsymspg),
         Cint,
