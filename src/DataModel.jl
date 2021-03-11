@@ -4,7 +4,12 @@ using Parameters: @with_kw
 
 export Cell, Dataset, SpaceGroup
 
-@with_kw struct Cell{L<:AbstractVecOrMat,P<:AbstractVecOrMat,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
+@with_kw struct Cell{
+    L<:AbstractVecOrMat,
+    P<:AbstractVecOrMat,
+    N<:AbstractVector,
+    M<:Union{AbstractVector,Nothing},
+}
     lattice::L
     positions::P
     numbers::N
@@ -16,11 +21,11 @@ Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 struct Cdataset
     spacegroup_number::Cint
     hall_number::Cint
-    international_symbol::NTuple{11, UInt8}
-    hall_symbol::NTuple{17, UInt8}
-    choice::NTuple{6, UInt8}
-    transformation_matrix::NTuple{3, NTuple{3, Cdouble}}
-    origin_shift::NTuple{3, Cdouble}
+    international_symbol::NTuple{11,UInt8}
+    hall_symbol::NTuple{17,UInt8}
+    choice::NTuple{6,UInt8}
+    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
+    origin_shift::NTuple{3,Cdouble}
     n_operations::Cint
     rotations::Ptr{Cvoid}
     translations::Ptr{Cvoid}
@@ -28,10 +33,10 @@ struct Cdataset
     wyckoffs::Ptr{Cint}
     equivalent_atoms::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{3, NTuple{3, Cdouble}}
+    std_lattice::NTuple{3,NTuple{3,Cdouble}}
     std_types::Ptr{Cint}
     std_positions::Ptr{Cvoid}
-    pointgroup_symbol::NTuple{6, UInt8}
+    pointgroup_symbol::NTuple{6,UInt8}
 end
 
 struct Dataset
@@ -58,16 +63,16 @@ end
 # This is an internal type, do not export!
 struct CspaceGroup
     number::Cint
-    international_short::NTuple{11, UInt8}
-    international_full::NTuple{20, UInt8}
-    international::NTuple{32, UInt8}
-    schoenflies::NTuple{7, UInt8}
-    hall_symbol::NTuple{17, UInt8}
-    choice::NTuple{6, UInt8}
-    pointgroup_international::NTuple{6, UInt8}
-    pointgroup_schoenflies::NTuple{4, UInt8}
+    international_short::NTuple{11,UInt8}
+    international_full::NTuple{20,UInt8}
+    international::NTuple{32,UInt8}
+    schoenflies::NTuple{7,UInt8}
+    hall_symbol::NTuple{17,UInt8}
+    choice::NTuple{6,UInt8}
+    pointgroup_international::NTuple{6,UInt8}
+    pointgroup_schoenflies::NTuple{4,UInt8}
     arithmetic_crystal_class_number::Cint
-    arithmetic_crystal_class_symbol::NTuple{7, UInt8}
+    arithmetic_crystal_class_symbol::NTuple{7,UInt8}
 end
 
 struct SpaceGroup
