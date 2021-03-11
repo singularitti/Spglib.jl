@@ -1,10 +1,8 @@
 module DataModel
 
-using Parameters: @with_kw
-
 export Cell, Dataset, SpaceGroup
 
-@with_kw struct Cell{
+struct Cell{
     L<:AbstractVecOrMat,
     P<:AbstractVecOrMat,
     N<:AbstractVector,
@@ -13,7 +11,7 @@ export Cell, Dataset, SpaceGroup
     lattice::L
     positions::P
     numbers::N
-    magmoms::M = nothing
+    magmoms::M
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
