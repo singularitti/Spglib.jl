@@ -7,6 +7,7 @@ version = "0.1.0"
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
+UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 spglib_jll = "ac4a9f1e-bdb2-5204-990c-47c8b2f70d4e"
 
 [compat]
