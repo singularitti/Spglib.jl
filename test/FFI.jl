@@ -1,6 +1,12 @@
 using Test
 
-using Parameters: type2dict
+function type2dict(dt)
+    di = Dict{Symbol,Any}()
+    for n in propertynames(dt)
+        di[n] = getproperty(dt, n)
+    end
+    di
+end
 
 using Spglib.DataModel: Cell, Dataset, SpaceGroup
 using Spglib.FFI
@@ -166,13 +172,13 @@ end
     c = 3.52
     lattice = [
         a 0 0
-        -a / 2 a / 2 * sqrt(3) 0
+        -a/2 a/2*sqrt(3) 0
         0 0 c
     ]
     positions = [
         0 0 0
-        1.0 / 3 2.0 / 3 0.5
-        2.0 / 3 1.0 / 3 0.5
+        1.0/3 2.0/3 0.5
+        2.0/3 1.0/3 0.5
     ]
     numbers = [12, 5, 5]
     MgB2 = Cell(lattice, positions, numbers)
