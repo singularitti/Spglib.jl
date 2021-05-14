@@ -89,8 +89,12 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
 end
 
 function get_spacegroup_type(hall_number::Integer)
-    spgtype =
-        ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
+    spgtype = ccall(
+        (:spg_get_spacegroup_type, libsymspg),
+        SpglibSpacegroupType,
+        (Cint,),
+        hall_number,
+    )
     return convert(SpaceGroup, spgtype)
 end
 
@@ -302,7 +306,7 @@ function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
     f = name -> getfield(dataset, name) |> convert_field
     return T(map(f, fieldnames(T))...)
 end
-function Base.convert(::Type{T}, spgtype::CspaceGroup) where {T<:SpaceGroup}
+function Base.convert(::Type{T}, spgtype::SpglibSpacegroupType) where {T<:SpaceGroup}
     f = name -> getfield(spgtype, name) |> convert_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return T(map(f, fieldnames(T))...)

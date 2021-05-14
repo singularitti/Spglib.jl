@@ -57,7 +57,7 @@ struct Dataset
 end
 
 # This is an internal type, do not export!
-struct CspaceGroup
+struct SpglibSpacegroupType
     number::Cint
     international_short::NTuple{11,UInt8}
     international_full::NTuple{20,UInt8}
