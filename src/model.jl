@@ -1,5 +1,3 @@
-module DataModel
-
 export Cell, Dataset, SpaceGroup
 
 struct Cell{
@@ -85,6 +83,4 @@ struct SpaceGroup
     pointgroup_schoenflies::String
     arithmetic_crystal_class_number::Int
     arithmetic_crystal_class_symbol::String
-end
-
 end

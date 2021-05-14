@@ -8,8 +8,7 @@ function type2dict(dt)
     di
 end
 
-using Spglib.DataModel: Cell, Dataset, SpaceGroup
-using Spglib.FFI
+using Spglib
 
 @testset "Test `get_spacegroup_type`" begin
     # Adapted from https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L7-L12
@@ -18,6 +17,7 @@ using Spglib.FFI
     @test spacegroup_type.hall_symbol == "-I 2a"
     @test spacegroup_type.arithmetic_crystal_class_symbol == "2/mC"
 end
+
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
