@@ -41,8 +41,8 @@ end
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars_to_string(s::AbstractVector{Cchar}) =
-    convert(Array{Char}, trunc_trailing_zeros(s)) |> join
+cchars2string(vec::AbstractVector{Cchar}) =
+    join(convert(Array{Char}, trunc_trailing_zeros(vec)))
 
 convert_field(x) = x  # Integers
 convert_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
@@ -118,7 +118,7 @@ function get_international(cell::Cell, symprec::Real = 1e-8)
         symprec,
     )
     exitcode == 0 && error("Could not determine the international symbol!")
-    return cchars_to_string(result)
+    return cchars2string(result)
 end
 
 function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
@@ -136,7 +136,7 @@ function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
         symprec,
     )
     exitcode == 0 && error("Could not determine the Schoenflies symbol!")
-    return cchars_to_string(result)
+    return cchars2string(result)
 end
 
 function standardize_cell(
