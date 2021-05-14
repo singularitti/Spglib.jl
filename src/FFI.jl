@@ -33,16 +33,12 @@ function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
 end
 
 # This is an internal function, do not export!
-function trunc_trailing_zeros(s)
-    i = findfirst(iszero, s)
-    isnothing(i) && return s
-    return s[1:findfirst(iszero, s)-1]
-end
+trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
 cchars2string(vec::AbstractVector{Cchar}) =
-    join(convert(Array{Char}, trunc_trailing_zeros(vec)))
+    String(convert(Vector{Char}, trunc_trailing_zeros(vec)))
 
 convert_field(x) = x  # Integers
 convert_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
