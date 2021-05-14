@@ -37,11 +37,10 @@ trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars2string(vec::AbstractVector{Cchar}) =
-    String(convert(Vector{Char}, trunc_trailing_zeros(vec)))
+cchars2string(vec) = String(collect(trunc_trailing_zeros(vec)))
 
 convert_field(x) = x  # Integers
-convert_field(x::NTuple{N,Integer}) where {N} = String(collect(trunc_trailing_zeros(x)))
+convert_field(x::NTuple{N,UInt8}) where {N} = String(collect(trunc_trailing_zeros(x)))
 convert_field(x::Ptr) = unsafe_load(x)
 convert_field(x::NTuple{M,NTuple{N,Number}}) where {M,N} =
     transpose(reshape(collect(Iterators.flatten(x)), N, M))
