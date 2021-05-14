@@ -1,14 +1,3 @@
-"""
-# module FFI
-
-
-
-# Examples
-
-```jldoctest
-julia>
-```
-"""
 module FFI
 
 using Compat: isnothing
@@ -48,7 +37,7 @@ function trunc_trailing_zeros(s)
     i = findfirst(iszero, s)
     isnothing(i) && return s
     return s[1:findfirst(iszero, s)-1]
-end # function trunc_trailing_zeros
+end
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
@@ -91,7 +80,7 @@ function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     )
     numops == 0 && error("Could not determine symmetries!")
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i in 1:numops]
-end # function get_symmetry
+end
 
 function get_dataset(cell::Cell; symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
@@ -106,13 +95,13 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
         symprec,
     )
     return convert(Dataset, unsafe_load(ptr))
-end # function get_dataset
+end
 
 function get_spacegroup_type(hall_number::Integer)
     spgtype =
         ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
     return convert(SpaceGroup, spgtype)
-end # function get_spacegroup_type
+end
 
 function get_international(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
@@ -130,7 +119,7 @@ function get_international(cell::Cell, symprec::Real = 1e-8)
     )
     exitcode == 0 && error("Could not determine the international symbol!")
     return cchars_to_string(result)
-end # function get_international
+end
 
 function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     result = zeros(Cchar, 11)
@@ -148,7 +137,7 @@ function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
     )
     exitcode == 0 && error("Could not determine the Schoenflies symbol!")
     return cchars_to_string(result)
-end # function get_schoenflies
+end
 
 function standardize_cell(
     cell::Cell;
@@ -171,7 +160,7 @@ function standardize_cell(
     )
     exitcode == 0 && error("Standardizing cell failed!")
     return Cell(lattice, positions, numbers)  # They have been changed now.
-end # function standardize_cell
+end
 
 find_primitive(cell::Cell, symprec::Real = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
@@ -194,7 +183,7 @@ function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L876
     return @set cell.lattice =
         Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
-end # function niggli_reduce
+end
 
 function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L832
@@ -211,7 +200,7 @@ function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L840
     return @set cell.lattice =
         Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
-end # function delaunay_reduce
+end
 
 function get_ir_reciprocal_mesh(
     cell::Cell,
@@ -254,7 +243,7 @@ function get_ir_reciprocal_mesh(
     )
     @assert(exitcode > 0, "Something wrong happens when finding mesh!")
     return mapping, grid_address
-end # function get_ir_reciprocal_mesh
+end
 
 function get_stabilized_reciprocal_mesh(
     rotations::AbstractVector{AbstractMatrix{<:Integer}},
@@ -295,7 +284,7 @@ function get_stabilized_reciprocal_mesh(
     )
     @assert(exitcode > 0, "Something wrong happens when finding mesh!")
     return mapping, grid_address
-end # function get_stabilized_reciprocal_mesh
+end
 
 """
     get_multiplicity(cell::Cell, symprec = 1e-8)
@@ -316,16 +305,16 @@ function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
     )
     nsymops == 0 && error("Could not determine the multiplicity!")
     return nsymops
-end # function get_multiplicity
+end
 
 function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
     f = name -> getfield(dataset, name) |> convert_field
     return T(map(f, fieldnames(T))...)
-end # function Base.convert
+end
 function Base.convert(::Type{T}, spgtype::CspaceGroup) where {T<:SpaceGroup}
     f = name -> getfield(spgtype, name) |> convert_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return T(map(f, fieldnames(T))...)
-end # function Base.convert
+end
 
 end
