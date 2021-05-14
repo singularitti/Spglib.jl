@@ -1,6 +1,6 @@
 module Spglib
 
-include("DataModel.jl")
-include("FFI.jl")
+include("model.jl")
+include("ffi.jl")
 
 end # module

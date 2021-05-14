@@ -1,12 +1,8 @@
-module FFI
-
 using Compat: isnothing
 using CoordinateTransformations
 using UnPack: @unpack
 using Setfield: @set
 using spglib_jll: libsymspg
-
-using ..DataModel: Cell, Dataset, Cdataset, SpaceGroup, CspaceGroup
 
 export get_symmetry,
     get_dataset,
@@ -310,6 +306,4 @@ function Base.convert(::Type{T}, spgtype::CspaceGroup) where {T<:SpaceGroup}
     f = name -> getfield(spgtype, name) |> convert_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
     return T(map(f, fieldnames(T))...)
-end
-
 end
