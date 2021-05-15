@@ -1,7 +1,6 @@
 using Compat: isnothing
 using CoordinateTransformations
 using UnPack: @unpack
-using Setfield: @set
 using spglib_jll: libsymspg
 
 using DataStructures: counter
