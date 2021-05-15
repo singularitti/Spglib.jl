@@ -284,8 +284,8 @@ find_primitive(cell::Cell, symprec = 1e-5) =
 refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
-function niggli_reduce(cell::Cell, symprec = 1e-5)
-    clattice = convert(Matrix{Cdouble}, cell.lattice)
+function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+    clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_niggli_reduce, libsymspg),
         Cint,
@@ -294,11 +294,15 @@ function niggli_reduce(cell::Cell, symprec = 1e-5)
         symprec,
     )
     iszero(exitcode) && error("Niggli reduce failed!")
+    return clattice
+end
+function niggli_reduce(cell::Cell, symprec = 1e-5)
+    clattice = niggli_reduce(cell.lattice, symprec)
     return cell.lattice[:, :] = clattice
 end
 
-function delaunay_reduce(cell::Cell, symprec = 1e-5)
-    clattice = convert(Matrix{Cdouble}, cell.lattice)
+function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+    clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_delaunay_reduce, libsymspg),
         Cint,
@@ -307,6 +311,10 @@ function delaunay_reduce(cell::Cell, symprec = 1e-5)
         symprec,
     )
     iszero(exitcode) && error("Delaunay reduce failed!")
+    return clattice
+end
+function delaunay_reduce(cell::Cell, symprec = 1e-5)
+    clattice = delaunay_reduce(cell.lattice, symprec)
     return cell.lattice[:, :] = clattice
 end
 
