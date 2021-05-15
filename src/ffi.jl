@@ -4,6 +4,8 @@ using UnPack: @unpack
 using Setfield: @set
 using spglib_jll: libsymspg
 
+using DataStructures: counter
+
 export get_symmetry,
     get_dataset,
     get_spacegroup_type,
@@ -16,7 +18,8 @@ export get_symmetry,
     delaunay_reduce,
     get_multiplicity,
     get_ir_reciprocal_mesh,
-    get_stabilized_reciprocal_mesh
+    get_stabilized_reciprocal_mesh,
+    list_reciprocal_points
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
@@ -272,6 +275,35 @@ function get_ir_reciprocal_mesh(
     @assert num_ir > 0 "Something wrong happens when finding mesh!"
     return num_ir, grid_mapping_table, grid_address
 end
+
+# See example https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
+function list_reciprocal_points(
+    cell::Cell,
+    mesh,
+    is_shift = falses(3);
+    is_time_reversal = true,
+    ir_only = true,
+    symprec = 1e-5,
+)
+    _, mapping, grid = get_ir_reciprocal_mesh(
+        cell,
+        mesh,
+        is_shift;
+        is_time_reversal = is_time_reversal,
+        symprec = symprec,
+    )
+    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
+    weights = counter(mapping)
+    mapping = convert(Vector{Int}, mapping)
+    # `unique(mapping)` and `mapping` are irreducible points and all points, respectively. They have different shapes.
+    if ir_only
+        unique!(mapping)
+    end
+    coord_crystal = map(mapping) do id
+        x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        weight = weights[id]  # Should use `id` not `id + 1`!
+        (x = x, y = y, z = z, weight = weight)
+    end
 end
 
 function get_stabilized_reciprocal_mesh(
