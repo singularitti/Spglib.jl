@@ -8,10 +8,10 @@ struct Cell{
 }
     lattice::L
     positions::P
-    numbers::N
+    types::N
     magmoms::M
 end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+Cell(lattice, positions, types) = Cell(lattice, positions, types, nothing)
 
 # This is an internal type, do not export!
 struct SpglibDataset

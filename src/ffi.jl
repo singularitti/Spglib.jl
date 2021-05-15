@@ -20,12 +20,12 @@ export get_symmetry,
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
-    @unpack lattice, positions, numbers = cell
+    @unpack lattice, positions, types = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
-    cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
-    return Cell(clattice, cpositions, cnumbers)
+    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    return Cell(clattice, cpositions, ctypes)
 end
 
 # This is an internal function, do not export!
