@@ -42,7 +42,7 @@ convert_field(x::NTuple{M,NTuple{N,Number}}) where {M,N} =
     transpose(reshape(collect(Iterators.flatten(x)), N, M))
 convert_field(x::NTuple{N,Number}) where {N} = collect(x)
 
-function get_symmetry(cell::Cell, symprec::Real = 1e-8)
+function get_symmetry(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     maxsize = 52 * length(positions)
     rotations = Array{Cint}(undef, maxsize, 3, 3)
@@ -73,7 +73,7 @@ function get_symmetry(cell::Cell, symprec::Real = 1e-8)
     [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i in 1:numops]
 end
 
-function get_dataset(cell::Cell; symprec::Real = 1e-8)
+function get_dataset(cell::Cell; symprec = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
@@ -98,7 +98,7 @@ function get_spacegroup_type(hall_number::Integer)
     return convert(SpaceGroup, spgtype)
 end
 
-function get_international(cell::Cell, symprec::Real = 1e-8)
+function get_international(cell::Cell, symprec = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
     exitcode = ccall(
@@ -116,7 +116,7 @@ function get_international(cell::Cell, symprec::Real = 1e-8)
     return cchars2string(result)
 end
 
-function get_schoenflies(cell::Cell, symprec::Real = 1e-8)
+function get_schoenflies(cell::Cell, symprec = 1e-8)
     result = zeros(Cchar, 11)
     @unpack lattice, positions, numbers = get_ccell(cell)
     exitcode = ccall(
@@ -136,9 +136,9 @@ end
 
 function standardize_cell(
     cell::Cell;
-    to_primitive::Bool = false,
-    no_idealize::Bool = false,
-    symprec::Real = 1e-5,
+    to_primitive = false,
+    no_idealize = false,
+    symprec = 1e-5,
 )
     @unpack lattice, positions, numbers = get_ccell(cell)
     exitcode = ccall(
@@ -157,13 +157,13 @@ function standardize_cell(
     return Cell(lattice, positions, numbers)  # They have been changed now.
 end
 
-find_primitive(cell::Cell, symprec::Real = 1e-5) =
+find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
 
-refine_cell(cell::Cell, symprec::Real = 1e-5) =
+refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
-function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
+function niggli_reduce(cell::Cell, symprec = 1e-5)
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L869
     lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
     # The result is reassigned to `lattice`.
@@ -180,7 +180,7 @@ function niggli_reduce(cell::Cell, symprec::Real = 1e-5)
         Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end
 
-function delaunay_reduce(cell::Cell, symprec::Real = 1e-5)
+function delaunay_reduce(cell::Cell, symprec = 1e-5)
     # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L832
     lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
     # The result is reassigned to `lattice`.
@@ -250,8 +250,8 @@ function get_stabilized_reciprocal_mesh(
     rotations::AbstractVector{AbstractMatrix{<:Integer}},
     grid::AbstractVector{<:Integer},
     shift::AbstractVector{<:Integer} = [0, 0, 0];
-    qpoints::AbstractMatrix{<:AbstractFloat} = [[0, 0, 0]],
-    is_time_reversal::Bool = true,
+    qpoints = [[0, 0, 0]],
+    is_time_reversal = true,
 )
     @assert(length(grid) == length(shift) == 3)
     @assert(all(isone(x) || iszero(x) for x in shift))
@@ -292,7 +292,7 @@ end
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
-function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
+function get_multiplicity(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     nsymops = ccall(
         (:spg_get_multiplicity, libsymspg),
