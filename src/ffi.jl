@@ -6,7 +6,8 @@ using spglib_jll: libsymspg
 
 using DataStructures: counter
 
-export get_symmetry,
+export get_symmetry!,
+    get_symmetry_with_collinear_spin!,
     get_dataset,
     get_spacegroup_type,
     get_international,
@@ -80,6 +81,87 @@ function get_symmetry(cell::Cell, symprec = 1e-8)
 end
 
 function get_dataset(cell::Cell; symprec = 1e-8)
+function get_symmetry!(
+    rotation::AbstractArray{T,3},
+    translation::AbstractMatrix,
+    max_size::Integer,
+    cell::Cell,
+    symprec = 1e-5,
+) where {T}
+    @unpack lattice, positions, types = get_ccell(cell)
+    rotation = Base.cconvert(Array{Cint,3}, rotation)
+    translation = Base.cconvert(Matrix{Cdouble}, translation)
+    max_size = Base.cconvert(Cint, max_size)
+    number = Base.cconvert(Cint, length(types))
+    num_sym = ccall(
+        (:spg_get_symmetry, libsymspg),
+        Cint,
+        (
+            Ptr{Cint},
+            Ptr{Float64},
+            Cint,
+            Ptr{Float64},
+            Ptr{Float64},
+            Ptr{Cint},
+            Cint,
+            Float64,
+        ),
+        rotation,
+        translation,
+        max_size,
+        lattice,
+        positions,
+        types,
+        number,
+        symprec,
+    )
+    num_sym == 0 && error("`spg_get_symmetry` failed!")
+    return num_sym
+end
+
+function get_symmetry_with_collinear_spin!(
+    rotation::AbstractArray{T,3},
+    translation::AbstractMatrix,
+    equivalent_atoms::AbstractVector,
+    max_size::Integer,
+    cell::Cell,
+    symprec = 1e-5,
+) where {T}
+    @unpack lattice, positions, types, magmoms = get_ccell(cell)
+    rotation = Base.cconvert(Array{Cint,3}, rotation)
+    translation = Base.cconvert(Matrix{Cdouble}, translation)
+    equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
+    max_size = Base.cconvert(Cint, max_size)
+    number = Base.cconvert(Cint, length(types))
+    num_sym = ccall(
+        (:spg_get_symmetry_with_collinear_spin, libsymspg),
+        Cint,
+        (
+            Ptr{Cint},
+            Ptr{Float64},
+            Ptr{Cint},
+            Cint,
+            Ptr{Float64},
+            Ptr{Float64},
+            Ptr{Cint},
+            Ptr{Float64},
+            Cint,
+            Float64,
+        ),
+        rotation,
+        translation,
+        equivalent_atoms,
+        max_size,
+        lattice,
+        positions,
+        types,
+        magmoms,
+        number,
+        symprec,
+    )
+    num_sym == 0 && error("`spg_get_symmetry` failed!")
+    return num_sym
+end
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
