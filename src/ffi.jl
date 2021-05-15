@@ -200,6 +200,29 @@ function delaunay_reduce(cell::Cell, symprec = 1e-5)
         Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
 end
 
+# Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
+"""
+    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift = falses(3); is_time_reversal = true, symprec = 1e-5)
+
+Return k-points mesh and k-point map to the irreducible k-points.
+
+Irreducible reciprocal grid points are searched from uniform
+mesh grid points specified by `mesh` and `is_shift`.
+`mesh` stores three integers. Reciprocal primitive vectors
+are divided by the number stored in `mesh` with (0,0,0) point
+centering. The centering can be shifted only half of one mesh
+by setting `1` or `true` for each `is_shift` element. If `0` or `false` is set for
+`is_shift`, it means there is no shift. This limitation of
+shifting enables the irreducible k-point search significantly
+faster when the mesh is very dense.
+
+The reducible uniform grid points are returned in reduced
+coordinates as `grid_address`. A map between reducible and
+irreducible points are returned as `grid_mapping_table` as in the indices of
+`grid_address`. The number of the irreducible k-points are
+returned as the return value.  The time reversal symmetry is
+imposed by setting `is_time_reversal`.
+"""
 function get_ir_reciprocal_mesh(
     cell::Cell,
     mesh,
