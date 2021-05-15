@@ -14,24 +14,29 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
 # This is an internal type, do not export!
-struct Cdataset
+struct SpglibDataset
     spacegroup_number::Cint
     hall_number::Cint
     international_symbol::NTuple{11,UInt8}
     hall_symbol::NTuple{17,UInt8}
     choice::NTuple{6,UInt8}
-    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
-    origin_shift::NTuple{3,Cdouble}
+    transformation_matrix::NTuple{9,Float64}
+    origin_shift::NTuple{3,Float64}
     n_operations::Cint
-    rotations::Ptr{Cvoid}
-    translations::Ptr{Cvoid}
+    rotations::Ptr{NTuple{9,Cint}}
+    translations::Ptr{NTuple{3,Float64}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
+    site_symmetry_symbols::Ptr{Tuple{7,UInt8}}
     equivalent_atoms::Ptr{Cint}
+    # crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
+    mapping_to_primitive::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{3,NTuple{3,Cdouble}}
+    std_lattice::NTuple{9,Float64}
     std_types::Ptr{Cint}
-    std_positions::Ptr{Cvoid}
+    std_positions::Ptr{NTuple{3,Float64}}
+    std_rotation_matrix::NTuple{9,Float64}
+    std_mapping_to_primitive::Ptr{Cint}
     pointgroup_symbol::NTuple{6,UInt8}
 end
 
