@@ -8,30 +8,35 @@ struct Cell{
 }
     lattice::L
     positions::P
-    numbers::N
+    types::N
     magmoms::M
 end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+Cell(lattice, positions, types) = Cell(lattice, positions, types, nothing)
 
 # This is an internal type, do not export!
-struct Cdataset
+struct SpglibDataset
     spacegroup_number::Cint
     hall_number::Cint
     international_symbol::NTuple{11,UInt8}
     hall_symbol::NTuple{17,UInt8}
     choice::NTuple{6,UInt8}
-    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
-    origin_shift::NTuple{3,Cdouble}
+    transformation_matrix::NTuple{9,Float64}
+    origin_shift::NTuple{3,Float64}
     n_operations::Cint
-    rotations::Ptr{Cvoid}
-    translations::Ptr{Cvoid}
+    rotations::Ptr{NTuple{9,Cint}}
+    translations::Ptr{NTuple{3,Float64}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
+    site_symmetry_symbols::Ptr{Tuple{7,UInt8}}
     equivalent_atoms::Ptr{Cint}
+    # crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
+    mapping_to_primitive::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{3,NTuple{3,Cdouble}}
+    std_lattice::NTuple{9,Float64}
     std_types::Ptr{Cint}
-    std_positions::Ptr{Cvoid}
+    std_positions::Ptr{NTuple{3,Float64}}
+    std_rotation_matrix::NTuple{9,Float64}
+    std_mapping_to_primitive::Ptr{Cint}
     pointgroup_symbol::NTuple{6,UInt8}
 end
 
@@ -44,20 +49,24 @@ struct Dataset
     transformation_matrix::Matrix{Float64}
     origin_shift::Vector{Float64}
     n_operations::Int
-    rotations::Vector{Matrix{Float64}}
+    rotations::Matrix{Float64}
     translations::Vector{Float64}
     n_atoms::Int
-    wyckoffs::Vector{Int}
-    equivalent_atoms::Vector{Int}
+    wyckoffs::Int
+    site_symmetry_symbols::String
+    equivalent_atoms::Int
+    mapping_to_primitive::Int
     n_std_atoms::Int
-    std_lattice::Matrix{Float64}
-    std_types::Vector{Int}
-    std_positions::Matrix{Float64}
+    std_lattice::NTuple{9,Float64}
+    std_types::Int
+    std_positions::Any
+    std_rotation_matrix::Matrix{Float64}
+    std_mapping_to_primitive::Int
     pointgroup_symbol::String
 end
 
 # This is an internal type, do not export!
-struct CspaceGroup
+struct SpglibSpacegroupType
     number::Cint
     international_short::NTuple{11,UInt8}
     international_full::NTuple{20,UInt8}

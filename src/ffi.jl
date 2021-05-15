@@ -20,12 +20,12 @@ export get_symmetry,
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
-    @unpack lattice, positions, numbers = cell
+    @unpack lattice, positions, types = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35
     clattice = convert(Matrix{Cdouble}, lattice)
     cpositions = convert(Matrix{Cdouble}, positions)
-    cnumbers = Cint[findfirst(isequal(u), unique(numbers)) for u in numbers]
-    return Cell(clattice, cpositions, cnumbers)
+    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    return Cell(clattice, cpositions, ctypes)
 end
 
 # This is an internal function, do not export!
@@ -77,7 +77,7 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
-        Ptr{Cdataset},
+        Ptr{SpglibDataset},
         (Ptr{NTuple{3,Cdouble}}, Ptr{NTuple{3,Cdouble}}, Ptr{Cint}, Cint, Cdouble),
         lattice,
         positions,
@@ -89,8 +89,12 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
 end
 
 function get_spacegroup_type(hall_number::Integer)
-    spgtype =
-        ccall((:spg_get_spacegroup_type, libsymspg), CspaceGroup, (Cint,), hall_number)
+    spgtype = ccall(
+        (:spg_get_spacegroup_type, libsymspg),
+        SpglibSpacegroupType,
+        (Cint,),
+        hall_number,
+    )
     return convert(SpaceGroup, spgtype)
 end
 
@@ -298,12 +302,34 @@ function get_multiplicity(cell::Cell, symprec::Real = 1e-8)
     return nsymops
 end
 
-function Base.convert(::Type{T}, dataset::Cdataset) where {T<:Dataset}
-    f = name -> getfield(dataset, name) |> convert_field
-    return T(map(f, fieldnames(T))...)
+function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+    return Dataset(
+        dataset.spacegroup_number,
+        dataset.hall_number,
+        convert_field(dataset.international_symbol),
+        convert_field(dataset.hall_symbol),
+        convert_field(dataset.choice),
+        collect(Iterators.partition(dataset.transformation_matrix, 3)),
+        collect(dataset.origin_shift),
+        dataset.n_operations,
+        collect(Iterators.partition(unsafe_load(dataset.rotations), 3)),
+        collect(unsafe_load(dataset.translations)),
+        dataset.n_atoms,
+        unsafe_load(dataset.wyckoffs),
+        unsafe_load(dataset.site_symmetry_symbols),
+        unsafe_load(dataset.equivalent_atoms),
+        unsafe_load(dataset.mapping_to_primitive),
+        dataset.n_std_atoms,
+        collect(Iterators.partition(dataset.std_lattice, 3)),
+        unsafe_load(dataset.std_types),
+        collect(dataset.std_positions),
+        collect(Iterators.partition(unsafe_load(dataset.std_rotation_matrix), 3)),
+        unsafe_load(dataset.std_mapping_to_primitive),
+        convert_field(dataset.pointgroup_symbol),
+    )
 end
-function Base.convert(::Type{T}, spgtype::CspaceGroup) where {T<:SpaceGroup}
+function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
     f = name -> getfield(spgtype, name) |> convert_field
     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
-    return T(map(f, fieldnames(T))...)
+    return SpaceGroup(map(f, fieldnames(SpaceGroup))...)
 end
