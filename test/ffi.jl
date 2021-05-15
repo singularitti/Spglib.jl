@@ -260,7 +260,7 @@ end
     end
 
     @testset "Get multiplicity" begin
-        latt = [
+        lattice = [
             4.0 0.0 0.0
             0.0 4.0 0.0
             0.0 0.0 4.0
@@ -271,7 +271,7 @@ end
             0.0 0.5
         ]
         types = [1, 1]
-        num_atom = 2
+        cell = Cell(lattice, positions, types)
         @test get_multiplicity(cell, 1e-5) == 96
     end
 end
