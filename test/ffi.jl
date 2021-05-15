@@ -203,3 +203,54 @@ end
         :arithmetic_crystal_class_symbol => "6/mmm",
     )
 end
+
+# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
+@testset "Get symmetry operations" begin
+    @testset "Normal symmetry" begin
+        lattice = [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        positions = [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        types = [1, 1]
+        cell = Cell(lattice, positions, types)
+        num_atom = length(types)
+        max_size = num_atom * 48
+        rotation = Array{Cint,3}(undef, 3, 3, max_size)
+        translation = Array{Float64,2}(undef, 3, max_size)
+        _ = get_symmetry!(rotation, translation, max_size, cell, 1e-5)
+        @test size(rotation) == (3, 3, 96)
+        @test size(translation) == (3, 96)
+    end
+
+    @testset "Get symmetry with collinear spins" begin
+        lattice = [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        positions = [0.0 0.5; 0.0 0.5; 0.0 0.5]
+        types = [1, 1]
+        equivalent_atoms = [0, 0]
+        spins = [1.0, -2.0]
+        cell = Cell(lattice, positions, types, spins)
+        num_atom = length(types)
+        max_size = num_atom * 48
+        rotation = Array{Cint,3}(undef, 3, 3, max_size)
+        translation = Array{Cdouble,2}(undef, 3, max_size)
+        _ = get_symmetry_with_collinear_spin!(
+            rotation,
+            translation,
+            equivalent_atoms,
+            max_size,
+            cell,
+            1e-5,
+        )
+        @test equivalent_atoms == [0, 1]
+    end
+end
