@@ -199,18 +199,23 @@ end
 
 function get_ir_reciprocal_mesh(
     cell::Cell,
-    grid::AbstractVector{<:Integer},
-    shift::AbstractVector{<:Integer} = [0, 0, 0];
-    is_time_reversal::Bool = true,
-    symprec::Real = 1e-5,
+    mesh,
+    is_shift = falses(3);
+    is_time_reversal = true,
+    symprec = 1e-5,
 )
-    @assert(length(grid) == length(shift) == 3)
-    @assert(all(isone(x) || iszero(x) for x in shift))
-    npoints = prod(grid)
-    grid_address = Matrix{Cint}(undef, npoints, 3)
-    mapping = Vector{Cint}(undef, npoints)
-    @unpack lattice, positions, numbers = get_ccell(cell)
-    exitcode = ccall(
+    @assert length(mesh) == length(is_shift) == 3
+    # Prepare for input
+    @unpack lattice, positions, types = get_ccell(cell)
+    mesh = Base.cconvert(Vector{Cint}, mesh)
+    is_shift = Base.cconvert(Vector{Cint}, is_shift)
+    is_time_reversal = Base.cconvert(Cint, is_time_reversal)
+    number = Base.cconvert(Cint, length(types))
+    # Prepare for output
+    npoints = prod(mesh)
+    grid_address = zeros(Cint, 3, npoints)
+    mapping = zeros(Cint, npoints)
+    num_ir = ccall(
         (:spg_get_ir_reciprocal_mesh, libsymspg),
         Cint,
         (
@@ -227,17 +232,18 @@ function get_ir_reciprocal_mesh(
         ),
         grid_address,
         mapping,
-        grid,
-        shift,
+        mesh,
+        is_shift,
         is_time_reversal,
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        number,
         symprec,
     )
-    @assert(exitcode > 0, "Something wrong happens when finding mesh!")
-    return mapping, grid_address
+    @assert num_ir > 0 "Something wrong happens when finding mesh!"
+    return num_ir, mapping, grid_address
+end
 end
 
 function get_stabilized_reciprocal_mesh(
