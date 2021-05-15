@@ -77,7 +77,7 @@ function get_dataset(cell::Cell; symprec::Real = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
-        Ptr{Cdataset},
+        Ptr{SpglibDataset},
         (Ptr{NTuple{3,Cdouble}}, Ptr{NTuple{3,Cdouble}}, Ptr{Cint}, Cint, Cdouble),
         lattice,
         positions,

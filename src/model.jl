@@ -49,15 +49,19 @@ struct Dataset
     transformation_matrix::Matrix{Float64}
     origin_shift::Vector{Float64}
     n_operations::Int
-    rotations::Vector{Matrix{Float64}}
+    rotations::Matrix{Float64}
     translations::Vector{Float64}
     n_atoms::Int
-    wyckoffs::Vector{Int}
-    equivalent_atoms::Vector{Int}
+    wyckoffs::Int
+    site_symmetry_symbols::String
+    equivalent_atoms::Int
+    mapping_to_primitive::Int
     n_std_atoms::Int
-    std_lattice::Matrix{Float64}
-    std_types::Vector{Int}
-    std_positions::Matrix{Float64}
+    std_lattice::NTuple{9,Float64}
+    std_types::Int
+    std_positions::Any
+    std_rotation_matrix::Matrix{Float64}
+    std_mapping_to_primitive::Int
     pointgroup_symbol::String
 end
 
