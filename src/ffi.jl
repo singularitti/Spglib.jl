@@ -8,6 +8,7 @@ using DataStructures: counter
 
 export get_symmetry!,
     get_symmetry_with_collinear_spin!,
+    get_hall_number_from_symmetry,
     get_dataset,
     get_spacegroup_type,
     get_international,
@@ -161,6 +162,26 @@ function get_symmetry_with_collinear_spin!(
     )
     num_sym == 0 && error("`spg_get_symmetry` failed!")
     return num_sym
+end
+
+function get_hall_number_from_symmetry(
+    rotation::AbstractArray{T,3},
+    translation::AbstractMatrix,
+    num_operations::Integer,
+    symprec = 1e-5,
+) where {T}
+    rotation = Base.cconvert(Array{Cint,3}, rotation)
+    translation = Base.cconvert(Matrix{Cdouble}, translation)
+    num_operations = Base.cconvert(Cint, num_operations)
+    return ccall(
+        (:spg_get_hall_number_from_symmetry, libsymspg),
+        Cint,
+        (Ptr{Cint}, Ptr{Float64}, Cint, Float64),
+        rotation,
+        translation,
+        num_operations,
+        symprec,
+    )
 end
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
