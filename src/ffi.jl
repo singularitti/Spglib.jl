@@ -183,6 +183,28 @@ function get_hall_number_from_symmetry(
         symprec,
     )
 end
+
+"""
+    get_multiplicity(cell::Cell, symprec = 1e-8)
+
+Return the exact number of symmetry operations. An error is thrown when it fails.
+"""
+function get_multiplicity(cell::Cell, symprec = 1e-8)
+    @unpack lattice, positions, types = get_ccell(cell)
+    number = Base.cconvert(Cint, length(types))
+    nsymops = ccall(
+        (:spg_get_multiplicity, libsymspg),
+        Cint,
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
+        lattice,
+        positions,
+        types,
+        number,
+        symprec,
+    )
+    nsymops == 0 && error("Could not determine the multiplicity!")
+    return nsymops
+end
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
@@ -448,27 +470,6 @@ function get_stabilized_reciprocal_mesh(
     )
     @assert(exitcode > 0, "Something wrong happens when finding mesh!")
     return mapping, grid_address
-end
-
-"""
-    get_multiplicity(cell::Cell, symprec = 1e-8)
-
-Return the exact number of symmetry operations. An error is thrown when it fails.
-"""
-function get_multiplicity(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, numbers = get_ccell(cell)
-    nsymops = ccall(
-        (:spg_get_multiplicity, libsymspg),
-        Cint,
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec,
-    )
-    nsymops == 0 && error("Could not determine the multiplicity!")
-    return nsymops
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
