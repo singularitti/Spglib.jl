@@ -6,7 +6,8 @@ using spglib_jll: libsymspg
 
 using DataStructures: counter
 
-export get_symmetry!,
+export get_symmetry,
+    get_symmetry!,
     get_symmetry_with_collinear_spin!,
     get_hall_number_from_symmetry,
     get_dataset,
@@ -50,35 +51,24 @@ convert_field(x::NTuple{M,NTuple{N,Number}}) where {M,N} =
     transpose(reshape(collect(Iterators.flatten(x)), N, M))
 convert_field(x::NTuple{N,Number}) where {N} = collect(x)
 
+# See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 function get_symmetry(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, numbers = get_ccell(cell)
-    maxsize = 52 * length(positions)
-    rotations = Array{Cint}(undef, maxsize, 3, 3)
-    translations = Array{Cdouble}(undef, maxsize, 3)
-    numops = ccall(
-        (:spg_get_symmetry, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Cdouble},
-            Cint,
-            Ptr{Cdouble},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Cint,
-            Cdouble,
-        ),
-        rotations,
-        translations,
-        maxsize,
-        lattice,
-        positions,
-        numbers,
-        length(numbers),
-        symprec,
-    )
-    numops == 0 && error("Could not determine symmetries!")
-    [AffineMap(transpose(rotations[:, :, i]), translations[:, i]) for i in 1:numops]
+    max_size = length(cell.types) * 48
+    rotation = Array{Cint,3}(undef, 3, 3, max_size)
+    translation = Array{Cdouble,2}(undef, 3, max_size)
+    if cell.magmoms === nothing
+        numops = get_symmetry!(rotation, translation, max_size, cell, symprec)
+    else
+        equivalent_atoms = zeros(length(cell.magmoms))
+        primitive_lattice = zeros(Cdouble, 3, 3)
+        if ndims(cell.magmoms) == 1
+            spin_flips = zeros(length(rotation))
+        else
+            spin_flips = nothing
+        end
+        # TODO: unfinished!
+    end
+    return [AffineMap(transpose(rotation[:, :, i]), translation[:, i]) for i in 1:numops]
 end
 
 function get_dataset(cell::Cell; symprec = 1e-8)
