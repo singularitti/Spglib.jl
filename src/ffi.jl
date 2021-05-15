@@ -71,7 +71,6 @@ function get_symmetry(cell::Cell, symprec = 1e-8)
     return [AffineMap(transpose(rotation[:, :, i]), translation[:, i]) for i in 1:numops]
 end
 
-function get_dataset(cell::Cell; symprec = 1e-8)
 function get_symmetry!(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
@@ -195,6 +194,8 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     nsymops == 0 && error("Could not determine the multiplicity!")
     return nsymops
 end
+
+function get_dataset(cell::Cell; symprec = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
