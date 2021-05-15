@@ -226,6 +226,7 @@ end
         _ = get_symmetry!(rotation, translation, max_size, cell, 1e-5)
         @test size(rotation) == (3, 3, 96)
         @test size(translation) == (3, 96)
+        @test get_hall_number_from_symmetry(rotation, translation, max_size, 1e-5) == 529
     end
 
     @testset "Get symmetry with collinear spins" begin
