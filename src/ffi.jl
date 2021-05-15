@@ -234,7 +234,7 @@ function get_ir_reciprocal_mesh(
     @assert length(mesh) == length(is_shift) == 3
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
-    @unpack lattice, positions, types, _ = get_ccell(cell)
+    @unpack lattice, positions, types = get_ccell(cell)
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
     is_time_reversal = Base.cconvert(Cint, is_time_reversal)
