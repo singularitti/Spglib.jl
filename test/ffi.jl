@@ -235,7 +235,11 @@ end
             0.0 4.0 0.0
             0.0 0.0 4.0
         ]
-        positions = [0.0 0.5; 0.0 0.5; 0.0 0.5]
+        positions = [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
         types = [1, 1]
         equivalent_atoms = [0, 0]
         spins = [1.0, -2.0]
@@ -253,5 +257,21 @@ end
             1e-5,
         )
         @test equivalent_atoms == [0, 1]
+    end
+
+    @testset "Get multiplicity" begin
+        latt = [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        positions = [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        types = [1, 1]
+        num_atom = 2
+        @test get_multiplicity(cell, 1e-5) == 96
     end
 end
