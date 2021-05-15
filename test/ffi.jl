@@ -275,3 +275,33 @@ end
         @test get_multiplicity(cell, 1e-5) == 96
     end
 end
+
+@testset "Reduce lattices" begin
+    @testset "Niggli reduce" begin
+        lattice = [
+            4.0 20.0 0.0
+            0.0 2.0 0.0
+            0.0 0.0 12.0
+        ]
+        niggli_reduce(lattice, 1e-3)
+        @test lattice ≈ [
+            0.0 -2.0 0.0
+            4.0 0.0 0.0
+            0.0 0.0 12.0
+        ]
+    end
+
+    @testset "Delaunay reduce" begin
+        lattice = [
+            4.0 20.0 0.0
+            0.0 2.0 0.0
+            0.0 0.0 12.0
+        ]
+        delaunay_reduce(lattice, 1e-3)
+        @test lattice ≈ [
+            0.0 2.0 0.0
+            -4.0 -0.0 0.0
+            -0.0 -0.0 12.0
+        ]
+    end
+end
