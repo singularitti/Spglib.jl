@@ -207,17 +207,19 @@ function get_ir_reciprocal_mesh(
     is_time_reversal = true,
     symprec = 1e-5,
 )
+    # Reference: https://github.com/unkcpz/LibSymspg.jl/blob/e912dd3/src/ir-mesh-api.jl#L1-L32
     @assert length(mesh) == length(is_shift) == 3
+    @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types, _ = get_ccell(cell)
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
     is_time_reversal = Base.cconvert(Cint, is_time_reversal)
     number = Base.cconvert(Cint, length(types))
     # Prepare for output
     npoints = prod(mesh)
-    grid_address = zeros(Cint, 3, npoints)
-    mapping = zeros(Cint, npoints)
+    grid_address = zeros(Cint, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
+    grid_mapping_table = zeros(Cint, npoints)
     num_ir = ccall(
         (:spg_get_ir_reciprocal_mesh, libsymspg),
         Cint,
@@ -234,7 +236,7 @@ function get_ir_reciprocal_mesh(
             Cdouble,
         ),
         grid_address,
-        mapping,
+        grid_mapping_table,
         mesh,
         is_shift,
         is_time_reversal,
@@ -245,7 +247,7 @@ function get_ir_reciprocal_mesh(
         symprec,
     )
     @assert num_ir > 0 "Something wrong happens when finding mesh!"
-    return num_ir, mapping, grid_address
+    return num_ir, grid_mapping_table, grid_address
 end
 end
 
