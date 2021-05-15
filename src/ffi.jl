@@ -286,37 +286,29 @@ refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
 function niggli_reduce(cell::Cell, symprec = 1e-5)
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L869
-    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
-    # The result is reassigned to `lattice`.
+    clattice = convert(Matrix{Cdouble}, cell.lattice)
     exitcode = ccall(
         (:spg_niggli_reduce, libsymspg),
         Cint,
         (Ptr{Cdouble}, Cdouble),
-        lattice,
+        clattice,
         symprec,
     )
     iszero(exitcode) && error("Niggli reduce failed!")
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L876
-    return @set cell.lattice =
-        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return cell.lattice[:, :] = clattice
 end
 
 function delaunay_reduce(cell::Cell, symprec = 1e-5)
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L832
-    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
-    # The result is reassigned to `lattice`.
+    clattice = convert(Matrix{Cdouble}, cell.lattice)
     exitcode = ccall(
         (:spg_delaunay_reduce, libsymspg),
         Cint,
         (Ptr{Cdouble}, Cdouble),
-        lattice,
+        clattice,
         symprec,
     )
     iszero(exitcode) && error("Delaunay reduce failed!")
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L840
-    return @set cell.lattice =
-        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return cell.lattice[:, :] = clattice
 end
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
