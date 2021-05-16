@@ -1,7 +1,6 @@
 using Compat: isnothing
 using CoordinateTransformations
 using UnPack: @unpack
-using Setfield: @set
 using spglib_jll: libsymspg
 
 using DataStructures: counter
@@ -71,7 +70,6 @@ function get_symmetry(cell::Cell, symprec = 1e-8)
     return [AffineMap(transpose(rotation[:, :, i]), translation[:, i]) for i in 1:numops]
 end
 
-function get_dataset(cell::Cell; symprec = 1e-8)
 function get_symmetry!(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
@@ -195,6 +193,8 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     nsymops == 0 && error("Could not determine the multiplicity!")
     return nsymops
 end
+
+function get_dataset(cell::Cell; symprec = 1e-8)
     @unpack lattice, positions, numbers = get_ccell(cell)
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
@@ -255,67 +255,105 @@ function get_schoenflies(cell::Cell, symprec = 1e-8)
     return cchars2string(result)
 end
 
+# See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L415-L463 and https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/src/cell-reduce-api.jl#L3-L35
+"""
+    standardize_cell(cell::Cell; to_primitive = false, no_idealize = false, symprec = 1e-5)
+
+Return standardized cell.
+
+The standardized unit cell is generated from an input unit cell structure and
+its symmetry found by the symmetry search. The choice of the setting for each
+space group type is as explained for [`get_dataset`](@ref).
+"""
 function standardize_cell(
     cell::Cell;
     to_primitive = false,
     no_idealize = false,
     symprec = 1e-5,
 )
-    @unpack lattice, positions, numbers = get_ccell(cell)
-    exitcode = ccall(
+    @unpack lattice, positions, types = get_ccell(cell)
+    to_primitive = Base.cconvert(Cint, to_primitive)
+    no_idealize = Base.cconvert(Cint, no_idealize)
+    number = Base.cconvert(Cint, length(types))
+    allocations = 4
+    _positions = Matrix{Cdouble}(undef, 3, number * allocations)
+    _types = Vector{Cint}(undef, number * allocations)
+    _positions[:, 1:number] = positions
+    _types[1:number] = types
+    num_atom_std = ccall(
         (:spg_standardize_cell, libsymspg),
         Cint,
         (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cint, Cdouble),
         lattice,
-        position,
-        numbers,
-        length(numbers),
+        _positions,
+        _types,
+        number,
         to_primitive,
         no_idealize,
         symprec,
-    )
-    exitcode == 0 && error("Standardizing cell failed!")
-    return Cell(lattice, positions, numbers)  # They have been changed now.
+    )  # Note: not `number`!
+    @assert num_atom_std > 0 "standardizing cell failed!"
+    return Cell(lattice, _positions[:, 1:num_atom_std], _types[1:num_atom_std])
 end
 
+"""
+    find_primitive(cell::Cell, symprec = 1e-5)
+
+Find the primitive cell of an input unit cell.
+
+This function is now a shortcut of `standardize_cell` with `to_primitive = true`
+and `no_idealize = false`.
+"""
 find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
 
+
+"""
+    refine_cell(cell::Cell, symprec = 1e-5)
+
+Return refined cell.
+
+The standardized crystal structure is obtained from a non-standard crystal
+structure which may be slightly distorted within a symmetry recognition
+tolerance, or whose primitive vectors are differently chosen, etc.
+This function is now a shortcut of `standardize_cell` with `to_primitive = false`
+and `no_idealize = false`.
+"""
 refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
-function niggli_reduce(cell::Cell, symprec = 1e-5)
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L869
-    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
-    # The result is reassigned to `lattice`.
+function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+    clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_niggli_reduce, libsymspg),
         Cint,
         (Ptr{Cdouble}, Cdouble),
-        lattice,
+        clattice,
         symprec,
     )
     iszero(exitcode) && error("Niggli reduce failed!")
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L876
-    return @set cell.lattice =
-        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return clattice
+end
+function niggli_reduce(cell::Cell, symprec = 1e-5)
+    clattice = niggli_reduce(cell.lattice, symprec)
+    return cell.lattice[:, :] = clattice
 end
 
-function delaunay_reduce(cell::Cell, symprec = 1e-5)
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L832
-    lattice = Iterators.partition(getfield(cell, :lattice), 3) |> collect
-    # The result is reassigned to `lattice`.
+function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+    clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_delaunay_reduce, libsymspg),
         Cint,
         (Ptr{Cdouble}, Cdouble),
-        lattice,
+        clattice,
         symprec,
     )
     iszero(exitcode) && error("Delaunay reduce failed!")
-    # Equivalent to `np.transpose` in https://github.com/atztogo/spglib/blob/f8ddf5b/python/spglib/spglib.py#L840
-    return @set cell.lattice =
-        Iterators.flatten(lattice) |> collect |> x -> reshape(x, 3, 3)
+    return clattice
+end
+function delaunay_reduce(cell::Cell, symprec = 1e-5)
+    clattice = delaunay_reduce(cell.lattice, symprec)
+    return cell.lattice[:, :] = clattice
 end
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
