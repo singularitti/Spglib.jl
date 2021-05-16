@@ -306,6 +306,28 @@ end
     end
 end
 
+# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L89-L99
+@testset "Test reciprocal mesh" begin
+    lattice = [
+        -2.0 2.0 2.0
+        2.0 -2.0 2.0
+        2.0 2.0 -2.0
+    ]
+    positions = [0.0 0.0 0.0]'
+    types = [1]
+    mesh = [4, 4, 4]
+    is_shift = [0, 0, 0]
+    cell = Cell(lattice, positions, types)
+    nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+        cell,
+        mesh,
+        is_shift;
+        is_time_reversal = true,
+        symprec = 1e-5,
+    )
+    @test nir == 8
+end
+
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L113-L136
 @testset "Cell reduce standardize" begin
     @testset "Test `find_primitive`" begin
