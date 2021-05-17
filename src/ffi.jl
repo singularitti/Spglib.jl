@@ -188,19 +188,21 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     return nsymops
 end
 
-function get_dataset(cell::Cell; symprec = 1e-8)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+function get_dataset(cell::Cell, symprec = 1e-8)
+    @unpack lattice, positions, types = get_ccell(cell)
+    number = Base.cconvert(Cint, length(types))
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
         Ptr{SpglibDataset},
-        (Ptr{NTuple{3,Cdouble}}, Ptr{NTuple{3,Cdouble}}, Ptr{Cint}, Cint, Cdouble),
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        number,
         symprec,
     )
-    return convert(Dataset, unsafe_load(ptr))
+    raw = unsafe_load(ptr)
+    return convert(Dataset, raw)
 end
 
 function get_spacegroup_type(hall_number::Integer)
@@ -300,7 +302,6 @@ and `no_idealize = false`.
 """
 find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
-
 
 """
     refine_cell(cell::Cell, symprec = 1e-5)
