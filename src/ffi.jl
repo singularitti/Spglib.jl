@@ -202,7 +202,7 @@ function get_dataset(cell::Cell, symprec = 1e-8)
         symprec,
     )
     raw = unsafe_load(ptr)
-    return convert(Dataset, raw)
+    # return convert(Dataset, raw)
 end
 
 function get_spacegroup_type(hall_number::Integer)
@@ -497,7 +497,32 @@ end
 
 tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
 
+function rotsFromTuple(rotsTuple::AbstractVector{NTuple{9,Int32}}, nop::Integer)
+    r = Array{Int64,3}(undef, 3, 3, nop)
+    for i in 1:nop
+        r[:, :, i] = reshape(collect(rotsTuple[i]), 3, 3)
+    end
+    return r
+end
+
+function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Integer)
+    t = Matrix{Float64}(undef, 3, nop)
+    for i in 1:nop
+        t[:, i] = collect(transTuple[i])
+    end
+    return t
+end
+
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+    r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
+    t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
+    # str = unsafe_wrap(
+    #     Vector{NTuple{7,Cchar}},
+    #     dataset.site_symmetry_symbols,
+    #     dataset.n_operations,
+    # )
+    pos =
+        unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_operations)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
@@ -507,12 +532,12 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         tuple2matrix(dataset.transformation_matrix),
         collect(dataset.origin_shift),
         dataset.n_operations,
-        tuple2matrix(unsafe_load(dataset.rotations)),
-        collect(unsafe_load(dataset.translations)),
+        rotsFromTuple(r, dataset.n_operations),
+        transFromTuple(t, dataset.n_operations),
         dataset.n_atoms,
         unsafe_load(dataset.wyckoffs),
         "",
-        # (dataset.site_symmetry_symbols),
+        # transFromTuple(dataset.site_symmetry_symbols, dataset.n_operations),
         unsafe_load(dataset.equivalent_atoms),
         unsafe_load(dataset.crystallographic_orbits),
         tuple2matrix(dataset.primitive_lattice),
@@ -520,7 +545,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         dataset.n_std_atoms,
         tuple2matrix(dataset.std_lattice),
         unsafe_load(dataset.std_types),
-        collect(unsafe_load(dataset.std_positions)),
+        transFromTuple(pos, dataset.n_operations),
         tuple2matrix(dataset.std_rotation_matrix),
         unsafe_load(dataset.std_mapping_to_primitive),
         cchars2string(dataset.pointgroup_symbol),

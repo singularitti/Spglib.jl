@@ -50,11 +50,11 @@ struct Dataset
     transformation_matrix::Matrix{Float64}
     origin_shift::Vector{Float64}
     n_operations::Int
-    rotations::Matrix{Float64}
-    translations::Vector{Float64}
+    rotations::Array{Float64,3}
+    translations::Matrix{Float64}
     n_atoms::Int
     wyckoffs::Int
-    site_symmetry_symbols::String
+    site_symmetry_symbols
     equivalent_atoms::Int
     crystallographic_orbits::Int
     primitive_lattice::Matrix{Float64}
@@ -62,7 +62,7 @@ struct Dataset
     n_std_atoms::Int
     std_lattice::Matrix{Float64}
     std_types::Int
-    std_positions::Vector{Float64}
+    std_positions::Matrix{Float64}
     std_rotation_matrix::Matrix{Float64}
     std_mapping_to_primitive::Int
     pointgroup_symbol::String
