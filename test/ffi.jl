@@ -18,6 +18,30 @@ using Spglib
     @test spacegroup_type.arithmetic_crystal_class_symbol == "2/mC"
 end
 
+@testset "Test `get_dataset`" begin
+    lattice = [
+        4.0 0.0 0.0
+        2.0 3.4641 0.0
+        0.0 0.0 12.0
+    ]
+    positions = [
+        0.0 1/3
+        0.0 1/3
+        0.0 1/3
+    ]
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    db = get_dataset(cell, 1e-3)
+    @test db.international_symbol == "P-3m1"
+
+    nop = db.n_operations
+    @test nop == 12
+    @test size(db.rotations) == (3, 3, 12)
+    @test size(db.translations) == (3, 12)
+
+    @test db.pointgroup_symbol == "-3m"
+end
+
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
