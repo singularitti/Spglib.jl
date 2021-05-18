@@ -216,7 +216,7 @@ function get_spacegroup_type(hall_number::Integer)
         (Cint,),
         hall_number,
     )
-    return convert(SpaceGroup, spgtype)
+    return convert(SpacegroupType, spgtype)
 end
 
 function get_international(cell::Cell, symprec = 1e-8)
@@ -564,8 +564,8 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         cchars2string(dataset.pointgroup_symbol),
     )
 end
-function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
-    values = map(fieldnames(SpaceGroup)) do name
+function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+    values = map(fieldnames(SpacegroupType)) do name
         value = getfield(spgtype, name)
         if value isa Cint
             value
@@ -575,5 +575,5 @@ function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
             error("unexpected field type $(typeof(value))!")
         end
     end
-    return SpaceGroup(values...)
+    return SpacegroupType(values...)
 end
