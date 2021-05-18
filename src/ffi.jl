@@ -560,8 +560,16 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         cchars2string(dataset.pointgroup_symbol),
     )
 end
-# function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
-#     f = name -> getfield(spgtype, name) |> convert_field
-#     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
-#     return SpaceGroup(map(f, fieldnames(SpaceGroup))...)
-# end
+function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
+    values = map(fieldnames(SpaceGroup)) do name
+        value = getfield(spgtype, name)
+        if value isa Cint
+            value
+        elseif value isa NTuple{N,Cchar} where {N}
+            cchars2string(value)
+        else  # This should never happen!
+            error("unexpected field type $(typeof(value))!")
+        end
+    end
+    return SpaceGroup(values...)
+end
