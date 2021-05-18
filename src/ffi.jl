@@ -215,21 +215,21 @@ function get_spacegroup_type(hall_number::Integer)
 end
 
 function get_international(cell::Cell, symprec = 1e-8)
-    result = zeros(Cchar, 11)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+    @unpack lattice, positions, types = get_ccell(cell)
+    symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
         (:spg_get_international, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
+        symbol,
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        length(types),
         symprec,
     )
     exitcode == 0 && error("Could not determine the international symbol!")
-    return cchars2string(result)
+    return cchars2string(symbol)
 end
 
 function get_schoenflies(cell::Cell, symprec = 1e-8)
