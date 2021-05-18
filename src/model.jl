@@ -71,16 +71,16 @@ end
 # This is an internal type, do not export!
 struct SpglibSpacegroupType
     number::Cint
-    international_short::NTuple{11,UInt8}
-    international_full::NTuple{20,UInt8}
-    international::NTuple{32,UInt8}
-    schoenflies::NTuple{7,UInt8}
-    hall_symbol::NTuple{17,UInt8}
-    choice::NTuple{6,UInt8}
-    pointgroup_international::NTuple{6,UInt8}
-    pointgroup_schoenflies::NTuple{4,UInt8}
+    international_short::NTuple{11,Cchar}
+    international_full::NTuple{20,Cchar}
+    international::NTuple{32,Cchar}
+    schoenflies::NTuple{7,Cchar}
+    hall_symbol::NTuple{17,Cchar}
+    choice::NTuple{6,Cchar}
+    pointgroup_international::NTuple{6,Cchar}
+    pointgroup_schoenflies::NTuple{4,Cchar}
     arithmetic_crystal_class_number::Cint
-    arithmetic_crystal_class_symbol::NTuple{7,UInt8}
+    arithmetic_crystal_class_symbol::NTuple{7,Cchar}
 end
 
 struct SpaceGroup
