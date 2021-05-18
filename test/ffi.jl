@@ -38,6 +38,7 @@ end
     @test size(dataset.rotations) == (3, 3, 12)
     @test size(dataset.translations) == (3, 12)
     @test dataset.pointgroup_symbol == "-3m"
+    @test get_international(cell) == dataset.international_symbol
 end
 
 @testset "Test rutile structure" begin
