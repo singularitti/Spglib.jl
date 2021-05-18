@@ -1,4 +1,4 @@
-export Cell, Dataset, SpaceGroup
+export Cell, Dataset, SpacegroupType
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -83,7 +83,7 @@ struct SpglibSpacegroupType
     arithmetic_crystal_class_symbol::NTuple{7,Cchar}
 end
 
-struct SpaceGroup
+struct SpacegroupType
     number::Int
     international_short::String
     international_full::String

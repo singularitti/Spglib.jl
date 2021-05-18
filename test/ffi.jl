@@ -1,5 +1,7 @@
 using Test
 
+using Spglib
+
 function type2dict(dt)
     di = Dict{Symbol,Any}()
     for n in propertynames(dt)
@@ -7,8 +9,6 @@ function type2dict(dt)
     end
     di
 end
-
-using Spglib
 
 @testset "Test `get_spacegroup_type`" begin
     # Adapted from https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L7-L12
@@ -38,6 +38,7 @@ end
     @test size(dataset.rotations) == (3, 3, 12)
     @test size(dataset.translations) == (3, 12)
     @test dataset.pointgroup_symbol == "-3m"
+    @test get_international(cell) == dataset.international_symbol
 end
 
 @testset "Test rutile structure" begin

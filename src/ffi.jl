@@ -27,22 +27,21 @@ export get_symmetry,
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     @unpack lattice, positions, types, magmoms = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = convert(Matrix{Cdouble}, lattice)
-    cpositions = convert(Matrix{Cdouble}, positions)
+    clattice = Base.cconvert(Matrix{Cdouble}, lattice)
+    cpositions = Base.cconvert(Matrix{Cdouble}, positions)
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     if magmoms !== nothing
-        magmoms = convert(Vector{Cdouble}, magmoms)
+        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     end
     return Cell(clattice, cpositions, ctypes, magmoms)
 end
 
-# This is an internal function, do not export!
-trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
-
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars2string(vec::NTuple{N,Cchar}) where {N} =
-    String(collect(Char, trunc_trailing_zeros(vec)))
+function cchars2string(itr)
+    vec = collect(Char, Iterators.filter(!iszero, itr))
+    return String(vec)
+end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 function get_symmetry(cell::Cell, symprec = 1e-8)
@@ -121,15 +120,15 @@ function get_symmetry_with_collinear_spin!(
         Cint,
         (
             Ptr{Cint},
-            Ptr{Float64},
+            Ptr{Cdouble},
             Ptr{Cint},
             Cint,
-            Ptr{Float64},
-            Ptr{Float64},
+            Ptr{Cdouble},
+            Ptr{Cdouble},
             Ptr{Cint},
-            Ptr{Float64},
+            Ptr{Cdouble},
             Cint,
-            Float64,
+            Cdouble,
         ),
         rotation,
         translation,
@@ -205,6 +204,11 @@ function get_dataset(cell::Cell, symprec = 1e-8)
     return convert(Dataset, raw)
 end
 
+"""
+    get_spacegroup_type(hall_number)
+
+Translate Hall number to space group type information.
+"""
 function get_spacegroup_type(hall_number::Integer)
     spgtype = ccall(
         (:spg_get_spacegroup_type, libsymspg),
@@ -212,43 +216,43 @@ function get_spacegroup_type(hall_number::Integer)
         (Cint,),
         hall_number,
     )
-    return convert(SpaceGroup, spgtype)
+    return convert(SpacegroupType, spgtype)
 end
 
 function get_international(cell::Cell, symprec = 1e-8)
-    result = zeros(Cchar, 11)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+    @unpack lattice, positions, types = get_ccell(cell)
+    symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
         (:spg_get_international, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
+        symbol,
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        length(types),
         symprec,
     )
     exitcode == 0 && error("Could not determine the international symbol!")
-    return cchars2string(result)
+    return cchars2string(symbol)
 end
 
 function get_schoenflies(cell::Cell, symprec = 1e-8)
-    result = zeros(Cchar, 11)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+    @unpack lattice, positions, types = get_ccell(cell)
+    symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(
         (:spg_get_schoenflies, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
+        symbol,
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        length(types),
         symprec,
     )
     exitcode == 0 && error("Could not determine the Schoenflies symbol!")
-    return cchars2string(result)
+    return cchars2string(symbol)
 end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L415-L463 and https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/src/cell-reduce-api.jl#L3-L35
@@ -392,8 +396,8 @@ function get_ir_reciprocal_mesh(
     number = Base.cconvert(Cint, length(types))
     # Prepare for output
     npoints = prod(mesh)
-    grid_address = zeros(Cint, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
-    grid_mapping_table = zeros(Cint, npoints)
+    grid_address = Matrix{Cint}(undef, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
+    grid_mapping_table = Vector{Cint}(undef, npoints)
     num_ir = ccall(
         (:spg_get_ir_reciprocal_mesh, libsymspg),
         Cint,
@@ -519,11 +523,6 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
     t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
     wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    # str = unsafe_wrap(
-    #     Vector{NTuple{7,Cchar}},
-    #     dataset.site_symmetry_symbols,
-    #     dataset.n_operations,
-    # )
     pos =
         unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_operations)
     return Dataset(
@@ -560,8 +559,8 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         cchars2string(dataset.pointgroup_symbol),
     )
 end
-function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
-    values = map(fieldnames(SpaceGroup)) do name
+function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+    values = map(fieldnames(SpacegroupType)) do name
         value = getfield(spgtype, name)
         if value isa Cint
             value
@@ -571,5 +570,5 @@ function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
             error("unexpected field type $(typeof(value))!")
         end
     end
-    return SpaceGroup(values...)
+    return SpacegroupType(values...)
 end
