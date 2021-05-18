@@ -523,11 +523,6 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
     t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
     wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    # str = unsafe_wrap(
-    #     Vector{NTuple{7,Cchar}},
-    #     dataset.site_symmetry_symbols,
-    #     dataset.n_operations,
-    # )
     pos =
         unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_operations)
     return Dataset(
