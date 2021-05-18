@@ -204,6 +204,11 @@ function get_dataset(cell::Cell, symprec = 1e-8)
     return convert(Dataset, raw)
 end
 
+"""
+    get_spacegroup_type(hall_number)
+
+Translate Hall number to space group type information.
+"""
 function get_spacegroup_type(hall_number::Integer)
     spgtype = ccall(
         (:spg_get_spacegroup_type, libsymspg),
