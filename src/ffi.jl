@@ -36,12 +36,12 @@ function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     return Cell(clattice, cpositions, ctypes, magmoms)
 end
 
-# This is an internal function, do not export!
-trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
-
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars2string(vec) = String(collect(Char, trunc_trailing_zeros(vec)))
+function cchars2string(itr)
+    vec = collect(Char, Iterators.filter(!iszero, itr))
+    return String(vec)
+end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 function get_symmetry(cell::Cell, symprec = 1e-8)
