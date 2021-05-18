@@ -27,7 +27,7 @@ struct SpglibDataset
     translations::Ptr{NTuple{3,Cdouble}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
-    site_symmetry_symbols::Ptr{Tuple{7,Cchar}}
+    site_symmetry_symbols::Ptr{NTuple{7,Cchar}}
     equivalent_atoms::Ptr{Cint}
     crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
     primitive_lattice::NTuple{9,Cdouble}  # Added in v1.15.0
@@ -53,18 +53,18 @@ struct Dataset
     rotations::Array{Float64,3}
     translations::Matrix{Float64}
     n_atoms::Int
-    wyckoffs::Int
-    site_symmetry_symbols
-    equivalent_atoms::Int
-    crystallographic_orbits::Int
+    wyckoffs::Vector{Char}
+    site_symmetry_symbols::Vector{String}
+    equivalent_atoms::Vector{Int}
+    crystallographic_orbits::Vector{Int}
     primitive_lattice::Matrix{Float64}
-    mapping_to_primitive::Int
+    mapping_to_primitive::Vector{Int}
     n_std_atoms::Int
     std_lattice::Matrix{Float64}
-    std_types::Int
+    std_types::Vector{Int}
     std_positions::Matrix{Float64}
     std_rotation_matrix::Matrix{Float64}
-    std_mapping_to_primitive::Int
+    std_mapping_to_primitive::Vector{Int}
     pointgroup_symbol::String
 end
 
