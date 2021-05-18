@@ -27,11 +27,11 @@ export get_symmetry,
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
     @unpack lattice, positions, types, magmoms = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = convert(Matrix{Cdouble}, lattice)
-    cpositions = convert(Matrix{Cdouble}, positions)
+    clattice = Base.cconvert(Matrix{Cdouble}, lattice)
+    cpositions = Base.cconvert(Matrix{Cdouble}, positions)
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     if magmoms !== nothing
-        magmoms = convert(Vector{Cdouble}, magmoms)
+        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     end
     return Cell(clattice, cpositions, ctypes, magmoms)
 end
