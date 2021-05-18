@@ -396,8 +396,8 @@ function get_ir_reciprocal_mesh(
     number = Base.cconvert(Cint, length(types))
     # Prepare for output
     npoints = prod(mesh)
-    grid_address = zeros(Cint, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
-    grid_mapping_table = zeros(Cint, npoints)
+    grid_address = Matrix{Cint}(undef, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
+    grid_mapping_table = Vector{Cint}(undef, npoints)
     num_ir = ccall(
         (:spg_get_ir_reciprocal_mesh, libsymspg),
         Cint,
