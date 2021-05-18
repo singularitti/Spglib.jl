@@ -41,14 +41,8 @@ trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars2string(vec) = String(collect(trunc_trailing_zeros(vec)))
-
-convert_field(x) = x  # Integers
-convert_field(x::NTuple{N,UInt8}) where {N} = String(collect(trunc_trailing_zeros(x)))
-convert_field(x::Ptr) = unsafe_load(x)
-convert_field(x::NTuple{M,NTuple{N,Number}}) where {M,N} =
-    transpose(reshape(collect(Iterators.flatten(x)), N, M))
-convert_field(x::NTuple{N,Number}) where {N} = collect(x)
+cchars2string(vec::NTuple{N,Cchar}) where {N} =
+    String(collect(Char, trunc_trailing_zeros(vec)))
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 function get_symmetry(cell::Cell, symprec = 1e-8)
@@ -194,19 +188,21 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     return nsymops
 end
 
-function get_dataset(cell::Cell; symprec = 1e-8)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+function get_dataset(cell::Cell, symprec = 1e-8)
+    @unpack lattice, positions, types = get_ccell(cell)
+    number = Base.cconvert(Cint, length(types))
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
         Ptr{SpglibDataset},
-        (Ptr{NTuple{3,Cdouble}}, Ptr{NTuple{3,Cdouble}}, Ptr{Cint}, Cint, Cdouble),
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        number,
         symprec,
     )
-    return convert(Dataset, unsafe_load(ptr))
+    raw = unsafe_load(ptr)
+    # return convert(Dataset, raw)
 end
 
 function get_spacegroup_type(hall_number::Integer)
@@ -306,7 +302,6 @@ and `no_idealize = false`.
 """
 find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
-
 
 """
     refine_cell(cell::Cell, symprec = 1e-5)
@@ -500,34 +495,64 @@ function get_stabilized_reciprocal_mesh(
     return mapping, grid_address
 end
 
+tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
+
+function rotsFromTuple(rotsTuple::AbstractVector{NTuple{9,Int32}}, nop::Integer)
+    r = Array{Int64,3}(undef, 3, 3, nop)
+    for i in 1:nop
+        r[:, :, i] = reshape(collect(rotsTuple[i]), 3, 3)
+    end
+    return r
+end
+
+function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Integer)
+    t = Matrix{Float64}(undef, 3, nop)
+    for i in 1:nop
+        t[:, i] = collect(transTuple[i])
+    end
+    return t
+end
+
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+    r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
+    t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
+    # str = unsafe_wrap(
+    #     Vector{NTuple{7,Cchar}},
+    #     dataset.site_symmetry_symbols,
+    #     dataset.n_operations,
+    # )
+    pos =
+        unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_operations)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
-        convert_field(dataset.international_symbol),
-        convert_field(dataset.hall_symbol),
-        convert_field(dataset.choice),
-        collect(Iterators.partition(dataset.transformation_matrix, 3)),
+        cchars2string(dataset.international_symbol),
+        cchars2string(dataset.hall_symbol),
+        cchars2string(dataset.choice),
+        tuple2matrix(dataset.transformation_matrix),
         collect(dataset.origin_shift),
         dataset.n_operations,
-        collect(Iterators.partition(unsafe_load(dataset.rotations), 3)),
-        collect(unsafe_load(dataset.translations)),
+        rotsFromTuple(r, dataset.n_operations),
+        transFromTuple(t, dataset.n_operations),
         dataset.n_atoms,
         unsafe_load(dataset.wyckoffs),
-        unsafe_load(dataset.site_symmetry_symbols),
+        "",
+        # transFromTuple(dataset.site_symmetry_symbols, dataset.n_operations),
         unsafe_load(dataset.equivalent_atoms),
+        unsafe_load(dataset.crystallographic_orbits),
+        tuple2matrix(dataset.primitive_lattice),
         unsafe_load(dataset.mapping_to_primitive),
         dataset.n_std_atoms,
-        collect(Iterators.partition(dataset.std_lattice, 3)),
+        tuple2matrix(dataset.std_lattice),
         unsafe_load(dataset.std_types),
-        collect(dataset.std_positions),
-        collect(Iterators.partition(unsafe_load(dataset.std_rotation_matrix), 3)),
+        transFromTuple(pos, dataset.n_operations),
+        tuple2matrix(dataset.std_rotation_matrix),
         unsafe_load(dataset.std_mapping_to_primitive),
-        convert_field(dataset.pointgroup_symbol),
+        cchars2string(dataset.pointgroup_symbol),
     )
 end
-function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
-    f = name -> getfield(spgtype, name) |> convert_field
-    # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
-    return SpaceGroup(map(f, fieldnames(SpaceGroup))...)
-end
+# function Base.convert(::Type{SpaceGroup}, spgtype::SpglibSpacegroupType)
+#     f = name -> getfield(spgtype, name) |> convert_field
+#     # Reference: https://discourse.julialang.org/t/construct-an-immutable-type-from-a-dict/26709/2
+#     return SpaceGroup(map(f, fieldnames(SpaceGroup))...)
+# end

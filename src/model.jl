@@ -17,27 +17,28 @@ Cell(lattice, positions, types) = Cell(lattice, positions, types, nothing)
 struct SpglibDataset
     spacegroup_number::Cint
     hall_number::Cint
-    international_symbol::NTuple{11,UInt8}
-    hall_symbol::NTuple{17,UInt8}
-    choice::NTuple{6,UInt8}
-    transformation_matrix::NTuple{9,Float64}
-    origin_shift::NTuple{3,Float64}
+    international_symbol::NTuple{11,Cchar}
+    hall_symbol::NTuple{17,Cchar}
+    choice::NTuple{6,Cchar}
+    transformation_matrix::NTuple{9,Cdouble}
+    origin_shift::NTuple{3,Cdouble}
     n_operations::Cint
     rotations::Ptr{NTuple{9,Cint}}
-    translations::Ptr{NTuple{3,Float64}}
+    translations::Ptr{NTuple{3,Cdouble}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
-    site_symmetry_symbols::Ptr{Tuple{7,UInt8}}
+    site_symmetry_symbols::Ptr{Tuple{7,Cchar}}
     equivalent_atoms::Ptr{Cint}
-    # crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
+    crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
+    primitive_lattice::NTuple{9,Cdouble}  # Added in v1.15.0
     mapping_to_primitive::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{9,Float64}
+    std_lattice::NTuple{9,Cdouble}
     std_types::Ptr{Cint}
-    std_positions::Ptr{NTuple{3,Float64}}
-    std_rotation_matrix::NTuple{9,Float64}
+    std_positions::Ptr{NTuple{3,Cdouble}}
+    std_rotation_matrix::NTuple{9,Cdouble}
     std_mapping_to_primitive::Ptr{Cint}
-    pointgroup_symbol::NTuple{6,UInt8}
+    pointgroup_symbol::NTuple{6,Cchar}
 end
 
 struct Dataset
@@ -49,17 +50,19 @@ struct Dataset
     transformation_matrix::Matrix{Float64}
     origin_shift::Vector{Float64}
     n_operations::Int
-    rotations::Matrix{Float64}
-    translations::Vector{Float64}
+    rotations::Array{Float64,3}
+    translations::Matrix{Float64}
     n_atoms::Int
     wyckoffs::Int
-    site_symmetry_symbols::String
+    site_symmetry_symbols
     equivalent_atoms::Int
+    crystallographic_orbits::Int
+    primitive_lattice::Matrix{Float64}
     mapping_to_primitive::Int
     n_std_atoms::Int
-    std_lattice::NTuple{9,Float64}
+    std_lattice::Matrix{Float64}
     std_types::Int
-    std_positions::Any
+    std_positions::Matrix{Float64}
     std_rotation_matrix::Matrix{Float64}
     std_mapping_to_primitive::Int
     pointgroup_symbol::String
