@@ -1,4 +1,3 @@
-using Compat: isnothing
 using UnPack: @unpack
 using spglib_jll: libsymspg
 
