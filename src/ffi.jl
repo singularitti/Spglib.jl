@@ -1,5 +1,4 @@
 using Compat: isnothing
-using CoordinateTransformations
 using UnPack: @unpack
 using spglib_jll: libsymspg
 
@@ -60,7 +59,10 @@ function get_symmetry(cell::Cell, symprec = 1e-8)
         end
         # TODO: unfinished!
     end
-    return [AffineMap(transpose(rotation[:, :, i]), translation[:, i]) for i in 1:numops]
+    return [
+        (rotation = transpose(rotation[:, :, i]), translation = translation[:, i]) for
+        i in 1:numops
+    ]
 end
 
 function get_symmetry!(
