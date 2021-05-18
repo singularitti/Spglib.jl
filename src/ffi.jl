@@ -41,8 +41,7 @@ trunc_trailing_zeros(vec) = Iterators.filter(!iszero, vec)
 
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-cchars2string(vec::NTuple{N,Cchar}) where {N} =
-    String(collect(Char, trunc_trailing_zeros(vec)))
+cchars2string(vec) = String(collect(Char, trunc_trailing_zeros(vec)))
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 function get_symmetry(cell::Cell, symprec = 1e-8)
