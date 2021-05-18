@@ -17,7 +17,8 @@ export get_symmetry,
     delaunay_reduce,
     get_multiplicity,
     get_ir_reciprocal_mesh,
-    get_stabilized_reciprocal_mesh
+    get_stabilized_reciprocal_mesh,
+    get_version
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
@@ -556,4 +557,10 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         end
     end
     return SpacegroupType(values...)
+end
+function get_version()
+    major = ccall((:spg_get_major_version, libsymspg), Cint, ())
+    minor = ccall((:spg_get_minor_version, libsymspg), Cint, ())
+    micro = ccall((:spg_get_micro_version, libsymspg), Cint, ())
+    return VersionNumber(major, minor, micro)
 end
