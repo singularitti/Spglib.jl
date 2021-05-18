@@ -27,7 +27,7 @@ struct SpglibDataset
     translations::Ptr{NTuple{3,Cdouble}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
-    site_symmetry_symbols::Ptr{Tuple{7,Cchar}}
+    site_symmetry_symbols::Ptr{NTuple{7,Cchar}}
     equivalent_atoms::Ptr{Cint}
     crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
     primitive_lattice::NTuple{9,Cdouble}  # Added in v1.15.0
