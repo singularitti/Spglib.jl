@@ -18,6 +18,7 @@ using Spglib
     @test spacegroup_type.arithmetic_crystal_class_symbol == "2/mC"
 end
 
+# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L14-L32
 @testset "Test `get_dataset`" begin
     lattice = [
         4.0 0.0 0.0
@@ -31,15 +32,12 @@ end
     ]
     types = [1, 1]
     cell = Cell(lattice, positions, types)
-    db = get_dataset(cell, 1e-3)
-    @test db.international_symbol == "P-3m1"
-
-    nop = db.n_operations
-    @test nop == 12
-    @test size(db.rotations) == (3, 3, 12)
-    @test size(db.translations) == (3, 12)
-
-    @test db.pointgroup_symbol == "-3m"
+    dataset = get_dataset(cell, 1e-3)
+    @test dataset.international_symbol == "P-3m1"
+    @test dataset.n_operations == 12
+    @test size(dataset.rotations) == (3, 3, 12)
+    @test size(dataset.translations) == (3, 12)
+    @test dataset.pointgroup_symbol == "-3m"
 end
 
 @testset "Test rutile structure" begin
