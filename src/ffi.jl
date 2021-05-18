@@ -3,6 +3,7 @@ using spglib_jll: libsymspg
 
 export get_symmetry,
     get_symmetry!,
+    get_symmetry_with_collinear_spin,
     get_symmetry_with_collinear_spin!,
     get_hall_number_from_symmetry,
     get_dataset,
@@ -141,6 +142,22 @@ function get_symmetry_with_collinear_spin!(
     )
     num_sym == 0 && error("`spg_get_symmetry` failed!")
     return num_sym
+end
+function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
+    number = length(cell.types)
+    max_size = number * 48
+    rotation = Array{Cint,3}(undef, 3, 3, max_size)
+    translation = Matrix{Cdouble}(undef, 3, max_size)
+    equivalent_atoms = Vector{Cint}(undef, number)
+    _ = get_symmetry_with_collinear_spin!(
+        rotation,
+        translation,
+        equivalent_atoms,
+        max_size,
+        cell,
+        symprec,
+    )
+    return rotation, translation, equivalent_atoms
 end
 
 function get_hall_number_from_symmetry(
