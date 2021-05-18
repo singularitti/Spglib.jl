@@ -558,6 +558,14 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
     end
     return SpacegroupType(values...)
 end
+
+"""
+    get_version()
+
+Obtain the version number of `spglib`.
+
+This is the mergence of `spg_get_major_version`, `spg_get_minor_version`, and `spg_get_micro_version` in its C-API.
+"""
 function get_version()
     major = ccall((:spg_get_major_version, libsymspg), Cint, ())
     minor = ccall((:spg_get_minor_version, libsymspg), Cint, ())
