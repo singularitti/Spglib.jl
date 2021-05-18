@@ -38,7 +38,7 @@ end
     @test size(dataset.rotations) == (3, 3, 12)
     @test size(dataset.translations) == (3, 12)
     @test dataset.pointgroup_symbol == "-3m"
-    @test get_international(cell) == dataset.international_symbol
+    @test get_international(cell, 1e-3) == dataset.international_symbol
 end
 
 @testset "Test rutile structure" begin
@@ -251,7 +251,7 @@ end
         @test size(translation) == (3, 96)
         @test get_hall_number_from_symmetry(rotation, translation, max_size, 1e-5) == 529
     end
-
+    # See https://github.com/spglib/spglib/blob/deb6695/python/test/test_collinear_spin.py#L18-L37
     @testset "Get symmetry with collinear spins" begin
         lattice = [
             4.0 0.0 0.0
@@ -264,22 +264,31 @@ end
             0.0 0.5
         ]
         types = [1, 1]
-        equivalent_atoms = [0, 0]
-        spins = [1.0, -2.0]
-        cell = Cell(lattice, positions, types, spins)
-        num_atom = length(types)
-        max_size = num_atom * 48
-        rotation = Array{Cint,3}(undef, 3, 3, max_size)
-        translation = Array{Cdouble,2}(undef, 3, max_size)
-        _ = get_symmetry_with_collinear_spin!(
-            rotation,
-            translation,
-            equivalent_atoms,
-            max_size,
-            cell,
-            1e-5,
-        )
-        @test equivalent_atoms == [0, 1]
+        @testset "Test ferromagnetism" begin
+            magmoms = [1.0, 1.0]
+            cell = Cell(lattice, positions, types, magmoms)
+            rotation, translation, equivalent_atoms =
+                get_symmetry_with_collinear_spin(cell, 1e-5)
+            @test size(rotation) == (3, 3, 96)
+            @test equivalent_atoms == [0, 0]
+        end
+        @testset "Test antiferromagnetism" begin
+            magmoms = [1.0, -1.0]
+            cell = Cell(lattice, positions, types, magmoms)
+            rotation, translation, equivalent_atoms =
+                get_symmetry_with_collinear_spin(cell, 1e-5)
+            @test size(rotation) == (3, 3, 96)
+            @test equivalent_atoms == [0, 0]
+        end
+        @testset "Test broken magmoms" begin
+            magmoms = [1.0, 2.0]
+            cell = Cell(lattice, positions, types, magmoms)
+            rotation, translation, equivalent_atoms =
+                get_symmetry_with_collinear_spin(cell, 1e-5)
+            @test size(rotation) == (3, 3, 48)
+            @test size(translation) == (3, 48)
+            @test equivalent_atoms == [0, 1]
+        end
     end
 
     @testset "Get multiplicity" begin
