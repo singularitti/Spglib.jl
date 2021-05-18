@@ -233,21 +233,21 @@ function get_international(cell::Cell, symprec = 1e-8)
 end
 
 function get_schoenflies(cell::Cell, symprec = 1e-8)
-    result = zeros(Cchar, 11)
-    @unpack lattice, positions, numbers = get_ccell(cell)
+    @unpack lattice, positions, types = get_ccell(cell)
+    symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(
         (:spg_get_schoenflies, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        result,
+        symbol,
         lattice,
         positions,
-        numbers,
-        length(numbers),
+        types,
+        length(types),
         symprec,
     )
     exitcode == 0 && error("Could not determine the Schoenflies symbol!")
-    return cchars2string(result)
+    return cchars2string(symbol)
 end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L415-L463 and https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/src/cell-reduce-api.jl#L3-L35
