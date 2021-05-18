@@ -286,6 +286,7 @@ end
             rotation, translation, equivalent_atoms =
                 get_symmetry_with_collinear_spin(cell, 1e-5)
             @test size(rotation) == (3, 3, 48)
+            @test size(translation) == (3, 48)
             @test equivalent_atoms == [0, 1]
         end
     end
