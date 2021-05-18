@@ -202,7 +202,7 @@ function get_dataset(cell::Cell, symprec = 1e-8)
         symprec,
     )
     raw = unsafe_load(ptr)
-    # return convert(Dataset, raw)
+    return convert(Dataset, raw)
 end
 
 function get_spacegroup_type(hall_number::Integer)
@@ -513,9 +513,12 @@ function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Inte
     return t
 end
 
+const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
     t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
+    wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
     # str = unsafe_wrap(
     #     Vector{NTuple{7,Cchar}},
     #     dataset.site_symmetry_symbols,
@@ -535,19 +538,25 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         rotsFromTuple(r, dataset.n_operations),
         transFromTuple(t, dataset.n_operations),
         dataset.n_atoms,
-        unsafe_load(dataset.wyckoffs),
-        "",
-        # transFromTuple(dataset.site_symmetry_symbols, dataset.n_operations),
-        unsafe_load(dataset.equivalent_atoms),
-        unsafe_load(dataset.crystallographic_orbits),
+        [LETTERS[x+1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
+        map(
+            cchars2string,
+            unsafe_wrap(
+                Vector{NTuple{7,Cchar}},
+                dataset.site_symmetry_symbols,
+                dataset.n_atoms,
+            ),
+        ),
+        unsafe_wrap(Vector{Cint}, dataset.equivalent_atoms, dataset.n_atoms),
+        unsafe_wrap(Vector{Cint}, dataset.crystallographic_orbits, dataset.n_atoms),
         tuple2matrix(dataset.primitive_lattice),
-        unsafe_load(dataset.mapping_to_primitive),
+        unsafe_wrap(Vector{Cint}, dataset.mapping_to_primitive, dataset.n_atoms),
         dataset.n_std_atoms,
         tuple2matrix(dataset.std_lattice),
-        unsafe_load(dataset.std_types),
+        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_atoms),
         transFromTuple(pos, dataset.n_operations),
         tuple2matrix(dataset.std_rotation_matrix),
-        unsafe_load(dataset.std_mapping_to_primitive),
+        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_atoms),
         cchars2string(dataset.pointgroup_symbol),
     )
 end
