@@ -13,8 +13,8 @@ export get_symmetry,
     standardize_cell,
     find_primitive,
     refine_cell,
-    niggli_reduce,
-    delaunay_reduce,
+    niggli_reduce!,
+    delaunay_reduce!,
     get_multiplicity,
     get_ir_reciprocal_mesh,
     get_stabilized_reciprocal_mesh,
@@ -359,6 +359,7 @@ refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
 function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+function niggli_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_niggli_reduce, libsymspg),
@@ -370,12 +371,13 @@ function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     iszero(exitcode) && error("Niggli reduce failed!")
     return clattice
 end
-function niggli_reduce(cell::Cell, symprec = 1e-5)
-    clattice = niggli_reduce(cell.lattice, symprec)
-    return cell.lattice[:, :] = clattice
+function niggli_reduce!(cell::Cell, symprec = 1e-5)
+    clattice = niggli_reduce!(cell.lattice, symprec)
+    cell.lattice[:, :] = clattice
+    return cell
 end
 
-function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+function delaunay_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_delaunay_reduce, libsymspg),
@@ -387,9 +389,10 @@ function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     iszero(exitcode) && error("Delaunay reduce failed!")
     return clattice
 end
-function delaunay_reduce(cell::Cell, symprec = 1e-5)
-    clattice = delaunay_reduce(cell.lattice, symprec)
-    return cell.lattice[:, :] = clattice
+function delaunay_reduce!(cell::Cell, symprec = 1e-5)
+    clattice = delaunay_reduce!(cell.lattice, symprec)
+    cell.lattice[:, :] = clattice
+    return cell
 end
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
