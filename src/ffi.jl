@@ -1,5 +1,4 @@
 using UnPack: @unpack
-using spglib_jll: libsymspg
 
 export get_symmetry,
     get_symmetry!,
