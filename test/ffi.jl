@@ -16,6 +16,59 @@ end
     @test spacegroup_type.number == 15
     @test spacegroup_type.hall_symbol == "-I 2a"
     @test spacegroup_type.arithmetic_crystal_class_symbol == "2/mC"
+    # These results are compared with Python's spglib results.
+    @test type2dict(get_spacegroup_type(419)) == Dict(
+        :number => 136,
+        :international_short => "P4_2/mnm",
+        :international_full => "P 4_2/m 2_1/n 2/m",
+        :international => "P 4_2/m n m",
+        :schoenflies => "D4h^14",
+        :hall_symbol => "-P 4n 2n",
+        :choice => "",
+        :pointgroup_schoenflies => "D4h",
+        :pointgroup_international => "4/mmm",
+        :arithmetic_crystal_class_number => 36,
+        :arithmetic_crystal_class_symbol => "4/mmmP",
+    )
+    @test type2dict(get_spacegroup_type(1)) == Dict(
+        :number => 1,
+        :international_short => "P1",
+        :international_full => "P 1",
+        :international => "P 1",
+        :schoenflies => "C1^1",
+        :hall_symbol => "P 1",
+        :choice => "",
+        :pointgroup_schoenflies => "C1",
+        :pointgroup_international => "1",
+        :arithmetic_crystal_class_number => 1,
+        :arithmetic_crystal_class_symbol => "1P",
+    )
+    @test type2dict(get_spacegroup_type(525)) == Dict(
+        :number => 227,
+        :international_short => "Fd-3m",
+        :international_full => "F 4_1/d -3 2/m",
+        :international => "F d -3 m",
+        :schoenflies => "Oh^7",
+        :hall_symbol => "F 4d 2 3 -1d",
+        :choice => "1",
+        :pointgroup_schoenflies => "Oh",
+        :pointgroup_international => "m-3m",
+        :arithmetic_crystal_class_number => 72,
+        :arithmetic_crystal_class_symbol => "m-3mF",
+    )
+    @test type2dict(get_spacegroup_type(485)) == Dict(
+        :number => 191,
+        :international_short => "P6/mmm",
+        :international_full => "P 6/m 2/m 2/m",
+        :international => "P 6/m m m",
+        :schoenflies => "D6h^1",
+        :hall_symbol => "-P 6 2",
+        :choice => "",
+        :pointgroup_schoenflies => "D6h",
+        :pointgroup_international => "6/mmm",
+        :arithmetic_crystal_class_number => 58,
+        :arithmetic_crystal_class_symbol => "6/mmm",
+    )
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L14-L32
@@ -57,21 +110,7 @@ end
     ]
     numbers = [14, 14, 8, 8, 8, 8]
     rutile = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(419)) == Dict(
-        :number => 136,
-        :international_short => "P4_2/mnm",
-        :international_full => "P 4_2/m 2_1/n 2/m",
-        :international => "P 4_2/m n m",
-        :schoenflies => "D4h^14",
-        :hall_symbol => "-P 4n 2n",
-        :choice => "",
-        :pointgroup_schoenflies => "D4h",
-        :pointgroup_international => "4/mmm",
-        :arithmetic_crystal_class_number => 36,
-        :arithmetic_crystal_class_symbol => "4/mmmP",
     )
-    # get_symmetry(rutile; symprec = 1e-5)
-end # testset
 
 @testset "Test distorted rutile structure" begin
     lattice = [
@@ -89,20 +128,7 @@ end # testset
     ]
     numbers = [14, 14, 8, 8, 8, 8]
     distorted_rutile = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(1)) == Dict(
-        :number => 1,
-        :international_short => "P1",
-        :international_full => "P 1",
-        :international => "P 1",
-        :schoenflies => "C1^1",
-        :hall_symbol => "P 1",
-        :choice => "",
-        :pointgroup_schoenflies => "C1",
-        :pointgroup_international => "1",
-        :arithmetic_crystal_class_number => 1,
-        :arithmetic_crystal_class_symbol => "1P",
-    )
-end # testset
+end
 
 @testset "Test silicon structure" begin
     lattice = [
@@ -122,19 +148,6 @@ end # testset
     ]
     numbers = [14, 14, 14, 14, 14, 14, 14, 14]
     silicon = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(525)) == Dict(
-        :number => 227,
-        :international_short => "Fd-3m",
-        :international_full => "F 4_1/d -3 2/m",
-        :international => "F d -3 m",
-        :schoenflies => "Oh^7",
-        :hall_symbol => "F 4d 2 3 -1d",
-        :choice => "1",
-        :pointgroup_schoenflies => "Oh",
-        :pointgroup_international => "m-3m",
-        :arithmetic_crystal_class_number => 72,
-        :arithmetic_crystal_class_symbol => "m-3mF",
-    )
 end
 
 @testset "Test silicon_dist structure" begin
@@ -155,19 +168,6 @@ end
     ]
     numbers = [14, 14, 14, 14, 14, 14, 14, 14]
     silicon_dist = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(1)) == Dict(
-        :number => 1,
-        :international_short => "P1",
-        :international_full => "P 1",
-        :international => "P 1",
-        :schoenflies => "C1^1",
-        :hall_symbol => "P 1",
-        :choice => "",
-        :pointgroup_schoenflies => "C1",
-        :pointgroup_international => "1",
-        :arithmetic_crystal_class_number => 1,
-        :arithmetic_crystal_class_symbol => "1P",
-    )
 end
 
 @testset "Test silicon_prim structure" begin
@@ -182,19 +182,6 @@ end
     ]
     numbers = [14, 14]
     silicon_prim = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(525)) == Dict(
-        :number => 227,
-        :international_short => "Fd-3m",
-        :international_full => "F 4_1/d -3 2/m",
-        :international => "F d -3 m",
-        :schoenflies => "Oh^7",
-        :hall_symbol => "F 4d 2 3 -1d",
-        :choice => "1",
-        :pointgroup_schoenflies => "Oh",
-        :pointgroup_international => "m-3m",
-        :arithmetic_crystal_class_number => 72,
-        :arithmetic_crystal_class_symbol => "m-3mF",
-    )
 end
 
 @testset "Test MgB2 structure" begin
@@ -212,19 +199,6 @@ end
     ]
     numbers = [12, 5, 5]
     MgB2 = Cell(lattice, positions, numbers)
-    @test type2dict(get_spacegroup_type(485)) == Dict(
-        :number => 191,
-        :international_short => "P6/mmm",
-        :international_full => "P 6/m 2/m 2/m",
-        :international => "P 6/m m m",
-        :schoenflies => "D6h^1",
-        :hall_symbol => "-P 6 2",
-        :choice => "",
-        :pointgroup_schoenflies => "D6h",
-        :pointgroup_international => "6/mmm",
-        :arithmetic_crystal_class_number => 58,
-        :arithmetic_crystal_class_symbol => "6/mmm",
-    )
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
