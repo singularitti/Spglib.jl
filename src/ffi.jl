@@ -162,7 +162,7 @@ function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
 end
 
 """
-    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5)
+    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
 
 Obtain `hall_number` from the set of symmetry operations.
 
@@ -215,7 +215,7 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
 end
 
 """
-    get_dataset(cell::Cell, symprec = 1e-8)
+    get_dataset(cell::Cell, symprec=1e-8)
 
 Search symmetry operations of an input unit cell structure.
 """
