@@ -214,6 +214,11 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     return nsymops
 end
 
+"""
+    get_dataset(cell::Cell, symprec = 1e-8)
+
+Search symmetry operations of an input unit cell structure.
+"""
 function get_dataset(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     number = Base.cconvert(Cint, length(types))
