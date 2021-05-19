@@ -1,5 +1,18 @@
 export Cell, Dataset, SpacegroupType
 
+"""
+    Cell(lattice, positions, types, magmoms)
+
+The basic input data type of `Spglib`.
+
+Lattice parameters `lattice` are given by a 3×3 matrix with floating point values,
+where 𝐚, 𝐛, and 𝐜 are given as rows, which results in the transpose of the
+definition for C-API. Fractional atomic positions `positions` are given
+by a N×3 matrix with floating point values, where N is the number of atoms.
+Numbers to distinguish atomic species `types` are given by a list of N integers.
+The collinear polarizations `magmoms` only work with `get_symmetry` and are given
+as a list of N floating point values.
+"""
 struct Cell{
     L<:AbstractVecOrMat,
     P<:AbstractVecOrMat,
@@ -41,6 +54,7 @@ struct SpglibDataset
     pointgroup_symbol::NTuple{6,Cchar}
 end
 
+"This represents `SpglibDataset`, see https://spglib.github.io/spglib/dataset.html#spglib-dataset."
 struct Dataset
     spacegroup_number::Int
     hall_number::Int
@@ -83,6 +97,7 @@ struct SpglibSpacegroupType
     arithmetic_crystal_class_symbol::NTuple{7,Cchar}
 end
 
+"This represents `SpglibSpacegroupType`, see https://spglib.github.io/spglib/api.html#spg-get-spacegroup-type."
 struct SpacegroupType
     number::Int
     international_short::String
