@@ -315,7 +315,7 @@ end
             0.0 2.0 0.0
             0.0 0.0 12.0
         ]
-        niggli_reduce(lattice, 1e-3)
+        niggli_reduce!(lattice, 1e-3)
         @test lattice ≈ [
             0.0 -2.0 0.0
             4.0 0.0 0.0
@@ -329,7 +329,7 @@ end
             0.0 2.0 0.0
             0.0 0.0 12.0
         ]
-        delaunay_reduce(lattice, 1e-3)
+        delaunay_reduce!(lattice, 1e-3)
         @test lattice ≈ [
             0.0 2.0 0.0
             -4.0 -0.0 0.0
