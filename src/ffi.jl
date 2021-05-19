@@ -522,66 +522,6 @@ function get_stabilized_reciprocal_mesh(
     return mapping, grid_address
 end
 
-tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
-
-function rotsFromTuple(rotsTuple::AbstractVector{NTuple{9,Int32}}, nop::Integer)
-    r = Array{Int64,3}(undef, 3, 3, nop)
-    for i in 1:nop
-        r[:, :, i] = reshape(collect(rotsTuple[i]), 3, 3)
-    end
-    return r
-end
-
-function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Integer)
-    t = Matrix{Float64}(undef, 3, nop)
-    for i in 1:nop
-        t[:, i] = collect(transTuple[i])
-    end
-    return t
-end
-
-const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
-    r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
-    t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
-    wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    pos =
-        unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_operations)
-    return Dataset(
-        dataset.spacegroup_number,
-        dataset.hall_number,
-        cchars2string(dataset.international_symbol),
-        cchars2string(dataset.hall_symbol),
-        cchars2string(dataset.choice),
-        tuple2matrix(dataset.transformation_matrix),
-        collect(dataset.origin_shift),
-        dataset.n_operations,
-        rotsFromTuple(r, dataset.n_operations),
-        transFromTuple(t, dataset.n_operations),
-        dataset.n_atoms,
-        [LETTERS[x+1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
-        map(
-            cchars2string,
-            unsafe_wrap(
-                Vector{NTuple{7,Cchar}},
-                dataset.site_symmetry_symbols,
-                dataset.n_atoms,
-            ),
-        ),
-        unsafe_wrap(Vector{Cint}, dataset.equivalent_atoms, dataset.n_atoms),
-        unsafe_wrap(Vector{Cint}, dataset.crystallographic_orbits, dataset.n_atoms),
-        tuple2matrix(dataset.primitive_lattice),
-        unsafe_wrap(Vector{Cint}, dataset.mapping_to_primitive, dataset.n_atoms),
-        dataset.n_std_atoms,
-        tuple2matrix(dataset.std_lattice),
-        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_atoms),
-        transFromTuple(pos, dataset.n_operations),
-        tuple2matrix(dataset.std_rotation_matrix),
-        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_atoms),
-        cchars2string(dataset.pointgroup_symbol),
-    )
-end
 function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
     values = map(fieldnames(SpacegroupType)) do name
         value = getfield(spgtype, name)
@@ -594,18 +534,4 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         end
     end
     return SpacegroupType(values...)
-end
-
-"""
-    get_version()
-
-Obtain the version number of `spglib`.
-
-This is the mergence of `spg_get_major_version`, `spg_get_minor_version`, and `spg_get_micro_version` in its C-API.
-"""
-function get_version()
-    major = ccall((:spg_get_major_version, libsymspg), Cint, ())
-    minor = ccall((:spg_get_minor_version, libsymspg), Cint, ())
-    micro = ccall((:spg_get_micro_version, libsymspg), Cint, ())
-    return VersionNumber(major, minor, micro)
 end
