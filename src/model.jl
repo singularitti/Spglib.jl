@@ -1,7 +1,7 @@
 export Cell, Dataset, SpacegroupType
 
 """
-    Cell(lattice, positions, types, magmoms)
+    Cell(lattice, positions, types, magmoms=nothing)
 
 The basic input data type of `Spglib`.
 
