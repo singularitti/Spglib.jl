@@ -161,6 +161,17 @@ function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym], equivalent_atoms
 end
 
+"""
+    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5)
+
+Obtain `hall_number` from the set of symmetry operations.
+
+This is expected to work well for the set of symmetry operations whose
+distortion is small. The aim of making this feature is to find space-group-type
+for the set of symmetry operations given by the other source than spglib. Note
+that the definition of `symprec` is different from usual one, but is given in the
+fractional coordinates and so it should be small like `1e-5`.
+"""
 function get_hall_number_from_symmetry(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
