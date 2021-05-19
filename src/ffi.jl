@@ -358,7 +358,11 @@ and `no_idealize = false`.
 refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
-function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+"""
+    niggli_reduce!(lattice::AbstractMatrix, symprec=1e-5)
+
+Apply Niggli reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+"""
 function niggli_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
@@ -377,6 +381,11 @@ function niggli_reduce!(cell::Cell, symprec = 1e-5)
     return cell
 end
 
+"""
+    delaunay_reduce!(lattice::AbstractMatrix, symprec=1e-5)
+
+Apply Delaunay reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+"""
 function delaunay_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
