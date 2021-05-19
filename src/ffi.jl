@@ -13,11 +13,12 @@ export get_symmetry,
     standardize_cell,
     find_primitive,
     refine_cell,
-    niggli_reduce,
-    delaunay_reduce,
+    niggli_reduce!,
+    delaunay_reduce!,
     get_multiplicity,
     get_ir_reciprocal_mesh,
-    get_stabilized_reciprocal_mesh
+    get_stabilized_reciprocal_mesh,
+    get_version
 
 # This is an internal function, do not export!
 function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
@@ -160,6 +161,17 @@ function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym], equivalent_atoms
 end
 
+"""
+    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
+
+Obtain `hall_number` from the set of symmetry operations.
+
+This is expected to work well for the set of symmetry operations whose
+distortion is small. The aim of making this feature is to find space-group-type
+for the set of symmetry operations given by the other source than spglib. Note
+that the definition of `symprec` is different from usual one, but is given in the
+fractional coordinates and so it should be small like `1e-5`.
+"""
 function get_hall_number_from_symmetry(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
@@ -181,7 +193,7 @@ function get_hall_number_from_symmetry(
 end
 
 """
-    get_multiplicity(cell::Cell, symprec = 1e-8)
+    get_multiplicity(cell::Cell, symprec=1e-8)
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
@@ -202,6 +214,11 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
     return nsymops
 end
 
+"""
+    get_dataset(cell::Cell, symprec=1e-8)
+
+Search symmetry operations of an input unit cell structure.
+"""
 function get_dataset(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     number = Base.cconvert(Cint, length(types))
@@ -234,6 +251,11 @@ function get_spacegroup_type(hall_number::Integer)
     return convert(SpacegroupType, spgtype)
 end
 
+"""
+    get_international(cell::Cell, symprec=1e-8)
+
+Return the space group type in Hermann–Mauguin (international) notation.
+"""
 function get_international(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     symbol = Vector{Cchar}(undef, 11)
@@ -252,6 +274,11 @@ function get_international(cell::Cell, symprec = 1e-8)
     return cchars2string(symbol)
 end
 
+"""
+    get_schoenflies(cell::Cell, symprec=1e-8)
+
+Return the space group type in Schoenflies notation.
+"""
 function get_schoenflies(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     symbol = Vector{Cchar}(undef, 7)
@@ -272,7 +299,7 @@ end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L415-L463 and https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/src/cell-reduce-api.jl#L3-L35
 """
-    standardize_cell(cell::Cell; to_primitive = false, no_idealize = false, symprec = 1e-5)
+    standardize_cell(cell::Cell; to_primitive=false, no_idealize=false, symprec=1e-5)
 
 Return standardized cell.
 
@@ -312,7 +339,7 @@ function standardize_cell(
 end
 
 """
-    find_primitive(cell::Cell, symprec = 1e-5)
+    find_primitive(cell::Cell, symprec=1e-5)
 
 Find the primitive cell of an input unit cell.
 
@@ -323,7 +350,7 @@ find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
 
 """
-    refine_cell(cell::Cell, symprec = 1e-5)
+    refine_cell(cell::Cell, symprec=1e-5)
 
 Return refined cell.
 
@@ -336,7 +363,12 @@ and `no_idealize = false`.
 refine_cell(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = false, no_idealize = false, symprec = symprec)
 
-function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+"""
+    niggli_reduce!(lattice::AbstractMatrix, symprec=1e-5)
+
+Apply Niggli reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+"""
+function niggli_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_niggli_reduce, libsymspg),
@@ -348,12 +380,18 @@ function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     iszero(exitcode) && error("Niggli reduce failed!")
     return clattice
 end
-function niggli_reduce(cell::Cell, symprec = 1e-5)
-    clattice = niggli_reduce(cell.lattice, symprec)
-    return cell.lattice[:, :] = clattice
+function niggli_reduce!(cell::Cell, symprec = 1e-5)
+    clattice = niggli_reduce!(cell.lattice, symprec)
+    cell.lattice[:, :] = clattice
+    return cell
 end
 
-function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+"""
+    delaunay_reduce!(lattice::AbstractMatrix, symprec=1e-5)
+
+Apply Delaunay reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+"""
+function delaunay_reduce!(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, lattice)
     exitcode = ccall(
         (:spg_delaunay_reduce, libsymspg),
@@ -365,14 +403,15 @@ function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     iszero(exitcode) && error("Delaunay reduce failed!")
     return clattice
 end
-function delaunay_reduce(cell::Cell, symprec = 1e-5)
-    clattice = delaunay_reduce(cell.lattice, symprec)
-    return cell.lattice[:, :] = clattice
+function delaunay_reduce!(cell::Cell, symprec = 1e-5)
+    clattice = delaunay_reduce!(cell.lattice, symprec)
+    cell.lattice[:, :] = clattice
+    return cell
 end
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
 """
-    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift = falses(3); is_time_reversal = true, symprec = 1e-5)
+    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift=falses(3); is_time_reversal=true, symprec=1e-5)
 
 Return k-points mesh and k-point map to the irreducible k-points.
 
@@ -556,4 +595,18 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         end
     end
     return SpacegroupType(values...)
+end
+
+"""
+    get_version()
+
+Obtain the version number of `spglib`.
+
+This is the mergence of `spg_get_major_version`, `spg_get_minor_version`, and `spg_get_micro_version` in its C-API.
+"""
+function get_version()
+    major = ccall((:spg_get_major_version, libsymspg), Cint, ())
+    minor = ccall((:spg_get_minor_version, libsymspg), Cint, ())
+    micro = ccall((:spg_get_micro_version, libsymspg), Cint, ())
+    return VersionNumber(major, minor, micro)
 end
