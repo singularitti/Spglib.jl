@@ -193,7 +193,7 @@ function get_hall_number_from_symmetry(
 end
 
 """
-    get_multiplicity(cell::Cell, symprec = 1e-8)
+    get_multiplicity(cell::Cell, symprec=1e-8)
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
@@ -284,7 +284,7 @@ end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L415-L463 and https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/src/cell-reduce-api.jl#L3-L35
 """
-    standardize_cell(cell::Cell; to_primitive = false, no_idealize = false, symprec = 1e-5)
+    standardize_cell(cell::Cell; to_primitive=false, no_idealize=false, symprec=1e-5)
 
 Return standardized cell.
 
@@ -324,7 +324,7 @@ function standardize_cell(
 end
 
 """
-    find_primitive(cell::Cell, symprec = 1e-5)
+    find_primitive(cell::Cell, symprec=1e-5)
 
 Find the primitive cell of an input unit cell.
 
@@ -335,7 +335,7 @@ find_primitive(cell::Cell, symprec = 1e-5) =
     standardize_cell(cell; to_primitive = true, no_idealize = false, symprec = symprec)
 
 """
-    refine_cell(cell::Cell, symprec = 1e-5)
+    refine_cell(cell::Cell, symprec=1e-5)
 
 Return refined cell.
 
@@ -384,7 +384,7 @@ end
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
 """
-    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift = falses(3); is_time_reversal = true, symprec = 1e-5)
+    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift=falses(3); is_time_reversal=true, symprec=1e-5)
 
 Return k-points mesh and k-point map to the irreducible k-points.
 
