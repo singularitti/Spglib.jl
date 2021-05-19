@@ -246,6 +246,11 @@ function get_spacegroup_type(hall_number::Integer)
     return convert(SpacegroupType, spgtype)
 end
 
+"""
+    get_international(cell::Cell, symprec=1e-8)
+
+Return the space group type in Hermann–Mauguin (international) notation.
+"""
 function get_international(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     symbol = Vector{Cchar}(undef, 11)
@@ -264,6 +269,11 @@ function get_international(cell::Cell, symprec = 1e-8)
     return cchars2string(symbol)
 end
 
+"""
+    get_schoenflies(cell::Cell, symprec=1e-8)
+
+Return the space group type in Schoenflies notation.
+"""
 function get_schoenflies(cell::Cell, symprec = 1e-8)
     @unpack lattice, positions, types = get_ccell(cell)
     symbol = Vector{Cchar}(undef, 7)
