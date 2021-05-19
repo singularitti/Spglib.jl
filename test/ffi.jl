@@ -108,8 +108,8 @@ end
         0.2 0.8 0.5
         0.8 0.2 0.5
     ]
-    numbers = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(lattice, positions, numbers)
+    types = [14, 14, 8, 8, 8, 8]
+    rutile = Cell(lattice, positions, types)
     )
 
 @testset "Test distorted rutile structure" begin
@@ -126,8 +126,8 @@ end
         0.2 0.8 0.5
         0.8 0.2 0.5
     ]
-    numbers = [14, 14, 8, 8, 8, 8]
-    distorted_rutile = Cell(lattice, positions, numbers)
+    types = [14, 14, 8, 8, 8, 8]
+    distorted_rutile = Cell(lattice, positions, types)
 end
 
 @testset "Test silicon structure" begin
@@ -146,8 +146,8 @@ end
         0.75 0.25 0.75
         0.75 0.75 0.25
     ]
-    numbers = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon = Cell(lattice, positions, numbers)
+    types = [14, 14, 14, 14, 14, 14, 14, 14]
+    silicon = Cell(lattice, positions, types)
 end
 
 @testset "Test silicon_dist structure" begin
@@ -166,8 +166,8 @@ end
         0.75 0.25 0.75
         0.75 0.75 0.25
     ]
-    numbers = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon_dist = Cell(lattice, positions, numbers)
+    types = [14, 14, 14, 14, 14, 14, 14, 14]
+    silicon_dist = Cell(lattice, positions, types)
 end
 
 @testset "Test silicon_prim structure" begin
@@ -180,8 +180,8 @@ end
         0 0 0
         0.25 0.25 0.25
     ]
-    numbers = [14, 14]
-    silicon_prim = Cell(lattice, positions, numbers)
+    types = [14, 14]
+    silicon_prim = Cell(lattice, positions, types)
 end
 
 @testset "Test MgB2 structure" begin
@@ -197,8 +197,8 @@ end
         1.0/3 2.0/3 0.5
         2.0/3 1.0/3 0.5
     ]
-    numbers = [12, 5, 5]
-    MgB2 = Cell(lattice, positions, numbers)
+    types = [12, 5, 5]
+    MgB2 = Cell(lattice, positions, types)
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
