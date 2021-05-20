@@ -121,3 +121,14 @@ if get_version() >= v"1.15.0"
 else
     include("old.jl")
 end
+
+function Base.show(io::IO, cell::Cell{N}) where {N}
+    println(io, "lattice:")
+    print(io, " ")
+    display(cell.lattice)
+    println(io, "$N atomic positions:")
+    print(io, " ")
+    display(cell.positions)
+    println(io, "$N atoms:")
+    println(io, " ", cell.types)
+end
