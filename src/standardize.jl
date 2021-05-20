@@ -36,7 +36,8 @@ function standardize_cell(
         symprec,
     )  # Note: not `number`!
     @assert num_atom_std > 0 "standardizing cell failed!"
-    return Cell(lattice, _positions[:, 1:num_atom_std], _types[1:num_atom_std])
+    # We have to `transpose` back because of `_expand_cell`!
+    return Cell(transpose(lattice), _positions[:, 1:num_atom_std], _types[1:num_atom_std])
 end
 
 """
