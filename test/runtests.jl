@@ -5,4 +5,5 @@ using Test
     # Write your own tests here.
     include("ffi.jl")
     include("standardize.jl")
+    include("reciprocal.jl")
 end
