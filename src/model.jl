@@ -34,6 +34,19 @@ Cell(
     magmoms,
 ) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
 
+# This is an internal function, do not export!
+function get_ccell(cell::Cell)
+    @unpack lattice, positions, types, magmoms = cell
+    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
+    clattice = Base.cconvert(Matrix{Cdouble}, lattice)
+    cpositions = Base.cconvert(Matrix{Cdouble}, positions)
+    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    if magmoms !== nothing
+        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
+    end
+    return Cell(clattice, cpositions, ctypes, magmoms)
+end
+
 # This is an internal type, do not export!
 struct SpglibSpacegroupType
     number::Cint
