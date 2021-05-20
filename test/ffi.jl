@@ -110,7 +110,70 @@ end
     ]
     types = [14, 14, 8, 8, 8, 8]
     rutile = Cell(lattice, positions, types)
+    type2dict(get_dataset(rutile, 1e-5)) == Dict(
+        "mapping_to_primitive" => [0, 1, 2, 3, 4, 5],
+        "number" => 136,
+        "site_symmetry_symbols" => ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"],
+        "hall_number" => 419,
+        "choice" => "",
+        "equivalent_atoms" => [0, 0, 2, 2, 2, 2],
+        "rotations" => [1 0 0; -1 0 0; …; 0 1 0; 0 -1 0],
+        "wyckoffs" => ["a", "a", "f", "f", "f", "f"],
+        "primitive_lattice" => [
+            0.0 0.0 3.0
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+        ],
+        "std_positions" => [
+            0.0 0.0 0.0
+            0.5 0.5 0.5
+            0.3 0.3 0.0
+            0.7 0.7 0.0
+            0.2 0.8 0.5
+            0.8 0.2 0.5
+        ],
+        "origin_shift" => [0.0, 0.0, 0.0],
+        "international" => "P4_2/mnm",
+        "std_lattice" => [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 3.0
+        ],
+        "std_types" => [14, 14, 8, 8, 8, 8],
+        "std_rotation_matrix" => [
+            1.0 0.0 0.0
+            0.0 1.0 0.0
+            0.0 0.0 1.0
+        ],
+        "translations" => [
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.5 0.5 0.5
+            0.5 0.5 0.5
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.5 0.5 0.5
+            0.5 0.5 0.5
+            0.5 0.5 0.5
+            0.5 0.5 0.5
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+            0.5 0.5 0.5
+            0.5 0.5 0.5
+            0.0 0.0 0.0
+            0.0 0.0 0.0
+        ],
+        "pointgroup" => "4/mmm",
+        "hall" => "-P 4n 2n",
+        "transformation_matrix" => [
+            1.0 0.0 0.0
+            0.0 1.0 0.0
+            0.0 0.0 1.0
+        ],
+        "std_mapping_to_primitive" => [0, 1, 2, 3, 4, 5],
+        "crystallographic_orbits" => [0, 0, 2, 2, 2, 2],
     )
+end
 
 @testset "Test distorted rutile structure" begin
     lattice = [
@@ -128,6 +191,55 @@ end
     ]
     types = [14, 14, 8, 8, 8, 8]
     distorted_rutile = Cell(lattice, positions, types)
+    @testset "Test `get_dataset`" begin
+        # These results are compared with Python's spglib results.
+        dataset = get_dataset(distorted_rutile)
+        @test dataset.mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+        @test dataset.spacegroup_number == 1
+        @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
+        @test dataset.hall_number == 1
+        @test dataset.choice == ""
+        @test dataset.equivalent_atoms == [0, 1, 2, 3, 4, 5]
+        @test dataset.rotations ==
+              permutedims(cat([1 0 0], [0 1 0], [0 0 1]; dims = 3), [2, 3, 1])  # Different dimensions with Python
+        @test dataset.wyckoffs == ["a", "a", "a", "a", "a", "a"]
+        @test dataset.primitive_lattice == [
+            0.0 0.0 3.0
+            3.97 0.0 0.0
+            0.0 4.03 0.0
+        ]
+        @test dataset.std_positions == [
+            0.0 0.0 0.0
+            0.5 0.5001 0.5
+            0.0 0.3 0.3
+            0.002 0.7 0.7
+            0.5 0.2 0.8
+            0.5 0.8 0.2
+        ]
+        @test dataset.origin_shift == [0.0, 0.0, 0.0]
+        @test dataset.international_symbol == "P1"
+        @test dataset.std_lattice ≈ [
+            3.0 0.0 0.0
+            2.43092e-16 3.97 0.0
+            2.46766e-16 2.46766e-16 4.03
+        ]
+        @test dataset.std_types == [1, 1, 2, 2, 2, 2]
+        @test dataset.std_rotation_matrix == [
+            0.0 0.0 1.0
+            1.0 0.0 0.0
+            0.0 1.0 0.0
+        ]
+        @test dataset.translations == [0.0 0.0 0.0]
+        @test dataset.pointgroup_symbol == "1"
+        @test dataset.hall_symbol == "P 1"
+        @test dataset.transformation_matrix == [
+            0.0 0.0 1.0
+            1.0 0.0 0.0
+            0.0 1.0 0.0
+        ]
+        @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+        @test dataset.crystallographic_orbits == [0, 1, 2, 3, 4, 5]
+    end
 end
 
 @testset "Test silicon structure" begin
