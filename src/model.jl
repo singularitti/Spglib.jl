@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructEquality: @def_structequal
 
-export Cell, Dataset, SpacegroupType
+export Cell, Dataset, SpacegroupType, basis_vectors
 
 """
     Cell(lattice, positions, types, magmoms=nothing)
@@ -33,6 +33,11 @@ Cell(
     types,
     magmoms,
 ) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
+
+function basis_vectors(cell::Cell)
+    lattice = cell.lattice
+    return lattice[:, 1], lattice[:, 2], lattice[:, 3]
+end
 
 # This is an internal function, do not export!
 function _expand_cell(cell::Cell)
