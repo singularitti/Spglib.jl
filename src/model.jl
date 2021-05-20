@@ -1,4 +1,6 @@
 using StaticArrays: MMatrix, MVector
+using StructEquality: @def_structequal
+
 export Cell, Dataset, SpacegroupType
 
 """
@@ -14,7 +16,7 @@ Numbers to distinguish atomic species `types` are given by a list of N integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of N floating point values.
 """
-struct Cell{N,L,P,T,M}
+@def_structequal struct Cell{N,L,P,T,M}
     lattice::MMatrix{3,3,L}
     positions::MMatrix{3,N,P}
     types::MVector{N,T}
