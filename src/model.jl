@@ -1,3 +1,4 @@
+using StaticArrays: MMatrix, MVector
 export Cell, Dataset, SpacegroupType
 
 """
@@ -13,18 +14,23 @@ Numbers to distinguish atomic species `types` are given by a list of N integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of N floating point values.
 """
-struct Cell{
-    L<:AbstractVecOrMat,
-    P<:AbstractVecOrMat,
-    N<:AbstractVector,
-    M<:Union{AbstractVector,Nothing},
-}
-    lattice::L
-    positions::P
-    types::N
-    magmoms::M
+struct Cell{N,L,P,T,M}
+    lattice::MMatrix{3,3,L}
+    positions::MMatrix{3,N,P}
+    types::MVector{N,T}
+    magmoms::MVector{N,M}
 end
-Cell(lattice, positions, types) = Cell(lattice, positions, types, nothing)
+function Cell(lattice, positions, types, magmoms = zeros(length(types)))
+    N, L, P, T, M =
+        length(types), eltype(lattice), eltype(positions), eltype(types), eltype(magmoms)
+    return Cell{N,L,P,T,M}(lattice, positions, types, magmoms)
+end
+Cell(
+    lattice::AbstractVector{<:AbstractVector},
+    positions::AbstractVector{<:AbstractVector},
+    types,
+    magmoms,
+) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
 
 # This is an internal type, do not export!
 struct SpglibSpacegroupType
