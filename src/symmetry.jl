@@ -35,7 +35,7 @@ function get_symmetry!(
     cell::Cell,
     symprec = 1e-5,
 ) where {T}
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     max_size = Base.cconvert(Cint, max_size)
@@ -74,7 +74,7 @@ function get_symmetry_with_collinear_spin!(
     cell::Cell,
     symprec = 1e-5,
 ) where {T}
-    @unpack lattice, positions, types, magmoms = get_ccell(cell)
+    @unpack lattice, positions, types, magmoms = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
@@ -163,7 +163,7 @@ end
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
 function get_multiplicity(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     nsymops = ccall(
         (:spg_get_multiplicity, libsymspg),
@@ -185,7 +185,7 @@ end
 Search symmetry operations of an input unit cell structure.
 """
 function get_dataset(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
@@ -231,7 +231,7 @@ end
 Return the space group type in Hermann–Mauguin (international) notation.
 """
 function get_international(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
         (:spg_get_international, libsymspg),
@@ -254,7 +254,7 @@ end
 Return the space group type in Schoenflies notation.
 """
 function get_schoenflies(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(
         (:spg_get_schoenflies, libsymspg),
