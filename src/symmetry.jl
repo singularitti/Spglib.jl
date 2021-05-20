@@ -1,18 +1,3 @@
-using UnPack: @unpack
-
-# This is an internal function, do not export!
-function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
-    @unpack lattice, positions, types, magmoms = cell
-    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, lattice)
-    cpositions = Base.cconvert(Matrix{Cdouble}, positions)
-    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    if magmoms !== nothing
-        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
-    end
-    return Cell(clattice, cpositions, ctypes, magmoms)
-end
-
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
 function cchars2string(itr)
@@ -50,7 +35,7 @@ function get_symmetry!(
     cell::Cell,
     symprec = 1e-5,
 ) where {T}
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     max_size = Base.cconvert(Cint, max_size)
@@ -89,7 +74,7 @@ function get_symmetry_with_collinear_spin!(
     cell::Cell,
     symprec = 1e-5,
 ) where {T}
-    @unpack lattice, positions, types, magmoms = get_ccell(cell)
+    @unpack lattice, positions, types, magmoms = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
@@ -178,7 +163,7 @@ end
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
 function get_multiplicity(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     nsymops = ccall(
         (:spg_get_multiplicity, libsymspg),
@@ -200,7 +185,7 @@ end
 Search symmetry operations of an input unit cell structure.
 """
 function get_dataset(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
@@ -217,7 +202,7 @@ function get_dataset(cell::Cell, symprec = 1e-8)
 end
 
 """
-    get_spacegroup_type(hall_number)
+    get_spacegroup_type(hall_number::Integer)
 
 Translate Hall number to space group type information.
 """
@@ -230,6 +215,15 @@ function get_spacegroup_type(hall_number::Integer)
     )
     return convert(SpacegroupType, spgtype)
 end
+"""
+    get_spacegroup_type(cell::Cell, symprec=1e-5)
+
+Get `SpacegroupType` from `cell`.
+"""
+function get_spacegroup_type(cell::Cell, symprec = 1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
+    dataset = get_dataset(cell, symprec)
+    return get_spacegroup_type(dataset.hall_number)
+end
 
 """
     get_international(cell::Cell, symprec=1e-8)
@@ -237,7 +231,7 @@ end
 Return the space group type in Hermann–Mauguin (international) notation.
 """
 function get_international(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
         (:spg_get_international, libsymspg),
@@ -260,7 +254,7 @@ end
 Return the space group type in Schoenflies notation.
 """
 function get_schoenflies(cell::Cell, symprec = 1e-8)
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(
         (:spg_get_schoenflies, libsymspg),

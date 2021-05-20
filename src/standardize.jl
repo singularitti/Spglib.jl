@@ -14,7 +14,7 @@ function standardize_cell(
     no_idealize = false,
     symprec = 1e-5,
 )
-    @unpack lattice, positions, types = get_ccell(cell)
+    @unpack lattice, positions, types = _expand_cell(cell)
     to_primitive = Base.cconvert(Cint, to_primitive)
     no_idealize = Base.cconvert(Cint, no_idealize)
     number = Base.cconvert(Cint, length(types))
@@ -36,7 +36,8 @@ function standardize_cell(
         symprec,
     )  # Note: not `number`!
     @assert num_atom_std > 0 "standardizing cell failed!"
-    return Cell(lattice, _positions[:, 1:num_atom_std], _types[1:num_atom_std])
+    # We have to `transpose` back because of `_expand_cell`!
+    return Cell(transpose(lattice), _positions[:, 1:num_atom_std], _types[1:num_atom_std])
 end
 
 """
