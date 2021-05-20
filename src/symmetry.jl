@@ -217,7 +217,7 @@ function get_dataset(cell::Cell, symprec = 1e-8)
 end
 
 """
-    get_spacegroup_type(hall_number)
+    get_spacegroup_type(hall_number::Integer)
 
 Translate Hall number to space group type information.
 """
@@ -229,6 +229,15 @@ function get_spacegroup_type(hall_number::Integer)
         hall_number,
     )
     return convert(SpacegroupType, spgtype)
+end
+"""
+    get_spacegroup_type(cell::Cell, symprec=1e-5)
+
+Get `SpacegroupType` from `cell`.
+"""
+function get_spacegroup_type(cell::Cell, symprec = 1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
+    dataset = get_dataset(cell, symprec)
+    return get_spacegroup_type(dataset.hall_number)
 end
 
 """
