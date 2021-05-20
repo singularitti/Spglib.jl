@@ -1,7 +1,7 @@
 using UnPack: @unpack
 
 # This is an internal function, do not export!
-function get_ccell(cell::Cell{<:AbstractMatrix,<:AbstractMatrix})
+function get_ccell(cell::Cell)
     @unpack lattice, positions, types, magmoms = cell
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, lattice)
