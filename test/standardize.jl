@@ -144,7 +144,7 @@ end
             2.0 -2.0 2.0
             2.0 2.0 -2.0
         ]
-        @test new_cell.positions ≈ [0.0, 0.0, 0.0]
+        @test new_cell.positions ≈ [0.0 0.0 0.0]'
         @test new_cell.types == [1]
     end
     @testset "Test `refine_cell`" begin
