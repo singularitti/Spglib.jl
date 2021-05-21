@@ -34,6 +34,11 @@ Cell(
     magmoms,
 ) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
 
+"""
+    basis_vectors(cell::Cell)
+
+Return the three basis vectors from `cell`.
+"""
 function basis_vectors(cell::Cell)
     lattice = cell.lattice
     return lattice[:, 1], lattice[:, 2], lattice[:, 3]

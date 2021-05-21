@@ -22,6 +22,7 @@ Some methods are exported here.
 You can find their official documentation [on this page](https://spglib.github.io/spglib/api.html).
 
 ```@docs
+basis_vectors
 get_hall_number_from_symmetry
 get_dataset
 get_spacegroup_type
