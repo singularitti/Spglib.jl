@@ -72,7 +72,11 @@ struct SpglibSpacegroupType
     arithmetic_crystal_class_symbol::NTuple{7,Cchar}
 end
 
-"This represents `SpglibSpacegroupType`, see https://spglib.github.io/spglib/api.html#spg-get-spacegroup-type."
+"""
+    SpglibSpacegroupType(number, international_short, international_full, international, schoenflies, hall_symbol, choice, pointgroup_international, pointgroup_schoenflies, arithmetic_crystal_class_number, arithmetic_crystal_class_symbol)
+
+Represent `SpglibSpacegroupType`, see its [official documentation](https://spglib.github.io/spglib/api.html#spg-get-spacegroup-type).
+"""
 struct SpacegroupType
     number::Int
     international_short::String
