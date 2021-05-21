@@ -71,99 +71,22 @@ end
     )
 end
 
-# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L14-L32
-@testset "Test `get_dataset`" begin
-    lattice = [
-        4.0 0.0 0.0
-        2.0 3.4641 0.0
-        0.0 0.0 12.0
-    ]
-    positions = [
-        0.0 1/3
-        0.0 1/3
-        0.0 1/3
-    ]
-    types = [1, 1]
-    cell = Cell(lattice, positions, types)
-    dataset = get_dataset(cell, 1e-3)
-    @test dataset.international_symbol == "P-3m1"
-    @test dataset.n_operations == 12
-    @test size(dataset.rotations) == (3, 3, 12)
-    @test size(dataset.translations) == (3, 12)
-    @test dataset.pointgroup_symbol == "-3m"
-    @test get_international(cell, 1e-3) == dataset.international_symbol
-end
-
-@testset "Test silicon structure" begin
-    lattice = [
-        4 0 0
-        0 4 0
-        0 0 4
-    ]
-    positions = [
-        0 0 0
-        0 0.5 0.5
-        0.5 0 0.5
-        0.5 0.5 0
-        0.25 0.25 0.25
-        0.25 0.75 0.75
-        0.75 0.25 0.75
-        0.75 0.75 0.25
-    ]
-    types = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon = Cell(lattice, positions, types)
-end
-
-@testset "Test silicon_dist structure" begin
-    lattice = [
-        4.01 0 0
-        0 4 0
-        0 0 3.99
-    ]
-    positions = [
-        0.001 0 0
-        0 0.5 0.5
-        0.5 0 0.5
-        0.5 0.5 0
-        0.25 0.25 0.251
-        0.25 0.75 0.75
-        0.75 0.25 0.75
-        0.75 0.75 0.25
-    ]
-    types = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon_dist = Cell(lattice, positions, types)
-end
-
-@testset "Test silicon_prim structure" begin
-    lattice = [
-        0 2 2
-        2 0 2
-        2 2 0
-    ]
-    positions = [
-        0 0 0
-        0.25 0.25 0.25
-    ]
-    types = [14, 14]
-    silicon_prim = Cell(lattice, positions, types)
-end
-
-@testset "Test MgB2 structure" begin
-    a = 3.07
-    c = 3.52
-    lattice = [
-        a 0 0
-        -a/2 a/2*sqrt(3) 0
-        0 0 c
-    ]
-    positions = [
-        0 0 0
-        1.0/3 2.0/3 0.5
-        2.0/3 1.0/3 0.5
-    ]
-    types = [12, 5, 5]
-    MgB2 = Cell(lattice, positions, types)
-end
+# @testset "Test MgB2 structure" begin
+#     a = 3.07
+#     c = 3.52
+#     lattice = [
+#         a 0 0
+#         -a/2 a/2*sqrt(3) 0
+#         0 0 c
+#     ]
+#     positions = [
+#         0 0 0
+#         1.0/3 2.0/3 0.5
+#         2.0/3 1.0/3 0.5
+#     ]
+#     types = [12, 5, 5]
+#     MgB2 = Cell(lattice, positions, types)
+# end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
 @testset "Get symmetry operations" begin
@@ -243,84 +166,5 @@ end
         types = [1, 1]
         cell = Cell(lattice, positions, types)
         @test get_multiplicity(cell, 1e-5) == 96
-    end
-end
-
-@testset "Reduce lattices" begin
-    # From https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/test/runtests.jl#L83-L85
-    @testset "Niggli reduce" begin
-        lattice = [
-            4.0 20.0 0.0
-            0.0 2.0 0.0
-            0.0 0.0 12.0
-        ]
-        niggli_reduce!(lattice, 1e-3)
-        @test lattice ≈ [
-            0.0 -2.0 0.0
-            4.0 0.0 0.0
-            0.0 0.0 12.0
-        ]
-    end
-    # From https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/test/runtests.jl#L87-89
-    @testset "Delaunay reduce" begin
-        lattice = [
-            4.0 20.0 0.0
-            0.0 2.0 0.0
-            0.0 0.0 12.0
-        ]
-        delaunay_reduce!(lattice, 1e-3)
-        @test lattice ≈ [
-            0.0 2.0 0.0
-            -4.0 -0.0 0.0
-            -0.0 -0.0 12.0
-        ]
-    end
-end
-
-# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L113-L136
-@testset "Cell reduce standardize" begin
-    @testset "Test `find_primitive`" begin
-        lattice = [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 4.0
-        ]
-        positions = [
-            0.0 0.5
-            0.0 0.5
-            0.0 0.5
-        ]
-        types = [1, 1]
-        cell = Cell(lattice, positions, types)
-        new_cell = find_primitive(cell, 1e-5)
-        @test new_cell.lattice ≈ [
-            -2.0 2.0 2.0
-            2.0 -2.0 2.0
-            2.0 2.0 -2.0
-        ]
-        @test new_cell.positions ≈ [0.0, 0.0, 0.0]
-        @test new_cell.types == [1]
-    end
-    @testset "Test `refine_cell`" begin
-        lattice = [
-            -2.0 2.0 2.0
-            2.0 -2.0 2.0
-            2.0 2.0 -2.0
-        ]
-        positions = [0.0 0.0 0.0]'
-        types = [1]
-        cell = Cell(lattice, positions, types)
-        new_cell = refine_cell(cell, 1e-5)
-        @test new_cell.lattice ≈ [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 4.0
-        ]
-        @test new_cell.positions ≈ [
-            0.0 0.5
-            0.0 0.5
-            0.0 0.5
-        ]
-        @test new_cell.types == [1, 1]
     end
 end

@@ -95,8 +95,7 @@ end
     ]
     @test primitive_cell.types == [8, 8, 8, 8] ./ 8  # Python results
     @testset "Obtain the rotated primitive cell basis vectors" begin
-        primitive_cell = standardize_cell(cell, to_primitive = true, no_idealize = true)
-        @test primitive_cell.lattice ≈ [
+        @test standardize_cell(cell, to_primitive = true, no_idealize = true).lattice ≈ [
             3.95200346 1.12397269 0.0
             1.12397269 3.95200346 0.0
             0.0 0.0 8.57154746
@@ -120,5 +119,53 @@ end
         @test primitive_cell.lattice == new_primitive_cell.lattice
         @test primitive_cell.positions == new_primitive_cell.positions
         @test primitive_cell.types == new_primitive_cell.types
+    end
+end
+
+# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L113-L136
+@testset "Cell reduce standardize" begin
+    @testset "Test `find_primitive`" begin
+        lattice = [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        positions = [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        types = [1, 1]
+        cell = Cell(lattice, positions, types)
+        new_cell = find_primitive(cell, 1e-5)
+        @test new_cell.lattice ≈ [
+            -2.0 2.0 2.0
+            2.0 -2.0 2.0
+            2.0 2.0 -2.0
+        ]
+        @test new_cell.positions ≈ [0.0 0.0 0.0]'
+        @test new_cell.types == [1]
+    end
+    @testset "Test `refine_cell`" begin
+        lattice = [
+            -2.0 2.0 2.0
+            2.0 -2.0 2.0
+            2.0 2.0 -2.0
+        ]
+        positions = [0.0 0.0 0.0]'
+        types = [1]
+        cell = Cell(lattice, positions, types)
+        new_cell = refine_cell(cell, 1e-5)
+        @test new_cell.lattice ≈ [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        @test new_cell.positions ≈ [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        @test new_cell.types == [1, 1]
     end
 end
