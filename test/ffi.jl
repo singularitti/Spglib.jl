@@ -91,26 +91,6 @@ end
     silicon = Cell(lattice, positions, types)
 end
 
-@testset "Test silicon_dist structure" begin
-    lattice = [
-        4.01 0 0
-        0 4 0
-        0 0 3.99
-    ]
-    positions = [
-        0.001 0 0
-        0 0.5 0.5
-        0.5 0 0.5
-        0.5 0.5 0
-        0.25 0.25 0.251
-        0.25 0.75 0.75
-        0.75 0.25 0.75
-        0.75 0.75 0.25
-    ]
-    types = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon_dist = Cell(lattice, positions, types)
-end
-
 @testset "Test silicon_prim structure" begin
     lattice = [
         0 2 2
