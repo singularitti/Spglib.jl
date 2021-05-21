@@ -7,5 +7,5 @@ using Test
     include("standardize.jl")
     include("reciprocal.jl")
     include("reduce.jl")
-    include("symmetry.jl")
+    include("dataset.jl")
 end

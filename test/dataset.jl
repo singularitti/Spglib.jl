@@ -119,7 +119,7 @@ end
     ]
     @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.international_symbol == "P4_2/mnm"
-    @test get_international(cell, 1e-5) == "P4_2/mnm"
+    @test get_international(rutile, 1e-5) == "P4_2/mnm"
     @test dataset.std_lattice == [
         4.0 0.0 0.0
         0.0 4.0 0.0
@@ -194,7 +194,7 @@ end
         dataset = get_dataset(distorted_rutile, 1e-5)
         @test dataset.mapping_to_primitive == [0, 1, 2, 3, 4, 5]
         @test dataset.international_symbol == "P1"
-        @test get_international(cell, 1e-5) == "P1"
+        @test get_international(distorted_rutile, 1e-5) == "P1"
         @test dataset.spacegroup_number == 1
         @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
         @test dataset.hall_number == 1
@@ -342,7 +342,8 @@ end
     @test dataset.spacegroup_number == 227
     @test dataset.hall_number == 525
     @test dataset.international_symbol == "Fd-3m"
-    @test get_international(cell, 1e-5) == "Fd-3m"
+    @test dataset.hall_symbol == "F 4d 2 3 -1d"
+    @test get_international(silicon, 1e-5) == "Fd-3m"
     @test dataset.choice == "1"
     @test dataset.transformation_matrix == [
         1 0 0
@@ -404,10 +405,12 @@ end
         for f in (
             :spacegroup_number,
             :hall_number,
+            :hall_symbol,
             :international_symbol,
             :choice,
             :std_lattice,
             :std_rotation_matrix,
+            :std_mapping_to_primitive,
             :pointgroup_symbol,
         )
             @test getfield(dataset_prim, f) == getfield(dataset, f)
@@ -419,12 +422,12 @@ end
         ]
         @test dataset_prim.origin_shift == [0, 0, 1 / 2]
         @test size(dataset_prim.rotations) == (3, 3, 48)
-        # @test dataset_prim.std_types == [14, 14] / 14
-        # @test dataset_prim.std_positions == [
-        #     0.0 0.25
-        #     0.0 0.75
-        #     0.5 0.25
-        # ]
+        @test dataset_prim.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
+        @test dataset_prim.std_positions == [
+            0.0 0.25 0.0 0.25 0.5 0.75 0.5 0.75
+            0.0 0.75 0.5 0.25 0.0 0.75 0.5 0.25
+            0.5 0.25 0.0 0.75 0.0 0.75 0.5 0.25
+        ]
         @test dataset_prim.translations == [
             0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0
             0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0

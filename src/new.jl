@@ -58,7 +58,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
     t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
     wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    pos = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_atoms)
+    pos = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_std_atoms)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
@@ -86,10 +86,10 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         unsafe_wrap(Vector{Cint}, dataset.mapping_to_primitive, dataset.n_atoms),
         dataset.n_std_atoms,
         transpose(tuple2matrix(dataset.std_lattice)),
-        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_atoms),
-        transFromTuple(pos, dataset.n_atoms),
+        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_std_atoms),
+        transFromTuple(pos, dataset.n_std_atoms),
         tuple2matrix(dataset.std_rotation_matrix),
-        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_atoms),
+        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
         cchars2string(dataset.pointgroup_symbol),
     )
 end
