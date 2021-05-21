@@ -1,7 +1,8 @@
 """
     niggli_reduce(lattice::AbstractMatrix, symprec=1e-5)
+    niggli_reduce(cell::Cell, symprec=1e-5)
 
-Apply Niggli reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+Apply Niggli reduction to input basis vectors `lattice`.
 """
 function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, transpose(lattice))
@@ -23,8 +24,9 @@ end
 
 """
     delaunay_reduce(lattice::AbstractMatrix, symprec=1e-5)
+    delaunay_reduce(cell::Cell, symprec=1e-5)
 
-Apply Delaunay reduction to input basis vectors `lattice` and the reduced basis vectors are overwritten to `lattice`.
+Apply Delaunay reduction to input basis vectors `lattice`.
 """
 function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
     clattice = convert(Matrix{Cdouble}, transpose(lattice))

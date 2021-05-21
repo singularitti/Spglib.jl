@@ -24,3 +24,11 @@ naming conventions, input types, and return types of functions.
 
 The code is [hosted on GitHub](https://github.com/singularitti/Spglib.jl), with some
 continuous integration services to test its validity.
+
+## Compatibility
+
+- [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
+- Dependencies: see `Project.toml` [`deps` field](Project.toml#L7-L10) and
+  [`compat` field](Project.toml#L13-L17)
+- OS: macOS, Linux, Windows, and FreeBSD
+- Architecture: x86, x64, ARM
