@@ -17,10 +17,11 @@
     ]
     numbers = fill(35, length(positions))
     cell = Cell(lattice, positions, numbers)
-    dataset = get_dataset(cell)
+    dataset = get_dataset(cell, 1e-5)
     # Compared with documented results
     @test dataset.spacegroup_number == 64
     @test dataset.international_symbol == "Cmce"
+    @test get_international(cell, 1e-5) == "Cmce"
     @test dataset.hall_number == 304  # Compared with Python results
     @test dataset.hall_symbol == "-C 2bc 2"  # Compared with Python results
     @test dataset.transformation_matrix == [  # Compared with documented results
@@ -118,6 +119,7 @@ end
     ]
     @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.international_symbol == "P4_2/mnm"
+    @test get_international(cell, 1e-5) == "P4_2/mnm"
     @test dataset.std_lattice == [
         4.0 0.0 0.0
         0.0 4.0 0.0
@@ -189,9 +191,10 @@ end
     distorted_rutile = Cell(lattice, positions, types)
     @testset "Test `get_dataset`" begin
         # These results are compared with Python's spglib results.
-        dataset = get_dataset(distorted_rutile)
+        dataset = get_dataset(distorted_rutile, 1e-5)
         @test dataset.mapping_to_primitive == [0, 1, 2, 3, 4, 5]
         @test dataset.international_symbol == "P1"
+        @test get_international(cell, 1e-5) == "P1"
         @test dataset.spacegroup_number == 1
         @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
         @test dataset.hall_number == 1
@@ -339,6 +342,7 @@ end
     @test dataset.spacegroup_number == 227
     @test dataset.hall_number == 525
     @test dataset.international_symbol == "Fd-3m"
+    @test get_international(cell, 1e-5) == "Fd-3m"
     @test dataset.choice == "1"
     @test dataset.transformation_matrix == [
         1 0 0
@@ -396,7 +400,7 @@ end
         ]
         types = [14, 14]
         silicon_prim = Cell(lattice, positions, types)
-        dataset_prim = get_dataset(silicon_prim)
+        dataset_prim = get_dataset(silicon_prim, 1e-5)
         for f in (
             :spacegroup_number,
             :hall_number,
