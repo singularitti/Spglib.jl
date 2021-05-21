@@ -6,7 +6,7 @@ function cchars2string(itr)
 end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
-function get_symmetry(cell::Cell, symprec = 1e-8)
+function get_symmetry(cell::Cell, symprec = 1e-5)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
@@ -158,11 +158,11 @@ function get_hall_number_from_symmetry(
 end
 
 """
-    get_multiplicity(cell::Cell, symprec=1e-8)
+    get_multiplicity(cell::Cell, symprec=1e-5)
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
-function get_multiplicity(cell::Cell, symprec = 1e-8)
+function get_multiplicity(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     nsymops = ccall(
@@ -180,11 +180,11 @@ function get_multiplicity(cell::Cell, symprec = 1e-8)
 end
 
 """
-    get_dataset(cell::Cell, symprec=1e-8)
+    get_dataset(cell::Cell, symprec=1e-5)
 
 Search symmetry operations of an input unit cell structure.
 """
-function get_dataset(cell::Cell, symprec = 1e-8)
+function get_dataset(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     number = Base.cconvert(Cint, length(types))
     ptr = ccall(
@@ -226,11 +226,11 @@ function get_spacegroup_type(cell::Cell, symprec = 1e-5)  # See https://github.c
 end
 
 """
-    get_international(cell::Cell, symprec=1e-8)
+    get_international(cell::Cell, symprec=1e-5)
 
 Return the space group type in Hermann–Mauguin (international) notation.
 """
-function get_international(cell::Cell, symprec = 1e-8)
+function get_international(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
@@ -249,11 +249,11 @@ function get_international(cell::Cell, symprec = 1e-8)
 end
 
 """
-    get_schoenflies(cell::Cell, symprec=1e-8)
+    get_schoenflies(cell::Cell, symprec=1e-5)
 
 Return the space group type in Schoenflies notation.
 """
-function get_schoenflies(cell::Cell, symprec = 1e-8)
+function get_schoenflies(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(
