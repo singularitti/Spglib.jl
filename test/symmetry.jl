@@ -181,12 +181,9 @@ end
         0.00 0.00 3.00
     ]
     positions = [
-        0 0 0
-        0.5001 0.5 0.5
-        0.3 0.3 0.0
-        0.7 0.7 0.002
-        0.2 0.8 0.5
-        0.8 0.2 0.5
+        0.0 0.5001 0.3 0.7 0.2 0.8
+        0.0 0.5 0.3 0.7 0.8 0.2
+        0.0 0.5 0.0 0.002 0.5 0.5
     ]
     types = [14, 14, 8, 8, 8, 8]
     distorted_rutile = Cell(lattice, positions, types)
@@ -198,7 +195,7 @@ end
         @test dataset.spacegroup_number == 1
         @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
         @test dataset.hall_number == 1
-        @test dataset.choice == ""
+        @test isempty(dataset.choice)
         @test dataset.equivalent_atoms == [0, 1, 2, 3, 4, 5]
         @test dataset.rotations ==
               permutedims(cat([1 0 0], [0 1 0], [0 0 1]; dims = 3), [2, 3, 1])  # Different dimensions with Python
@@ -221,9 +218,9 @@ end
         ]
         @test dataset.std_types == [1, 1, 2, 2, 2, 2]
         @test dataset.std_rotation_matrix == [
+            0.0 1.0 0.0
             0.0 0.0 1.0
             1.0 0.0 0.0
-            0.0 1.0 0.0
         ]
         @test dataset.translations == [0.0 0.0 0.0]'
         @test dataset.pointgroup_symbol == "1"
