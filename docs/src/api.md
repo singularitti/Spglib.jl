@@ -44,8 +44,8 @@ get_schoenflies
 standardize_cell
 find_primitive
 refine_cell
-niggli_reduce!
-delaunay_reduce!
+niggli_reduce
+delaunay_reduce
 get_multiplicity
 get_ir_reciprocal_mesh
 get_version
