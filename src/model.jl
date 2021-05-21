@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructEquality: @def_structequal
 
-export Cell, Dataset, SpacegroupType
+export Cell, Dataset, SpacegroupType, basis_vectors
 
 """
     Cell(lattice, positions, types, magmoms=nothing)
@@ -33,6 +33,11 @@ Cell(
     types,
     magmoms,
 ) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
+
+function basis_vectors(cell::Cell)
+    lattice = cell.lattice
+    return lattice[:, 1], lattice[:, 2], lattice[:, 3]
+end
 
 # This is an internal function, do not export!
 function _expand_cell(cell::Cell)
@@ -115,4 +120,15 @@ if get_version() >= v"1.15.0"
     include("new.jl")
 else
     include("old.jl")
+end
+
+function Base.show(io::IO, cell::Cell{N}) where {N}
+    println(io, "lattice:")
+    print(io, " ")
+    display(cell.lattice)
+    println(io, "$N atomic positions:")
+    print(io, " ")
+    display(cell.positions)
+    println(io, "$N atoms:")
+    println(io, " ", cell.types)
 end
