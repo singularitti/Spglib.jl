@@ -17,7 +17,7 @@
     ]
     numbers = fill(35, length(positions))
     cell = Cell(lattice, positions, numbers)
-    dataset = get_dataset(cell)
+    dataset = get_dataset(cell, 1e-5)
     # Compared with documented results
     @test dataset.spacegroup_number == 64
     @test dataset.international_symbol == "Cmce"
@@ -189,7 +189,7 @@ end
     distorted_rutile = Cell(lattice, positions, types)
     @testset "Test `get_dataset`" begin
         # These results are compared with Python's spglib results.
-        dataset = get_dataset(distorted_rutile)
+        dataset = get_dataset(distorted_rutile, 1e-5)
         @test dataset.mapping_to_primitive == [0, 1, 2, 3, 4, 5]
         @test dataset.international_symbol == "P1"
         @test dataset.spacegroup_number == 1
@@ -396,7 +396,7 @@ end
         ]
         types = [14, 14]
         silicon_prim = Cell(lattice, positions, types)
-        dataset_prim = get_dataset(silicon_prim)
+        dataset_prim = get_dataset(silicon_prim, 1e-5)
         for f in (
             :spacegroup_number,
             :hall_number,
