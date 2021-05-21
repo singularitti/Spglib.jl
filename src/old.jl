@@ -44,7 +44,7 @@ struct Dataset
     rotations::Array{Float64,3}
     translations::Matrix{Float64}
     n_atoms::Int
-    wyckoffs::Vector{String}
+    wyckoffs::Vector{Char}
     site_symmetry_symbols::Vector{String}
     equivalent_atoms::Vector{Int}
     mapping_to_primitive::Vector{Int}
@@ -74,7 +74,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         rotsFromTuple(r, dataset.n_operations),
         transFromTuple(t, dataset.n_operations),
         dataset.n_atoms,
-        [string(LETTERS[x+1]) for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
+        [LETTERS[x+1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
         map(
             cchars2string,
             unsafe_wrap(
