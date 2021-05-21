@@ -6,4 +6,6 @@ using Test
     include("ffi.jl")
     include("standardize.jl")
     include("reciprocal.jl")
+    include("reduce.jl")
+    include("symmetry.jl")
 end
