@@ -101,78 +101,80 @@ end
         0 0 3
     ]
     positions = [
-        0.0 0.0 0.0
-        0.5 0.5 0.5
-        0.3 0.3 0.0
-        0.7 0.7 0.0
-        0.2 0.8 0.5
-        0.8 0.2 0.5
+        0.0 0.5 0.3 0.7 0.2 0.8
+        0.0 0.5 0.3 0.7 0.8 0.2
+        0.0 0.5 0.0 0.0 0.5 0.5
     ]
     types = [14, 14, 8, 8, 8, 8]
     rutile = Cell(lattice, positions, types)
-    type2dict(get_dataset(rutile, 1e-5)) == Dict(
-        "mapping_to_primitive" => [0, 1, 2, 3, 4, 5],
-        "number" => 136,
-        "site_symmetry_symbols" => ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"],
-        "hall_number" => 419,
-        "choice" => "",
-        "equivalent_atoms" => [0, 0, 2, 2, 2, 2],
-        "rotations" => [1 0 0; -1 0 0; …; 0 1 0; 0 -1 0],
-        "wyckoffs" => ["a", "a", "f", "f", "f", "f"],
-        "primitive_lattice" => [
-            0.0 0.0 3.0
-            4.0 0.0 0.0
+    dataset = get_dataset(rutile, 1e-5)
+    @test dataset.spacegroup_number == 136
+    @test dataset.site_symmetry_symbols == ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"]
+    @test dataset.hall_number == 419
+    @test isempty(dataset.choice)
+    @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2]
+    @test dataset.wyckoffs == ["a", "a", "f", "f", "f", "f"]
+    @test dataset.std_positions == [
+        0.0 0.5 0.3 0.7 0.2 0.8
+        0.0 0.5 0.3 0.7 0.8 0.2
+        0.0 0.5 0.0 0.0 0.5 0.5
+    ]
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.international_symbol == "P4_2/mnm"
+    @test dataset.std_lattice == [
+        4.0 0.0 0.0
+        0.0 4.0 0.0
+        0.0 0.0 3.0
+    ]
+    @test dataset.std_types == [1, 1, 2, 2, 2, 2]  # 14, 14, 8, 8, 8, 8
+    @test dataset.pointgroup_symbol == "4/mmm"
+    @test dataset.hall_symbol == "-P 4n 2n"
+    @test dataset.transformation_matrix == [
+        1.0 0.0 0.0
+        0.0 1.0 0.0
+        0.0 0.0 1.0
+    ]
+    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+    if get_version() >= v"1.15"
+        @test dataset.crystallographic_orbits == [0, 0, 2, 2, 2, 2]
+        @test dataset.primitive_lattice == [
             0.0 4.0 0.0
-        ],
-        "std_positions" => [
-            0.0 0.0 0.0
-            0.5 0.5 0.5
-            0.3 0.3 0.0
-            0.7 0.7 0.0
-            0.2 0.8 0.5
-            0.8 0.2 0.5
-        ],
-        "origin_shift" => [0.0, 0.0, 0.0],
-        "international" => "P4_2/mnm",
-        "std_lattice" => [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 3.0
-        ],
-        "std_types" => [14, 14, 8, 8, 8, 8],
-        "std_rotation_matrix" => [
-            1.0 0.0 0.0
-            0.0 1.0 0.0
-            0.0 0.0 1.0
-        ],
-        "translations" => [
-            0.0 0.0 0.0
-            0.0 0.0 0.0
-            0.5 0.5 0.5
-            0.5 0.5 0.5
-            0.0 0.0 0.0
-            0.0 0.0 0.0
-            0.5 0.5 0.5
-            0.5 0.5 0.5
-            0.5 0.5 0.5
-            0.5 0.5 0.5
-            0.0 0.0 0.0
-            0.0 0.0 0.0
-            0.5 0.5 0.5
-            0.5 0.5 0.5
-            0.0 0.0 0.0
-            0.0 0.0 0.0
-        ],
-        "pointgroup" => "4/mmm",
-        "hall" => "-P 4n 2n",
-        "transformation_matrix" => [
-            1.0 0.0 0.0
-            0.0 1.0 0.0
-            0.0 0.0 1.0
-        ],
-        "std_mapping_to_primitive" => [0, 1, 2, 3, 4, 5],
-        "crystallographic_orbits" => [0, 0, 2, 2, 2, 2],
-    )
+            0.0 0.0 4.0
+            3.0 0.0 0.0
+        ]
+    end
+    @test dataset.std_rotation_matrix == [
+        1.0 0.0 0.0
+        0.0 1.0 0.0
+        0.0 0.0 1.0
+    ]
+    @test dataset.translations == [
+        0.0 0.0 0.5 0.5 0.0 0.0 0.5 0.5 0.5 0.5 0.0 0.0 0.5 0.5 0.0 0.0
+        0.0 0.0 0.5 0.5 0.0 0.0 0.5 0.5 0.5 0.5 0.0 0.0 0.5 0.5 0.0 0.0
+        0.0 0.0 0.5 0.5 0.0 0.0 0.5 0.5 0.5 0.5 0.0 0.0 0.5 0.5 0.0 0.0
+    ]
+    rotations = dataset.rotations
+    python_rotations = [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [0 1 0; -1 0 0; 0 0 1],
+        [0 -1 0; 1 0 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+        [0 -1 0; 1 0 0; 0 0 1],
+        [0 1 0; -1 0 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 1 0; 0 0 1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 1],
+        [-1 0 0; 0 1 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 1],
+        [0 1 0; 1 0 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 1],
+    ]
+    @test all(map(1:16) do i
+        rotations[:, :, i] == python_rotations[i]
+    end)
 end
 
 @testset "Test distorted rutile structure" begin
