@@ -24,7 +24,14 @@ struct SpglibDataset
     pointgroup_symbol::NTuple{6,Cchar}
 end
 
-"This represents `SpglibDataset`, see https://spglib.github.io/spglib/dataset.html#spglib-dataset."
+"""
+    Dataset(spacegroup_number, hall_number, international_symbol, hall_symbol, choice, transformation_matrix, origin_shift, n_operations, rotations, translations, n_atoms, wyckoffs, site_symmetry_symbols, equivalent_atoms, mapping_to_primitive, n_std_atoms, std_lattice, std_types, std_positions, std_rotation_matrix, std_mapping_to_primitive, pointgroup_symbol)
+
+Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
+
+!!! note
+    Fields `crystallographic_orbits` and `primitive_lattice` are added after `spglib` `v1.15.0`.
+"""
 struct Dataset
     spacegroup_number::Int
     hall_number::Int
