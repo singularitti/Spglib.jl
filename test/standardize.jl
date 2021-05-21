@@ -122,3 +122,51 @@ end
         @test primitive_cell.types == new_primitive_cell.types
     end
 end
+
+# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L113-L136
+@testset "Cell reduce standardize" begin
+    @testset "Test `find_primitive`" begin
+        lattice = [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        positions = [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        types = [1, 1]
+        cell = Cell(lattice, positions, types)
+        new_cell = find_primitive(cell, 1e-5)
+        @test new_cell.lattice ≈ [
+            -2.0 2.0 2.0
+            2.0 -2.0 2.0
+            2.0 2.0 -2.0
+        ]
+        @test new_cell.positions ≈ [0.0, 0.0, 0.0]
+        @test new_cell.types == [1]
+    end
+    @testset "Test `refine_cell`" begin
+        lattice = [
+            -2.0 2.0 2.0
+            2.0 -2.0 2.0
+            2.0 2.0 -2.0
+        ]
+        positions = [0.0 0.0 0.0]'
+        types = [1]
+        cell = Cell(lattice, positions, types)
+        new_cell = refine_cell(cell, 1e-5)
+        @test new_cell.lattice ≈ [
+            4.0 0.0 0.0
+            0.0 4.0 0.0
+            0.0 0.0 4.0
+        ]
+        @test new_cell.positions ≈ [
+            0.0 0.5
+            0.0 0.5
+            0.0 0.5
+        ]
+        @test new_cell.types == [1, 1]
+    end
+end
