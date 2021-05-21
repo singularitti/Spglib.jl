@@ -95,8 +95,7 @@ end
     ]
     @test primitive_cell.types == [8, 8, 8, 8] ./ 8  # Python results
     @testset "Obtain the rotated primitive cell basis vectors" begin
-        primitive_cell = standardize_cell(cell, to_primitive = true, no_idealize = true)
-        @test primitive_cell.lattice ≈ [
+        @test standardize_cell(cell, to_primitive = true, no_idealize = true).lattice ≈ [
             3.95200346 1.12397269 0.0
             1.12397269 3.95200346 0.0
             0.0 0.0 8.57154746
