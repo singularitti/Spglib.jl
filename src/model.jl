@@ -4,17 +4,17 @@ using StructEquality: @def_structequal
 export Cell, Dataset, SpacegroupType, basis_vectors
 
 """
-    Cell(lattice, positions, types, magmoms=nothing)
+    Cell(lattice, positions, types, magmoms=zeros(length(types)))
 
 The basic input data type of `Spglib`.
 
-Lattice parameters `lattice` are given by a 3×3 matrix with floating point values,
-where 𝐚, 𝐛, and 𝐜 are given as rows, which results in the transpose of the
-definition for C-API. Fractional atomic positions `positions` are given
-by a N×3 matrix with floating point values, where N is the number of atoms.
-Numbers to distinguish atomic species `types` are given by a list of N integers.
+Lattice parameters `lattice` are given by a ``3×3`` matrix with floating point values,
+where ``𝐚``, ``𝐛``, and ``𝐜`` are given as columns.
+Fractional atomic positions `positions` are given
+by a ``3×N`` matrix with floating point values, where ``N`` is the number of atoms.
+Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
-as a list of N floating point values.
+as a list of ``N`` floating point values.
 """
 @def_structequal struct Cell{N,L,P,T,M}
     lattice::MMatrix{3,3,L}
