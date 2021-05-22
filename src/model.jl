@@ -23,16 +23,16 @@ as a list of ``N`` floating point values.
     magmoms::MVector{N,M}
 end
 function Cell(lattice, positions, types, magmoms = zeros(length(types)))
+    if lattice isa AbstractVector
+        lattice = hcat(lattice...)
+    end
+    if positions isa AbstractVector
+        positions = hcat(positions...)
+    end
     N, L, P, T, M =
         length(types), eltype(lattice), eltype(positions), eltype(types), eltype(magmoms)
     return Cell{N,L,P,T,M}(lattice, positions, types, magmoms)
 end
-Cell(
-    lattice::AbstractVector{<:AbstractVector},
-    positions::AbstractVector{<:AbstractVector},
-    types,
-    magmoms,
-) = Cell(hcat(lattice...), hcat(positions...), types, magmoms)
 
 """
     basis_vectors(cell::Cell)
