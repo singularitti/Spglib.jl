@@ -107,7 +107,7 @@ end
         max_size = num_atom * 48
         rotation = Array{Cint,3}(undef, 3, 3, max_size)
         translation = Array{Float64,2}(undef, 3, max_size)
-        _ = get_symmetry!(rotation, translation, max_size, cell, 1e-5)
+        get_symmetry!(rotation, translation, cell, 1e-5)
         @test size(rotation) == (3, 3, 96)
         @test size(translation) == (3, 96)
         @test get_hall_number_from_symmetry(rotation, translation, max_size, 1e-5) == 529
