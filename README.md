@@ -35,4 +35,4 @@ continuous integration services to test its validity.
 
 ## Contributors
 
-This repository is now maintained by [singularitti](https://github.com/singularitti). Thanks to the contribution from [searchengineorientprogramming](https://github.com/searchengineorientprogramming).
+This repository is created and maintained by [singularitti](https://github.com/singularitti). Thanks to the contribution from [searchengineorientprogramming](https://github.com/searchengineorientprogramming).
