@@ -6,12 +6,17 @@ function cchars2string(itr)
 end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
+"""
+    get_symmetry(cell::Cell, symprec=1e-5)
+
+Return the symmetry operations of a `cell`.
+"""
 function get_symmetry(cell::Cell, symprec = 1e-5)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
-    if cell.magmoms === nothing
-        numops = get_symmetry!(rotation, translation, max_size, cell, symprec)
+    if iszero(cell.magmoms)
+        return get_symmetry!(rotation, translation, cell, symprec)
     else
         equivalent_atoms = zeros(length(cell.magmoms))
         primitive_lattice = zeros(Cdouble, 3, 3)
@@ -22,23 +27,24 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
         end
         # TODO: unfinished!
     end
-    return [
-        (rotation = transpose(rotation[:, :, i]), translation = translation[:, i]) for
-        i in 1:numops
-    ]
 end
 
 function get_symmetry!(
-    rotation::AbstractArray{T,3},
+    rotation::AbstractArray,
     translation::AbstractMatrix,
-    max_size::Integer,
     cell::Cell,
     symprec = 1e-5,
-) where {T}
+)
+    if size(rotation, 3) != size(translation, 2)
+        throw(DimensionMismatch("`rotation` & `translation` have different max size!"))
+    end
+    if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
+        throw(ArgumentError("`rotation` & `translation` don't have the right size"))
+    end
     @unpack lattice, positions, types = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
-    max_size = Base.cconvert(Cint, max_size)
+    max_size = Base.cconvert(Cint, size(rotation, 3))
     number = Base.cconvert(Cint, length(types))
     num_sym = ccall(
         (:spg_get_symmetry, libsymspg),
@@ -63,7 +69,7 @@ function get_symmetry!(
         symprec,
     )
     num_sym == 0 && error("`spg_get_symmetry` failed!")
-    return num_sym
+    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
 end
 
 function get_symmetry_with_collinear_spin!(
