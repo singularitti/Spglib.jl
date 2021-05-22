@@ -18,7 +18,7 @@ The reducible uniform grid points are returned in reduced
 coordinates as `grid_address`. A map between reducible and
 irreducible points are returned as `grid_mapping_table` as in the indices of
 `grid_address`. The number of the irreducible k-points are
-returned as the return value.  The time reversal symmetry is
+returned as the return value. The time reversal symmetry is
 imposed by setting `is_time_reversal`.
 """
 function get_ir_reciprocal_mesh(
@@ -29,7 +29,9 @@ function get_ir_reciprocal_mesh(
     symprec = 1e-5,
 )
     # Reference: https://github.com/unkcpz/LibSymspg.jl/blob/e912dd3/src/ir-mesh-api.jl#L1-L32
-    @assert length(mesh) == length(is_shift) == 3
+    if !(length(mesh) == length(is_shift) == 3)
+        throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
+    end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
     @unpack lattice, positions, types = _expand_cell(cell)
@@ -72,16 +74,18 @@ function get_ir_reciprocal_mesh(
 end
 
 function get_stabilized_reciprocal_mesh(
-    rotations::AbstractVector{AbstractMatrix{<:Integer}},
-    grid::AbstractVector{<:Integer},
-    shift::AbstractVector{<:Integer} = [0, 0, 0];
+    rotations,
+    mesh,
+    is_shift = falses(3);
     qpoints = [[0, 0, 0]],
     is_time_reversal = true,
 )
-    @assert(length(grid) == length(shift) == 3)
-    @assert(all(isone(x) || iszero(x) for x in shift))
-    @assert(size(qpoints, 2) == 3)
-    npoints = prod(grid)
+    if !(length(mesh) == length(is_shift) == 3)
+        throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
+    end
+    @assert all(isone(x) || iszero(x) for x in is_shift)
+    @assert size(qpoints, 2) == 3
+    npoints = prod(mesh)
     grid_address = Matrix{Cint}(undef, npoints, 3)
     mapping = Vector{Cint}(undef, npoints)
     exitcode = ccall(
@@ -100,14 +104,14 @@ function get_stabilized_reciprocal_mesh(
         ),
         grid_address,
         mapping,
-        grid,
-        shift,
+        mesh,
+        is_shift,
         is_time_reversal,
         length(rotations),
         rotations,
         length(qpoints),
         qpoints,
     )
-    @assert(exitcode > 0, "Something wrong happens when finding mesh!")
+    @assert exitcode > 0 "Something wrong happens when finding mesh!"
     return mapping, grid_address
 end
