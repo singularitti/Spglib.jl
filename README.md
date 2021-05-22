@@ -28,10 +28,31 @@ continuous integration services to test its validity.
 ## Compatibility
 
 - [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
-- Dependencies: see `Project.toml` [`deps` field](Project.toml#L7-L10) and
-  [`compat` field](Project.toml#L13-L17)
+- Dependencies:
+  - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
+  - [`StructEquality.jl`](https://github.com/schlichtanders/StructEquality.jl) `v1.0.0` and above
+  - [`UnPack.jl`](https://github.com/mauro3/UnPack.jl) `v1.0.0` and above
+  - [`spglib_jll.jl`](https://github.com/JuliaBinaryWrappers/spglib_jll.jl) `v1.14.1+0` and above
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
+
+## Installation
+
+To install `Spglib`, please open Julia's interactive session (known as REPL) and
+press `]` key in the REPL to use the [package mode](https://docs.julialang.org/en/v1/stdlib/Pkg/),
+then type the following command
+
+For stable release
+
+```julia
+(@v1.6) pkg> add Spglib
+```
+
+For current master
+
+```julia
+(@v1.6) pkg> add Spglib#master
+```
 
 ## Contributors
 
