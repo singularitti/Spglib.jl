@@ -10,7 +10,7 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
-    if cell.magmoms === nothing
+    if iszero(cell.magmoms)
         numops = get_symmetry!(rotation, translation, max_size, cell, symprec)
     else
         equivalent_atoms = zeros(length(cell.magmoms))
@@ -22,10 +22,7 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
         end
         # TODO: unfinished!
     end
-    return [
-        (rotation = transpose(rotation[:, :, i]), translation = translation[:, i]) for
-        i in 1:numops
-    ]
+    return rotation[:, :, 1:numops], translation[:, 1:numops]
 end
 
 function get_symmetry!(
