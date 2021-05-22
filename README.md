@@ -28,8 +28,11 @@ continuous integration services to test its validity.
 ## Compatibility
 
 - [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
-- Dependencies: see `Project.toml` [`deps` field](Project.toml#L7-L10) and
-  [`compat` field](Project.toml#L13-L17)
+- Dependencies:
+  - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
+  - [`StructEquality.jl`](https://github.com/schlichtanders/StructEquality.jl) `v1.0.0` and above
+  - [`UnPack.jl`](https://github.com/mauro3/UnPack.jl) `v1.0.0` and above
+  - [`spglib_jll.jl`](https://github.com/JuliaBinaryWrappers/spglib_jll.jl) `v1.14.1+0` and above
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
 
