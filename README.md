@@ -33,6 +33,24 @@ continuous integration services to test its validity.
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
 
+## Installation
+
+To install `Spglib`, please open Julia's interactive session (known as REPL) and
+press `]` key in the REPL to use the [package mode](https://docs.julialang.org/en/v1/stdlib/Pkg/),
+then type the following command
+
+For stable release
+
+```julia
+(@v1.6) pkg> add Spglib
+```
+
+For current master
+
+```julia
+(@v1.6) pkg> add Spglib#master
+```
+
 ## Contributors
 
 This repository is created and maintained by [singularitti](https://github.com/singularitti). Thanks to the contribution from [searchengineorientprogramming](https://github.com/searchengineorientprogramming).
