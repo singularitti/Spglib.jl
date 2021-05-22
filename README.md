@@ -32,3 +32,7 @@ continuous integration services to test its validity.
   [`compat` field](Project.toml#L13-L17)
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
+
+## Contributors
+
+This repository is now maintained by [singularitti](https://github.com/singularitti). Thanks to the contribution from [searchengineorientprogramming](https://github.com/searchengineorientprogramming).
