@@ -6,6 +6,11 @@ function cchars2string(itr)
 end
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
+"""
+    get_symmetry(cell::Cell, symprec=1e-5)
+
+Return the symmetry operations of a `cell`.
+"""
 function get_symmetry(cell::Cell, symprec = 1e-5)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
