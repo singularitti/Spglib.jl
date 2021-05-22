@@ -600,32 +600,6 @@ end
         @test list_points(ir_mapping_table, grid_address, mesh, shift, true) ==
               python_results
         @test length(list_points(ir_mapping_table, grid_address, mesh, shift, false)) == 512
-        @testset "Another way of writing the lattice and atomic positions" begin
-            lattice = [
-                0.0 2.7 2.7
-                2.7 0.0 2.7
-                2.7 2.7 0.0
-            ]
-            positions = [
-                0.875 0.125
-                0.875 0.125
-                0.875 0.125
-            ]
-            cell = Cell(lattice, positions, types)
-            nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-                cell,
-                mesh,
-                shift;
-                is_time_reversal = true,
-                symprec = 1e-5,
-            )
-            @test ir_mapping_table == python_mapping
-            @test nir == 29
-            @test list_points(ir_mapping_table, grid_address, mesh, shift, true) ==
-                  python_results
-            @test length(list_points(ir_mapping_table, grid_address, mesh, shift, false)) ==
-                  512
-        end
     end
     @testset "With shifts" begin
         shift = [1, 1, 1]
@@ -1218,31 +1192,5 @@ end
         @test list_points(ir_mapping_table, grid_address, mesh, shift, true) ==
               python_results
         @test length(list_points(ir_mapping_table, grid_address, mesh, shift, false)) == 512
-        @testset "Another way of writing the lattice and atomic positions" begin
-            lattice = [
-                0.0 2.7 2.7
-                2.7 0.0 2.7
-                2.7 2.7 0.0
-            ]
-            positions = [
-                0.875 0.125
-                0.875 0.125
-                0.875 0.125
-            ]
-            cell = Cell(lattice, positions, types)
-            nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-                cell,
-                mesh,
-                shift;
-                is_time_reversal = true,
-                symprec = 1e-5,
-            )
-            @test ir_mapping_table == python_mapping
-            @test nir == 60
-            @test list_points(ir_mapping_table, grid_address, mesh, shift, true) ==
-                  python_results
-            @test length(list_points(ir_mapping_table, grid_address, mesh, shift, false)) ==
-                  512
-        end
     end
 end

@@ -32,25 +32,6 @@
         0.1203133 0.6203133 0.3796867 0.8796867
     ]
     @test primitive_cell.types == [8, 8, 8, 8] ./ 8  # Python results
-    @testset "Another way of writing the lattice and atomic positions" begin
-        lattice = [
-            7.17851431 0.0 0.0
-            0.0 3.99943947 0.0
-            0.0 0.0 8.57154746
-        ]
-        positions = [
-            0.0 0.0 0.0 0.0 0.5 0.5 0.5 0.5
-            0.84688439 0.65311561 0.34688439 0.15311561 0.34688439 0.15311561 0.84688439 0.65311561
-            0.1203133 0.6203133 0.3796867 0.8796867 0.1203133 0.6203133 0.3796867 0.8796867
-        ]
-        cell = Cell(lattice, positions, types)
-        # Results should not change
-        new_primitive_cell = find_primitive(cell)
-        @test primitive_cell == new_primitive_cell
-        @test primitive_cell.lattice == new_primitive_cell.lattice
-        @test primitive_cell.positions == new_primitive_cell.positions
-        @test primitive_cell.types == new_primitive_cell.types
-    end
 end
 
 @testset "Rotate the basis vectors rigidly in the above example" begin
@@ -100,25 +81,6 @@ end
             1.12397269 3.95200346 0.0
             0.0 0.0 8.57154746
         ]
-    end
-    @testset "Another way of writing the lattice and atomic positions" begin
-        lattice = [
-            5.07597614744567 -2.8280307701821314 0.0
-            5.07597614744567 2.8280307701821314 0.0
-            0.0 0.0 8.57154746
-        ]
-        positions = [
-            0.0 0.0 0.0 0.0 0.5 0.5 0.5 0.5
-            0.84688439 0.65311561 0.34688439 0.15311561 0.34688439 0.15311561 0.84688439 0.65311561
-            0.1203133 0.6203133 0.3796867 0.8796867 0.1203133 0.6203133 0.3796867 0.8796867
-        ]
-        cell = Cell(lattice, positions, types)
-        # Results should not change
-        new_primitive_cell = find_primitive(cell)
-        @test primitive_cell == new_primitive_cell
-        @test primitive_cell.lattice == new_primitive_cell.lattice
-        @test primitive_cell.positions == new_primitive_cell.positions
-        @test primitive_cell.types == new_primitive_cell.types
     end
 end
 
