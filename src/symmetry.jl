@@ -11,7 +11,7 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
     if iszero(cell.magmoms)
-        numops = get_symmetry!(rotation, translation, max_size, cell, symprec)
+        return get_symmetry!(rotation, translation, cell, symprec)
     else
         equivalent_atoms = zeros(length(cell.magmoms))
         primitive_lattice = zeros(Cdouble, 3, 3)
@@ -22,7 +22,6 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
         end
         # TODO: unfinished!
     end
-    return rotation[:, :, 1:numops], translation[:, 1:numops]
 end
 
 function get_symmetry!(
