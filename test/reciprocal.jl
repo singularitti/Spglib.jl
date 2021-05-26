@@ -1,11 +1,13 @@
 function list_points(mapping, grid, mesh, shift, ir_only)
-    # `unique(mapping)` and `mapping` are irreducible points and all points, respectively. They have different shapes.
-    if ir_only
-        mapping = unique(mapping)  # Cannot use `unique!(mapping)`, it will change future results
-    end
     shift = shift ./ 2  # true / 2 = 0.5, false / 2 = 0
-    return map(mapping) do id
-        (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+    if ir_only
+        return map(unique(mapping)) do i
+            (grid[:, i] .+ shift) ./ mesh
+        end
+    else
+        return map(eachslice(grid; dims = 2)) do point
+            (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        end
     end
 end
 
@@ -563,7 +565,7 @@ end
             15,
             1,
         ]
-        @test ir_mapping_table == python_mapping
+        @test ir_mapping_table == python_mapping .+ 1
         @test nir == 29
         # Irreducible k-points
         python_results = [
@@ -1124,7 +1126,7 @@ end
             1,
             0,
         ]
-        @test ir_mapping_table == python_mapping
+        @test ir_mapping_table == python_mapping .+ 1
         @test nir == 60
         # Irreducible k-points
         python_results = [
