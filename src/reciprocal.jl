@@ -70,6 +70,7 @@ function get_ir_reciprocal_mesh(
         symprec,
     )
     @assert num_ir > 0 "Something wrong happens when finding mesh!"
+    grid_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return num_ir, grid_mapping_table, grid_address
 end
 
@@ -113,5 +114,6 @@ function get_stabilized_reciprocal_mesh(
         qpoints,
     )
     @assert exitcode > 0 "Something wrong happens when finding mesh!"
+    mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return mapping, grid_address
 end
