@@ -30,7 +30,7 @@ end
         is_time_reversal = true,
         symprec = 1e-5,
     )
-    @test nir == 8
+    @test nir == length(unique(ir_mapping_table)) == 8
 end
 
 # See https://spglib.github.io/spglib/python-spglib.html
@@ -566,7 +566,7 @@ end
             1,
         ]
         @test ir_mapping_table == python_mapping .+ 1
-        @test nir == 29
+        @test nir == length(unique(ir_mapping_table)) == 29
         # Irreducible k-points
         python_results = [
             [0.0, 0.0, 0.0],
@@ -1127,7 +1127,7 @@ end
             0,
         ]
         @test ir_mapping_table == python_mapping .+ 1
-        @test nir == 60
+        @test nir == length(unique(ir_mapping_table)) == 60
         # Irreducible k-points
         python_results = [
             [0.0625, 0.0625, 0.0625],
