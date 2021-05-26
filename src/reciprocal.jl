@@ -20,6 +20,9 @@ irreducible points are returned as `grid_mapping_table` as in the indices of
 `grid_address`. The number of the irreducible k-points are
 returned as the return value. The time reversal symmetry is
 imposed by setting `is_time_reversal`.
+
+!!! compat "Version 0.2"
+    The returned mapping table is indexed starting at `1`, not `0` as in Python or C.
 """
 function get_ir_reciprocal_mesh(
     cell::Cell,
