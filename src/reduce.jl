@@ -13,7 +13,9 @@ function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
         clattice,
         symprec,
     )
-    iszero(exitcode) && error("Niggli reduce failed!")
+    if exitcode == 0
+        throw(SpglibError("Niggli reduce failed!"))
+    end
     return transpose(clattice)
 end
 function niggli_reduce(cell::Cell, symprec = 1e-5)
@@ -37,7 +39,9 @@ function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
         clattice,
         symprec,
     )
-    iszero(exitcode) && error("Delaunay reduce failed!")
+    if exitcode == 0
+        throw(SpglibError("Delaunay reduce failed!"))
+    end
     return transpose(clattice)
 end
 function delaunay_reduce(cell::Cell, symprec = 1e-5)

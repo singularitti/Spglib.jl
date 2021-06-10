@@ -72,7 +72,9 @@ function get_ir_reciprocal_mesh(
         number,
         symprec,
     )
-    @assert num_ir > 0 "Something wrong happens when finding mesh!"
+    if num_ir <= 0
+        throw(SpglibError("Something wrong happens when finding mesh!"))
+    end
     grid_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return num_ir, grid_mapping_table, grid_address
 end
@@ -92,7 +94,7 @@ function get_stabilized_reciprocal_mesh(
     npoints = prod(mesh)
     grid_address = Matrix{Cint}(undef, npoints, 3)
     mapping = Vector{Cint}(undef, npoints)
-    exitcode = ccall(
+    num_ir = ccall(
         (:spg_get_stabilized_reciprocal_mesh, libsymspg),
         Cint,
         (
@@ -116,7 +118,9 @@ function get_stabilized_reciprocal_mesh(
         length(qpoints),
         qpoints,
     )
-    @assert exitcode > 0 "Something wrong happens when finding mesh!"
+    if num_ir <= 0
+        throw(SpglibError("Something wrong happens when finding mesh!"))
+    end
     mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return mapping, grid_address
 end
