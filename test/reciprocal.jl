@@ -1480,8 +1480,13 @@ end
     @testset "With shift" begin
         shift = trues(3)
         mesh = [6, 6, 6]
-        nir, ir_mapping_table, grid_address =
-            get_ir_reciprocal_mesh(rutile, mesh; is_time_reversal = true, symprec = 1e-5)
+        nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            rutile,
+            mesh,
+            shift;
+            is_time_reversal = true,
+            symprec = 1e-5,
+        )
         @test nir == length(unique(ir_mapping_table)) == 18
         @test list_points(ir_mapping_table, grid_address, mesh, shift, true) ≈ [
             [0.08333333, 0.08333333, 0.08333333],
@@ -1504,9 +1509,14 @@ end
             [0.41666667, 0.41666667, 0.41666667],
         ]
         mesh = [4, 4, 4]
-        nir, ir_mapping_table, grid_address =
-            get_ir_reciprocal_mesh(rutile, mesh; is_time_reversal = true, symprec = 1e-5)
-        @test nir == length(unique(ir_mapping_table)) == 18
+        nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            rutile,
+            mesh,
+            shift;
+            is_time_reversal = true,
+            symprec = 1e-5,
+        )
+        @test nir == length(unique(ir_mapping_table)) == 6
         @test list_points(ir_mapping_table, grid_address, mesh, shift, true) == [
             [0.125, 0.125, 0.125],
             [0.375, 0.125, 0.125],
@@ -1574,8 +1584,13 @@ end
             [-0.125, -0.125, -0.125],
         ]
         mesh = [5, 5, 5]
-        nir, ir_mapping_table, grid_address =
-            get_ir_reciprocal_mesh(rutile, mesh; is_time_reversal = true, symprec = 1e-5)
+        nir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            rutile,
+            mesh,
+            shift;
+            is_time_reversal = true,
+            symprec = 1e-5,
+        )
         @test nir == length(unique(ir_mapping_table)) == 18
         @test list_points(ir_mapping_table, grid_address, mesh, shift, true) == [
             [0.1, 0.1, 0.1],
