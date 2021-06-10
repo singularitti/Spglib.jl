@@ -35,7 +35,9 @@ function standardize_cell(
         no_idealize,
         symprec,
     )  # Note: not `number`!
-    @assert num_atom_std > 0 "standardizing cell failed!"
+    if num_atom_std <= 0
+        throw(SpglibError("Cell standardization failed!"))
+    end
     # We have to `transpose` back because of `_expand_cell`!
     return Cell(transpose(lattice), _positions[:, 1:num_atom_std], _types[1:num_atom_std])
 end
