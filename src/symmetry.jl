@@ -39,7 +39,7 @@ function get_symmetry!(
         throw(DimensionMismatch("`rotation` & `translation` have different max size!"))
     end
     if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
-        throw(ArgumentError("`rotation` & `translation` don't have the right size"))
+        throw(DimensionMismatch("`rotation` & `translation` don't have the right size!"))
     end
     @unpack lattice, positions, types = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
@@ -68,7 +68,9 @@ function get_symmetry!(
         number,
         symprec,
     )
-    num_sym == 0 && error("`spg_get_symmetry` failed!")
+    if num_sym == 0
+        throw(SpglibError("Symmetry operation search failed!"))
+    end
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
 end
 
@@ -112,7 +114,9 @@ function get_symmetry_with_collinear_spin!(
         number,
         symprec,
     )
-    num_sym == 0 && error("`spg_get_symmetry` failed!")
+    if num_sym == 0
+        throw(SpglibError("Symmetry operation search failed!"))
+    end
     return num_sym
 end
 function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
@@ -181,7 +185,9 @@ function get_multiplicity(cell::Cell, symprec = 1e-5)
         number,
         symprec,
     )
-    nsymops == 0 && error("Could not determine the multiplicity!")
+    if nsymops == 0
+        throw(SpglibError("Symmetry operation search failed!"))
+    end
     return nsymops
 end
 
@@ -250,7 +256,9 @@ function get_international(cell::Cell, symprec = 1e-5)
         length(types),
         symprec,
     )
-    exitcode == 0 && error("Could not determine the international symbol!")
+    if exitcode == 0
+        throw(SpglibError("Spacegroup search failed!"))
+    end
     return cchars2string(symbol)
 end
 
@@ -273,7 +281,9 @@ function get_schoenflies(cell::Cell, symprec = 1e-5)
         length(types),
         symprec,
     )
-    exitcode == 0 && error("Could not determine the Schoenflies symbol!")
+    if exitcode == 0
+        throw(SpglibError("Spacegroup search failed!"))
+    end
     return cchars2string(symbol)
 end
 
@@ -285,7 +295,7 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         elseif value isa NTuple{N,Cchar} where {N}
             cchars2string(value)
         else  # This should never happen!
-            error("unexpected field type $(typeof(value))!")
+            @assert false "unexpected field type $(typeof(value))!"  # See https://discourse.julialang.org/t/please-stop-using-error-and-errorexception-in-packages-and-base/12096
         end
     end
     return SpacegroupType(values...)
