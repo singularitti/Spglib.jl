@@ -45,7 +45,7 @@ function get_symmetry!(
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     max_size = Base.cconvert(Cint, size(rotation, 3))
-    number = Base.cconvert(Cint, length(types))
+    num_atom = Base.cconvert(Cint, length(types))
     num_sym = ccall(
         (:spg_get_symmetry, libsymspg),
         Cint,
@@ -65,7 +65,7 @@ function get_symmetry!(
         lattice,
         positions,
         types,
-        number,
+        num_atom,
         symprec,
     )
     if num_sym == 0
@@ -87,7 +87,7 @@ function get_symmetry_with_collinear_spin!(
     translation = Base.cconvert(Matrix{Cdouble}, translation)
     equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
     max_size = Base.cconvert(Cint, max_size)
-    number = Base.cconvert(Cint, length(types))
+    num_atom = Base.cconvert(Cint, length(types))
     num_sym = ccall(
         (:spg_get_symmetry_with_collinear_spin, libsymspg),
         Cint,
@@ -111,7 +111,7 @@ function get_symmetry_with_collinear_spin!(
         positions,
         types,
         magmoms,
-        number,
+        num_atom,
         symprec,
     )
     if num_sym == 0
@@ -120,11 +120,11 @@ function get_symmetry_with_collinear_spin!(
     return num_sym
 end
 function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
-    number = length(cell.types)
-    max_size = number * 48
+    num_atom = length(cell.types)
+    max_size = num_atom * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, number)
+    equivalent_atoms = Vector{Cint}(undef, num_atom)
     num_sym = get_symmetry_with_collinear_spin!(
         rotation,
         translation,
@@ -174,21 +174,21 @@ Return the exact number of symmetry operations. An error is thrown when it fails
 """
 function get_multiplicity(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
-    number = Base.cconvert(Cint, length(types))
-    nsymops = ccall(
+    num_atom = Base.cconvert(Cint, length(types))
+    num_sym = ccall(
         (:spg_get_multiplicity, libsymspg),
         Cint,
         (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
         lattice,
         positions,
         types,
-        number,
+        num_atom,
         symprec,
     )
-    if nsymops == 0
+    if num_sym == 0
         throw(SpglibError("Symmetry operation search failed!"))
     end
-    return nsymops
+    return num_sym
 end
 
 """
@@ -198,7 +198,7 @@ Search symmetry operations of an input unit cell structure.
 """
 function get_dataset(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
-    number = Base.cconvert(Cint, length(types))
+    num_atom = Base.cconvert(Cint, length(types))
     ptr = ccall(
         (:spg_get_dataset, libsymspg),
         Ptr{SpglibDataset},
@@ -206,7 +206,7 @@ function get_dataset(cell::Cell, symprec = 1e-5)
         lattice,
         positions,
         types,
-        number,
+        num_atom,
         symprec,
     )
     raw = unsafe_load(ptr)
