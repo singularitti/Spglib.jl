@@ -41,7 +41,7 @@ function get_ir_reciprocal_mesh(
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
     is_time_reversal = Base.cconvert(Cint, is_time_reversal)
-    number = Base.cconvert(Cint, length(types))
+    num_atom = Base.cconvert(Cint, length(types))
     # Prepare for output
     npoints = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
@@ -69,7 +69,7 @@ function get_ir_reciprocal_mesh(
         lattice,
         positions,
         types,
-        number,
+        num_atom,
         symprec,
     )
     if nir <= 0

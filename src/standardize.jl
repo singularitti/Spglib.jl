@@ -17,12 +17,12 @@ function standardize_cell(
     @unpack lattice, positions, types = _expand_cell(cell)
     to_primitive = Base.cconvert(Cint, to_primitive)
     no_idealize = Base.cconvert(Cint, no_idealize)
-    number = Base.cconvert(Cint, length(types))
+    num_atom = Base.cconvert(Cint, length(types))
     allocations = 4
-    _positions = Matrix{Cdouble}(undef, 3, number * allocations)
-    _types = Vector{Cint}(undef, number * allocations)
-    _positions[:, 1:number] = positions
-    _types[1:number] = types
+    _positions = Matrix{Cdouble}(undef, 3, num_atom * allocations)
+    _types = Vector{Cint}(undef, num_atom * allocations)
+    _positions[:, 1:num_atom] = positions
+    _types[1:num_atom] = types
     num_atom_std = ccall(
         (:spg_standardize_cell, libsymspg),
         Cint,
@@ -30,11 +30,11 @@ function standardize_cell(
         lattice,
         _positions,
         _types,
-        number,
+        num_atom,
         to_primitive,
         no_idealize,
         symprec,
-    )  # Note: not `number`!
+    )  # Note: not `num_atom`!
     if num_atom_std <= 0
         throw(SpglibError("Cell standardization failed!"))
     end
