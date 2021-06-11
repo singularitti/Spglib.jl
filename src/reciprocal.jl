@@ -46,7 +46,7 @@ function get_ir_reciprocal_mesh(
     npoints = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
     grid_mapping_table = Vector{Cint}(undef, npoints)
-    num_ir = ccall(
+    nir = ccall(
         (:spg_get_ir_reciprocal_mesh, libsymspg),
         Cint,
         (
@@ -72,11 +72,11 @@ function get_ir_reciprocal_mesh(
         number,
         symprec,
     )
-    if num_ir <= 0
+    if nir <= 0
         throw(SpglibError("Something wrong happens when finding mesh!"))
     end
     grid_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return num_ir, grid_mapping_table, grid_address
+    return nir, grid_mapping_table, grid_address
 end
 
 function get_stabilized_reciprocal_mesh(
@@ -94,7 +94,7 @@ function get_stabilized_reciprocal_mesh(
     npoints = prod(mesh)
     grid_address = Matrix{Cint}(undef, npoints, 3)
     mapping = Vector{Cint}(undef, npoints)
-    num_ir = ccall(
+    nir = ccall(
         (:spg_get_stabilized_reciprocal_mesh, libsymspg),
         Cint,
         (
@@ -118,9 +118,9 @@ function get_stabilized_reciprocal_mesh(
         length(qpoints),
         qpoints,
     )
-    if num_ir <= 0
+    if nir <= 0
         throw(SpglibError("Something wrong happens when finding mesh!"))
     end
     mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return num_ir, mapping, grid_address
+    return nir, mapping, grid_address
 end
