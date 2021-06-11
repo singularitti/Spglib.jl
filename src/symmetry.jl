@@ -175,7 +175,7 @@ Return the exact number of symmetry operations. An error is thrown when it fails
 function get_multiplicity(cell::Cell, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
-    nsymops = ccall(
+    num_sym = ccall(
         (:spg_get_multiplicity, libsymspg),
         Cint,
         (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
@@ -185,10 +185,10 @@ function get_multiplicity(cell::Cell, symprec = 1e-5)
         num_atom,
         symprec,
     )
-    if nsymops == 0
+    if num_sym == 0
         throw(SpglibError("Symmetry operation search failed!"))
     end
-    return nsymops
+    return num_sym
 end
 
 """
