@@ -122,5 +122,5 @@ function get_stabilized_reciprocal_mesh(
         throw(SpglibError("Something wrong happens when finding mesh!"))
     end
     mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return mapping, grid_address
+    return num_ir, mapping, grid_address
 end
