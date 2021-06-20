@@ -1,2 +1,5 @@
 theme: jekyll-theme-cayman
 show_downloads: true
+github:
+  zip_url: {{ site.github.zip_url }}
+  tar_url: {{ site.github.tar_url }}
