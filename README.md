@@ -10,6 +10,7 @@
 [![pipeline status](https://gitlab.com/singularitti/Spglib.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/Spglib.jl/-/pipelines)
 [![Coverage](https://codecov.io/gh/singularitti/Spglib.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/singularitti/Spglib.jl)
 [![Coverage Status](https://coveralls.io/repos/github/singularitti/Spglib.jl/badge.svg?branch=master)](https://coveralls.io/github/singularitti/Spglib.jl?branch=master)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 
 `Spglib` is a Julia wrapper of the C library [`spglib`](https://github.com/spglib/spglib).
 It is used for finding and handling crystal symmetries.
