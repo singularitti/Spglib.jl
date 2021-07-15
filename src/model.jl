@@ -129,7 +129,7 @@ end
 
 const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-if get_version() >= v"1.15.0"
+@static if get_version() >= v"1.15.0"
     include("new.jl")
 else
     include("old.jl")
