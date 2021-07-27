@@ -40,6 +40,7 @@ get_symmetry
 get_hall_number_from_symmetry
 get_dataset
 get_spacegroup_type
+get_spacegroup_number
 get_international
 get_schoenflies
 standardize_cell
