@@ -236,6 +236,7 @@ Get the spacegroup number from the Spglib dataset.
 function get_spacegroup_number(cell::Cell, symprec=1e-5)
 	dataset = get_dataset(cell, symprec=symprec)
 	return dataset.spacegroup_number
+end
 """
     get_spacegroup_type(cell::Cell, symprec=1e-5)
 
