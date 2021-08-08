@@ -1,7 +1,7 @@
 name = "Spglib"
 uuid = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
 authors = ["Qi Zhang <singularitti@outlook.com>"]
-version = "0.3.1"
+version = "0.4.0"
 
 [deps]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
