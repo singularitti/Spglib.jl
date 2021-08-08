@@ -154,12 +154,12 @@ end
 function get_symmetry_from_database!(
     rotation::AbstractArray,
     translation::AbstractMatrix,
-    hall_number::Int,
+    hall_number,
 )
     if !(size(rotation, 3) == size(translation, 2) == 192)
         throw(
             DimensionMismatch(
-                "`rotation` & `translation` should have space for 192 symmetry operations",
+                "`rotation` & `translation` should have space for 192 symmetry operations!",
             ),
         )
     end
