@@ -139,11 +139,11 @@ end
 """
     get_symmetry_from_database(hall_number)
 
-This function allows to directly access to the space group operations in the
-spglib database. To specify the space group type with a specific choice,
-hall_number is used. The definition of hall_number is found at Space group type.
+Return the symmetry operations given a `hall_number`.
 
-The returned values are the rotations and translations.
+This function allows to directly access to the space group operations in the
+`spglib` database. To specify the space group type with a specific choice,
+`hall_number` is used.
 """
 function get_symmetry_from_database(hall_number)
     rotation = Array{Cint,3}(undef, 3, 3, 192)
