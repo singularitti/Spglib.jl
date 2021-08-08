@@ -154,10 +154,14 @@ end
 function get_symmetry_from_database!(
     rotation::AbstractArray,
     translation::AbstractMatrix,
-    hall_number::Int
+    hall_number::Int,
 )
     if !(size(rotation, 3) == size(translation, 2) == 192)
-        throw(DimensionMismatch("`rotation` & `translation` should have space for 192 symmetry operations"))
+        throw(
+            DimensionMismatch(
+                "`rotation` & `translation` should have space for 192 symmetry operations",
+            ),
+        )
     end
     if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
         throw(DimensionMismatch("`rotation` & `translation` don't have the right size!"))
@@ -168,11 +172,7 @@ function get_symmetry_from_database!(
     num_sym = ccall(
         (:spg_get_symmetry_from_database, libsymspg),
         Cint,
-        (
-            Ptr{Cint},
-            Ptr{Float64},
-            Cint,
-        ),
+        (Ptr{Cint}, Ptr{Float64}, Cint),
         rotation,
         translation,
         hall_number,
