@@ -54,7 +54,3 @@ For current master
 ```julia
 (@v1.6) pkg> add Spglib#master
 ```
-
-## Contributors
-
-This repository is created and maintained by [singularitti](https://github.com/singularitti). Thanks to the contribution from [searchengineorientprogramming](https://github.com/searchengineorientprogramming).
