@@ -256,8 +256,41 @@ function get_dataset(cell::Cell, symprec = 1e-5)
         num_atom,
         symprec,
     )
-    raw = unsafe_load(ptr)
-    return convert(Dataset, raw)
+    if ptr == C_NULL
+        return nothing
+    else
+        raw = unsafe_load(ptr)
+        return convert(Dataset, raw)
+    end
+end
+
+
+"""
+    get_dataset(cell::Cell, symprec=1e-5)
+
+Search symmetry operations of an input unit cell structure, using a given Hall number.
+"""
+function get_dataset_with_hall_number(cell::Cell, hall_number::Int, symprec = 1e-5)
+    @unpack lattice, positions, types = _expand_cell(cell)
+    num_atom = Base.cconvert(Cint, length(types))
+    hall_number = Base.cconvert(Cint, hall_number)
+    ptr = ccall(
+        (:spg_get_dataset_with_hall_number, libsymspg),
+        Ptr{SpglibDataset},
+        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cdouble),
+        lattice,
+        positions,
+        types,
+        num_atom,
+        hall_number,
+        symprec,
+    )
+    if ptr == C_NULL
+        return nothing
+    else
+        raw = unsafe_load(ptr)
+        return convert(Dataset, raw)
+    end
 end
 
 """
