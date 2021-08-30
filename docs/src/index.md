@@ -38,7 +38,6 @@ This repository is created and maintained by
 ```@contents
 Pages = [
     "installation.md",
-    "portability.md",
     "api.md",
 ]
 Depth = 3
