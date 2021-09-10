@@ -6,10 +6,9 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/singularitti/Spglib.jl?svg=true)](https://ci.appveyor.com/project/singularitti/Spglib-jl)
 [![Build Status](https://cloud.drone.io/api/badges/singularitti/Spglib.jl/status.svg)](https://cloud.drone.io/singularitti/Spglib.jl)
 [![Build Status](https://api.cirrus-ci.com/github/singularitti/Spglib.jl.svg)](https://cirrus-ci.com/github/singularitti/Spglib.jl)
-[![Build Status](https://travis-ci.com/singularitti/Spglib.jl.svg?branch=master)](https://travis-ci.com/singularitti/Spglib.jl)
 [![pipeline status](https://gitlab.com/singularitti/Spglib.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/Spglib.jl/-/pipelines)
+[![coverage report](https://gitlab.com/singularitti/Spglib.jl/badges/master/coverage.svg)](https://gitlab.com/singularitti/Spglib.jl/-/jobs)
 [![Coverage](https://codecov.io/gh/singularitti/Spglib.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/singularitti/Spglib.jl)
-[![Coverage Status](https://coveralls.io/repos/github/singularitti/Spglib.jl/badge.svg?branch=master)](https://coveralls.io/github/singularitti/Spglib.jl?branch=master)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 
 `Spglib` is a Julia wrapper of the C library [`spglib`](https://github.com/spglib/spglib).
@@ -28,7 +27,7 @@ continuous integration services to test its validity.
 
 ## Compatibility
 
-- [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
+- [Julia version: `v1.3.0` to `v1.6.2`](https://julialang.org/downloads/)
 - Dependencies:
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
   - [`StructEquality.jl`](https://github.com/schlichtanders/StructEquality.jl) `v1.0.0` and above
