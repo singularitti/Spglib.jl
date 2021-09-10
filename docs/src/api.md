@@ -39,6 +39,7 @@ basis_vectors
 get_symmetry
 get_hall_number_from_symmetry
 get_dataset
+get_dataset_with_hall_number
 get_spacegroup_type
 get_symmetry_from_database
 get_spacegroup_number
