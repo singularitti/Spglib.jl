@@ -270,7 +270,7 @@ end
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
 """
-function get_dataset_with_hall_number(cell::Cell, hall_number::Int, symprec = 1e-5)
+function get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec = 1e-5)
     @unpack lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     hall_number = Base.cconvert(Cint, hall_number)
