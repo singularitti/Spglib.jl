@@ -4,6 +4,8 @@ CurrentModule = Spglib
 
 # Spglib
 
+Documentation for [Spglib](https://github.com/singularitti/Spglib.jl).
+
 `Spglib` is a Julia wrapper of the C library [`spglib`](https://github.com/spglib/spglib).
 It is used for finding and handling crystal symmetries.
 Thanks to Julia's binary artifact mechanism, the installation and usage of it should be
@@ -38,7 +40,7 @@ This repository is created and maintained by
 ```@contents
 Pages = [
     "installation.md",
-    "portability.md",
+    "develop.md",
     "api.md",
 ]
 Depth = 3
