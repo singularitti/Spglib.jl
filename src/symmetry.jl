@@ -264,9 +264,8 @@ function get_dataset(cell::Cell, symprec = 1e-5)
     end
 end
 
-
 """
-    get_dataset_with_hall_number(cell::Cell, symprec=1e-5)
+    get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec=1e-5)
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
 """
