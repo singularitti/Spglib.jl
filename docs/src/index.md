@@ -24,7 +24,7 @@ This repository is created and maintained by
 
 ## Compatibility
 
-- [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
+- [Julia version: `v1.3.0` to `v1.6.2`](https://julialang.org/downloads/)
 - Dependencies:
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
   - [`StructEquality.jl`](https://github.com/schlichtanders/StructEquality.jl) `v1.0.0` and above
