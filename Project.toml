@@ -5,6 +5,7 @@ version = "0.5.1-DEV"
 
 [deps]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StructHelpers = "4093c41a-2008-41fd-82b8-e3f9d02b504f"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 spglib_jll = "ac4a9f1e-bdb2-5204-990c-47c8b2f70d4e"
 
