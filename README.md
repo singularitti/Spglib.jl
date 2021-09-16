@@ -30,7 +30,7 @@ continuous integration services to test its validity.
 - [Julia version: `v1.3.0` to `v1.6.2`](https://julialang.org/downloads/)
 - Dependencies:
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
-  - [`StructEquality.jl`](https://github.com/schlichtanders/StructEquality.jl) `v1.0.0` and above
+  - [`StructHelpers.jl`](https://github.com/jw3126/StructHelpers.jl) `v0.1.0` and above
   - [`UnPack.jl`](https://github.com/mauro3/UnPack.jl) `v1.0.0` and above
   - [`spglib_jll.jl`](https://github.com/JuliaBinaryWrappers/spglib_jll.jl) `v1.14.1+0` and above
 - OS: macOS, Linux, Windows, and FreeBSD
