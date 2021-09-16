@@ -1,5 +1,5 @@
 using StaticArrays: MMatrix, MVector
-using AutoHashEquals: @auto_hash_equals
+using StructHelpers: @batteries
 
 export Cell, Dataset, SpacegroupType, basis_vectors
 
@@ -16,7 +16,7 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values.
 """
-@auto_hash_equals struct Cell{N,L,P,T,M}
+struct Cell{N,L,P,T,M}
     lattice::MMatrix{3,3,L}
     positions::MMatrix{3,N,P}
     types::MVector{N,T}
@@ -33,6 +33,8 @@ function Cell(lattice, positions, types, magmoms = zeros(length(types)))
         length(types), eltype(lattice), eltype(positions), eltype(types), eltype(magmoms)
     return Cell{N,L,P,T,M}(lattice, positions, types, magmoms)
 end
+
+@batteries Cell eq = true hash = true
 
 """
     basis_vectors(cell::Cell)
