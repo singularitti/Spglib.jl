@@ -27,7 +27,7 @@ continuous integration services to test its validity.
 
 ## Compatibility
 
-- [Julia version: `v1.3.0` to `v1.6.2`](https://julialang.org/downloads/)
+- [Julia version: `v1.3.0` to `v1.7.0`](https://julialang.org/downloads/)
 - Dependencies:
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
   - [`StructHelpers.jl`](https://github.com/jw3126/StructHelpers.jl) `v0.1.0` and above
