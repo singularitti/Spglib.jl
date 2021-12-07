@@ -5,7 +5,7 @@ DocMeta.setdocmeta!(Spglib, :DocTestSetup, :(using Spglib); recursive=true)
 
 makedocs(;
     modules=[Spglib],
-    authors="Qi Zhang <singularitti@outlook.com>",
+    authors="Reno <singularitti@outlook.com>",
     repo="https://github.com/singularitti/Spglib.jl/blob/{commit}{path}#{line}",
     sitename="Spglib.jl",
     format=Documenter.HTML(;
