@@ -17,7 +17,7 @@ The collinear polarizations `magmoms` only work with `get_symmetry` and are give
 as a list of ``N`` floating point values.
 """
 struct Cell{N,L,P,T,M}
-    lattice::MMatrix{3,3,L}
+    lattice::MMatrix{3,3,L,9}
     positions::MMatrix{3,N,P}
     types::MVector{N,T}
     magmoms::MVector{N,M}
