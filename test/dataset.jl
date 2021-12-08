@@ -19,7 +19,7 @@
     cell = Cell(lattice, positions, numbers)
     dataset = get_dataset(cell, 1e-5)
     # Compared with documented results
-    @test get_spacegroup_number(cell) == 64 
+    @test get_spacegroup_number(cell) == 64
     @test dataset.spacegroup_number == 64
     @test dataset.international_symbol == "Cmce"
     @test get_international(cell, 1e-5) == "Cmce"
