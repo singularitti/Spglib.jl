@@ -140,10 +140,12 @@ end
 function Base.show(io::IO, cell::Cell{N}) where {N}
     println(io, "lattice:")
     print(io, " ")
-    display(cell.lattice)
+    show(io, "text/plain", cell.lattice)
+    println(io, "")
     println(io, "$N atomic positions:")
     print(io, " ")
-    display(cell.positions)
+    show(io, "text/plain", cell.positions)
+    println(io, "")
     println(io, "$N atoms:")
     println(io, " ", cell.types)
 end
