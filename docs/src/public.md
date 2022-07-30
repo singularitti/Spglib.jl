@@ -15,11 +15,12 @@ the convention of
 [`spglib`](https://spglib.github.io/spglib/definition.html#basis-vectors-mathbf-a-mathbf-b-mathbf-c-or-mathbf-a-1-mathbf-a-2-mathbf-a-3).
 Coordinates of an atomic point are represented as three fractional values
 relative to basis vectors. So when constructing a `Cell`:
-- The lattice can be a ``3×3`` matrix with columns as basis vectors, or it can be a
+
+- The lattice can be a `3×3` matrix with columns as basis vectors, or it can be a
   vector containing the three basis vectors. To get those basis vectors from a
   `Cell`, use `basis_vectors`.
-- The atomic positions can be a ``3×N`` matrix, where ``N`` denotes the number of
-  atoms in a cell. Or it can be a vector of ``N`` vectors, where each vector represents an
+- The atomic positions can be a `3×N` matrix, where `N` denotes the number of
+  atoms in a cell. Or it can be a vector of `N` vectors, where each vector represents an
   atom.
 - The `types` variable corresponds to different atomic types.
 
