@@ -1,15 +1,25 @@
 # Spglib
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://singularitti.github.io/Spglib.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://singularitti.github.io/Spglib.jl/dev)
-[![Build Status](https://github.com/singularitti/Spglib.jl/workflows/CI/badge.svg)](https://github.com/singularitti/Spglib.jl/actions)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/singularitti/Spglib.jl?svg=true)](https://ci.appveyor.com/project/singularitti/Spglib-jl)
-[![Build Status](https://cloud.drone.io/api/badges/singularitti/Spglib.jl/status.svg)](https://cloud.drone.io/singularitti/Spglib.jl)
-[![Build Status](https://api.cirrus-ci.com/github/singularitti/Spglib.jl.svg)](https://cirrus-ci.com/github/singularitti/Spglib.jl)
-[![pipeline status](https://gitlab.com/singularitti/Spglib.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/Spglib.jl/-/pipelines)
-[![coverage report](https://gitlab.com/singularitti/Spglib.jl/badges/master/coverage.svg)](https://gitlab.com/singularitti/Spglib.jl/-/jobs)
-[![Coverage](https://codecov.io/gh/singularitti/Spglib.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/singularitti/Spglib.jl)
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
+|                                 **Documentation**                                  |                                                                                                 **Build Status**                                                                                                 |                  **LICENSE**                  |
+| :--------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------: |
+| [![Stable][docs-stable-img]][docs-stable-url] [![Dev][docs-dev-img]][docs-dev-url] | [![Build Status][gha-img]][gha-url] [![Build Status][appveyor-img]][appveyor-url] [![Build Status][cirrus-img]][cirrus-url] [![pipeline status][gitlab-img]][gitlab-url] [![Coverage][codecov-img]][codecov-url] | [![GitHub license][license-img]][license-url] |
+
+[docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
+[docs-stable-url]: https://singularitti.github.io/Spglib.jl/stable
+[docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]: https://singularitti.github.io/Spglib.jl/dev
+[gha-img]: https://github.com/singularitti/Spglib.jl/workflows/CI/badge.svg
+[gha-url]: https://github.com/singularitti/Spglib.jl/actions
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/github/singularitti/Spglib.jl?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/singularitti/Spglib-jl
+[cirrus-img]: https://api.cirrus-ci.com/github/singularitti/Spglib.jl.svg
+[cirrus-url]: https://cirrus-ci.com/github/singularitti/Spglib.jl
+[gitlab-img]: https://gitlab.com/singularitti/Spglib.jl/badges/master/pipeline.svg
+[gitlab-url]: https://gitlab.com/singularitti/Spglib.jl/-/pipelines
+[codecov-img]: https://codecov.io/gh/singularitti/Spglib.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/singularitti/Spglib.jl
+[license-img]: https://img.shields.io/github/license/singularitti/Spglib.jl
+[license-url]: https://github.com/singularitti/Spglib.jl/blob/master/LICENSE
 
 `Spglib` is a Julia wrapper of the C library [`spglib`](https://github.com/spglib/spglib).
 It is used for finding and handling crystal symmetries.
@@ -25,9 +35,24 @@ naming conventions, input types, and return types of functions.
 The code is [hosted on GitHub](https://github.com/singularitti/Spglib.jl), with some
 continuous integration services to test its validity.
 
+## Installation
+
+The package can be installed with the Julia package manager.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
+
+```
+pkg> add Spglib
+```
+
+Or, equivalently, via the `Pkg` API:
+
+```julia
+julia> import Pkg; Pkg.add("Spglib")
+```
+
 ## Compatibility
 
-- [Julia version: `v1.3.0` to `v1.7.0`](https://julialang.org/downloads/)
+- [Julia version: `v1.3` to `v1.7`](https://julialang.org/downloads/)
 - Dependencies:
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
   - [`StructHelpers.jl`](https://github.com/jw3126/StructHelpers.jl) `v0.1.0` and above
@@ -36,20 +61,24 @@ continuous integration services to test its validity.
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
 
-## Installation
+## Documentation
 
-To install `Spglib`, please open Julia's interactive session (known as REPL) and
-press `]` key in the REPL to use the [package mode](https://docs.julialang.org/en/v1/stdlib/Pkg/),
-then type the following command
+- [**STABLE**][docs-stable-url] &mdash; **documentation of the most recently tagged version.**
+- [**DEV**][docs-dev-url] &mdash; _documentation of the in-development version._
 
-For stable release
+## Project Status
 
-```julia
-(@v1.6) pkg> add Spglib
-```
+The package is tested against, and being developed for, Julia `1.6` and above on Linux,
+macOS, and Windows.
 
-For current master
+## Questions and Contributions
 
-```julia
-(@v1.6) pkg> add Spglib#master
-```
+Usage questions can be posted on [our discussion page][discussions-url].
+
+Contributions are very welcome, as are feature requests and suggestions. Please open an
+[issue][issues-url] if you encounter any problems. The [contributing](@ref) page has
+a few guidelines that should be followed when opening pull requests and contributing code.
+
+[discussions-url]: https://github.com/singularitti/Spglib.jl/discussions
+[issues-url]: https://github.com/singularitti/Spglib.jl/issues
+[contrib-url]: https://github.com/singularitti/Spglib.jl/discussions
