@@ -40,8 +40,8 @@ This repository is created and maintained by
 ```@contents
 Pages = [
     "installation.md",
-    "develop.md",
-    "api.md",
+    "contributing.md",
+    "public.md",
 ]
 Depth = 3
 ```
