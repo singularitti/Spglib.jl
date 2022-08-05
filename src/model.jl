@@ -23,8 +23,8 @@ struct Cell{L,P,T,M}
     magmoms::Vector{M}
 end
 function Cell(lattice, positions, types, magmoms = zeros(length(types)))
-    if lattice isa AbstractVector
-        lattice = hcat(lattice...)
+    if !(lattice isa AbstractMatrix)
+        lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
     end
     N = length(types)
     if positions isa AbstractMatrix
