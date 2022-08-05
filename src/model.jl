@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructHelpers: @batteries
 
-export Cell, Dataset, SpacegroupType, basis_vectors
+export Cell, Dataset, SpacegroupType, basis_vectors, natoms
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -47,6 +47,8 @@ function Cell(lattice, positions, types, magmoms = zeros(length(types)))
 end
 
 @batteries Cell eq = true hash = true
+
+natoms(cell::Cell) = length(cell.types)
 
 """
     basis_vectors(cell::Cell)
