@@ -26,12 +26,24 @@ function Cell(lattice, positions, types, magmoms = zeros(length(types)))
     if lattice isa AbstractVector
         lattice = hcat(lattice...)
     end
-    if positions isa AbstractVector
-        positions = hcat(positions...)
+    N = length(types)
+    if positions isa AbstractMatrix
+        P = eltype(positions)
+        if size(positions) == (3, N)
+            positions = collect(eachcol(positions))
+        elseif size(positions) == (N, 3)
+            positions = collect(eachrow(positions))
+        else
+            #! format: off
+            throw(DimensionMismatch( "the `positions` has a different number of atoms from the `types`!"))
+            #! format: on
+        end
+    else  # positions isa AbstractVector or a Tuple
+        P = eltype(Base.promote_typeof(positions...))
+        positions = collect(map(MVector{3,P}, positions))
     end
-    N, L, P, T, M =
-        length(types), eltype(lattice), eltype(positions), eltype(types), eltype(magmoms)
-    return Cell{N,L,P,T,M}(lattice, positions, types, magmoms)
+    L, T, M = eltype(lattice), eltype(types), eltype(magmoms)
+    return Cell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
 @batteries Cell eq = true hash = true
