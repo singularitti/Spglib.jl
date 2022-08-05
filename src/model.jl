@@ -11,7 +11,7 @@ The basic input data type of `Spglib`.
 Lattice parameters `lattice` are given by a ``3×3`` matrix with floating point values,
 where ``𝐚``, ``𝐛``, and ``𝐜`` are given as columns.
 Fractional atomic positions `positions` are given
-by a ``3×N`` matrix with floating point values, where ``N`` is the number of atoms.
+by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
 Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values.
@@ -36,9 +36,7 @@ function Cell(lattice, positions, types, magmoms = zeros(length(types)))
         elseif size(positions) == (N, 3)
             positions = collect(eachrow(positions))
         else
-            #! format: off
             throw(DimensionMismatch( "the `positions` has a different number of atoms from the `types`!"))
-            #! format: on
         end
     else  # positions isa AbstractVector or a Tuple
         P = eltype(Base.promote_typeof(positions...))
