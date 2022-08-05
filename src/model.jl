@@ -16,11 +16,11 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values.
 """
-struct Cell{N,L,P,T,M}
+struct Cell{L,P,T,M}
     lattice::MMatrix{3,3,L,9}
-    positions::MMatrix{3,N,P}
-    types::MVector{N,T}
-    magmoms::MVector{N,M}
+    positions::Vector{MVector{3,P}}
+    types::Vector{T}
+    magmoms::Vector{M}
 end
 function Cell(lattice, positions, types, magmoms = zeros(length(types)))
     if lattice isa AbstractVector
