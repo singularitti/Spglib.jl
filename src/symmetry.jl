@@ -11,7 +11,12 @@ end
 
 Return the symmetry operations of a `cell`.
 """
-function get_symmetry(cell::Cell, symprec = 1e-5)
+function get_symmetry(
+    cell::Cell,
+    symprec = 1e-5,
+    angle_tolerance = -1.0,
+    is_magnetic = false,
+)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
@@ -25,7 +30,43 @@ function get_symmetry(cell::Cell, symprec = 1e-5)
         else
             spin_flips = nothing
         end
-        # TODO: unfinished!
+        num_sym = ccall(
+            (:spg_symmetry_with_site_tensors, libsymspg),
+            Cint,
+            (
+                Ptr{Cint},
+                Ptr{Cdouble},
+                Ptr{Cint},
+                Ptr{Cint},
+                Ptr{Cint},
+                Cint,
+                Ptr{Cdouble},
+                Ptr{Cdouble},
+                Ptr{Cint},
+                Ptr{Cdouble},
+                Cint,
+                Cdouble,
+            ),
+            rotation,
+            translation,
+            equivalent_atoms,
+            primitive_lattice,
+            spin_flips,
+            lattice,
+            positions,
+            types,
+            magmoms,
+            is_magnetic,
+            symprec,
+            angle_tolerance,
+        )
+        if num_sym == 0
+            throw(SpglibError("Symmetry operation search failed!"))
+        end
+        return rotation[:, :, 1:num_sym],
+        translation[:, 1:num_sym],
+        equivalent_atoms,
+        primitive_lattice
     end
 end
 
