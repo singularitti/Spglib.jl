@@ -22,7 +22,7 @@ already have Julia installed as a module, you may
 just `module load julia` to use it. If not, either install by yourself or contact your
 administrator.
 
-## Loading `SimpleWorkflows`
+## Loading `Spglib`
 
 ### Why is Julia compiling/loading modules so slow? What can I do?
 
