@@ -70,7 +70,7 @@ function _expand_cell(cell::Cell)
     if magmoms !== nothing
         magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     end
-    return Cell(clattice, cpositions, ctypes, magmoms)
+    return clattice, cpositions, ctypes, magmoms
 end
 
 # This is an internal type, do not export!
