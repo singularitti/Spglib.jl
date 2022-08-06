@@ -152,20 +152,21 @@ else
     include("old.jl")
 end
 
-function Base.show(io::IO, cell::Cell{N}) where {N}
+function Base.show(io::IO, cell::Cell)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(cell)
         Base.show_default(IOContext(io, :limit => true), cell)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
     else
         println(io, string(typeof(cell)))
-        println(io, "lattice:")
-        print(io, " ")
-        show(io, "text/plain", cell.lattice)
-        println(io, "")
-        println(io, "$N atomic positions:")
-        print(io, " ")
-        show(io, "text/plain", cell.positions)
-        println(io, "")
-        println(io, "$N atoms:")
-        println(io, " ", cell.types)
+        println(io, " lattice:")
+        for row in eachrow(cell.lattice)
+            println(io, "  ", join(row, "  "))
+        end
+        N = natoms(cell)
+        println(io, " $N atomic positions:")
+        for pos in cell.positions
+            println(io, "  ", pos)
+        end
+        println(io, " $N atoms:")
+        println(io, "  ", cell.types)
     end
 end
