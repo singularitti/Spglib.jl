@@ -14,7 +14,7 @@ function standardize_cell(
     no_idealize = false,
     symprec = 1e-5,
 )
-    @unpack lattice, positions, types = _expand_cell(cell)
+    lattice, positions, types = _expand_cell(cell)
     to_primitive = Base.cconvert(Cint, to_primitive)
     no_idealize = Base.cconvert(Cint, no_idealize)
     num_atom = Base.cconvert(Cint, length(types))

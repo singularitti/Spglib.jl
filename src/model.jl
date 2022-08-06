@@ -62,7 +62,8 @@ end
 
 # This is an internal function, do not export!
 function _expand_cell(cell::Cell)
-    @unpack lattice, positions, types, magmoms = cell
+    lattice, positions, types, magmoms =
+        cell.lattice, cell.positions, cell.types, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, lattice) |> transpose
     cpositions = Base.cconvert(Matrix{Cdouble}, positions)

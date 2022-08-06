@@ -37,7 +37,7 @@ function get_ir_reciprocal_mesh(
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
-    @unpack lattice, positions, types = _expand_cell(cell)
+    lattice, positions, types = _expand_cell(cell)
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
     is_time_reversal = Base.cconvert(Cint, is_time_reversal)
