@@ -146,12 +146,6 @@ end
 
 const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-@static if get_version() >= v"1.15.0"
-    include("new.jl")
-else
-    include("old.jl")
-end
-
 function Base.show(io::IO, cell::Cell)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(cell)
         Base.show_default(IOContext(io, :limit => true), cell)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
