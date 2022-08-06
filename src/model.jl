@@ -20,9 +20,9 @@ struct Cell{L,P,T,M}
     lattice::MMatrix{3,3,L,9}
     positions::Vector{MVector{3,P}}
     types::Vector{T}
-    magmoms::Vector{M}
+    magmoms::M
 end
-function Cell(lattice, positions, types, magmoms = zeros(length(types)))
+function Cell(lattice, positions, types, magmoms = nothing)
     if !(lattice isa AbstractMatrix)
         lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
     end
@@ -42,7 +42,7 @@ function Cell(lattice, positions, types, magmoms = zeros(length(types)))
         P = eltype(Base.promote_typeof(positions...))
         positions = collect(map(MVector{3,P}, positions))
     end
-    L, T, M = eltype(lattice), eltype(types), eltype(magmoms)
+    L, T, M = eltype(lattice), eltype(types), typeof(magmoms)
     return Cell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
