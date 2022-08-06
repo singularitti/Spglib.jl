@@ -14,7 +14,7 @@ Fractional atomic positions `positions` are given
 by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
 Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
-as a list of ``N`` floating point values.
+as a list of ``N`` floating point values, or a vector of vectors.
 """
 struct Cell{L,P,T,M}
     lattice::MMatrix{3,3,L,9}
