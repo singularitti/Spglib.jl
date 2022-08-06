@@ -26,7 +26,7 @@
               -1.999719735 1.999719735 0.0
               0.0 0.0 8.57154746
           ]
-    @test primitive_cell.positions ≈ [  # Python results
+    @test reduce(hcat, primitive_cell.positions) ≈ [  # Python results
         0.15311561 0.34688439 0.65311561 0.84688439
         0.84688439 0.65311561 0.34688439 0.15311561
         0.1203133 0.6203133 0.3796867 0.8796867
@@ -69,7 +69,7 @@ end
         -1.99971973 1.99971973 0.0
         0.0 0.0 8.57154746
     ]
-    @test primitive_cell.positions ≈ [  # Python results
+    @test reduce(hcat, primitive_cell.positions) ≈ [  # Python results
         0.15311561 0.34688439 0.65311561 0.84688439
         0.84688439 0.65311561 0.34688439 0.15311561
         0.1203133 0.6203133 0.3796867 0.8796867
@@ -105,7 +105,7 @@ end
             2.0 -2.0 2.0
             2.0 2.0 -2.0
         ]
-        @test new_cell.positions ≈ [0.0 0.0 0.0]'
+        @test new_cell.positions ≈ [[0.0, 0.0, 0.0]]
         @test new_cell.types == [1]
     end
     @testset "Test `refine_cell`" begin
@@ -123,7 +123,7 @@ end
             0.0 4.0 0.0
             0.0 0.0 4.0
         ]
-        @test new_cell.positions ≈ [
+        @test reduce(hcat, new_cell.positions) ≈ [
             0.0 0.5
             0.0 0.5
             0.0 0.5
