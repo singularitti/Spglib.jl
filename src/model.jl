@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructHelpers: @batteries
 
-export Cell, Dataset, SpacegroupType, basis_vectors
+export Cell, Dataset, SpacegroupType, basis_vectors, natoms
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -11,30 +11,44 @@ The basic input data type of `Spglib`.
 Lattice parameters `lattice` are given by a ``3×3`` matrix with floating point values,
 where ``𝐚``, ``𝐛``, and ``𝐜`` are given as columns.
 Fractional atomic positions `positions` are given
-by a ``3×N`` matrix with floating point values, where ``N`` is the number of atoms.
+by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
 Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values.
 """
-struct Cell{N,L,P,T,M}
+struct Cell{L,P,T,M}
     lattice::MMatrix{3,3,L,9}
-    positions::MMatrix{3,N,P}
-    types::MVector{N,T}
-    magmoms::MVector{N,M}
+    positions::Vector{MVector{3,P}}
+    types::Vector{T}
+    magmoms::Vector{M}
 end
 function Cell(lattice, positions, types, magmoms = zeros(length(types)))
-    if lattice isa AbstractVector
-        lattice = hcat(lattice...)
+    if !(lattice isa AbstractMatrix)
+        lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
     end
-    if positions isa AbstractVector
-        positions = hcat(positions...)
+    N = length(types)
+    if positions isa AbstractMatrix
+        P = eltype(positions)
+        if size(positions) == (3, 3)
+            error("ambiguous `positions` size 3×3! Use a vector of `Vector`s instead!")
+        elseif size(positions) == (3, N)
+            positions = collect(eachcol(positions))
+        elseif size(positions) == (N, 3)
+            positions = collect(eachrow(positions))
+        else
+            throw(DimensionMismatch( "the `positions` has a different number of atoms from the `types`!"))
+        end
+    else  # positions isa AbstractVector or a Tuple
+        P = eltype(Base.promote_typeof(positions...))
+        positions = collect(map(MVector{3,P}, positions))
     end
-    N, L, P, T, M =
-        length(types), eltype(lattice), eltype(positions), eltype(types), eltype(magmoms)
-    return Cell{N,L,P,T,M}(lattice, positions, types, magmoms)
+    L, T, M = eltype(lattice), eltype(types), eltype(magmoms)
+    return Cell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
 @batteries Cell eq = true hash = true
+
+natoms(cell::Cell) = length(cell.types)
 
 """
     basis_vectors(cell::Cell)
@@ -48,15 +62,16 @@ end
 
 # This is an internal function, do not export!
 function _expand_cell(cell::Cell)
-    @unpack lattice, positions, types, magmoms = cell
+    lattice, positions, types, magmoms =
+        cell.lattice, cell.positions, cell.types, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, lattice) |> transpose
-    cpositions = Base.cconvert(Matrix{Cdouble}, positions)
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
+    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     if magmoms !== nothing
         magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     end
-    return Cell(clattice, cpositions, ctypes, magmoms)
+    return clattice, cpositions, ctypes, magmoms
 end
 
 # This is an internal type, do not export!

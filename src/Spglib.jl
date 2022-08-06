@@ -1,7 +1,6 @@
 module Spglib
 
 using spglib_jll: libsymspg
-using UnPack: @unpack
 
 # All public methods
 export get_symmetry,
