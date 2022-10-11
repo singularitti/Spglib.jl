@@ -30,7 +30,8 @@ function Cell(lattice, positions, types, magmoms = nothing)
     if positions isa AbstractMatrix
         P = eltype(positions)
         if size(positions) == (3, 3)
-            error("ambiguous `positions` size 3×3! Use a vector of `Vector`s instead!")
+            @warn "ambiguous `positions` size 3×3! Use `eachcol` by default!"
+            positions = collect(eachcol(positions))
         elseif size(positions) == (3, N)
             positions = collect(eachcol(positions))
         elseif size(positions) == (N, 3)
