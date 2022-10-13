@@ -36,7 +36,11 @@ function Cell(lattice, positions, types, magmoms = nothing)
         elseif size(positions) == (N, 3)
             positions = collect(eachrow(positions))
         else
-            throw(DimensionMismatch( "the `positions` has a different number of atoms from the `types`!"))
+            throw(
+                DimensionMismatch(
+                    "the `positions` has a different number of atoms from the `types`!",
+                ),
+            )
         end
     else  # positions isa AbstractVector or a Tuple
         P = eltype(Base.promote_typeof(positions...))
