@@ -39,7 +39,7 @@ function standardize_cell(
         throw(SpglibError("Cell standardization failed!"))
     end
     # We have to `transpose` back because of `_expand_cell`!
-    return Cell(transpose(lattice), _positions[:, 1:num_atom_std], _types[1:num_atom_std])
+    return Cell(transpose(lattice), collect(eachcol(_positions))[1:num_atom_std], _types[1:num_atom_std])
 end
 
 """
