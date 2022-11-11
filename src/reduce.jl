@@ -21,8 +21,8 @@ end
 function niggli_reduce(cell::Cell, symprec = 1e-5)
     lattice = cell.lattice
     clattice = niggli_reduce(lattice, symprec)
-    # Keeping cartesian coordinates
-    recip = inv(clattice) * cell.lattice 
+    # Keeping cartesian coordinates, see #106
+    recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
     return Cell(clattice, new_frac_pos, cell.types, cell.magmoms)
 end
@@ -50,8 +50,8 @@ end
 function delaunay_reduce(cell::Cell, symprec = 1e-5)
     lattice = cell.lattice
     clattice = delaunay_reduce(lattice, symprec)
-    # Keeping cartesian coordinates
-    recip = inv(clattice) * cell.lattice 
+    # Keeping cartesian coordinates, see #106
+    recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
     return Cell(clattice, new_frac_pos, cell.types, cell.magmoms)
 end
