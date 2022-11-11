@@ -20,7 +20,7 @@ function get_symmetry(
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
-    if iszero(cell.magmoms)
+    if isnothing(cell.magmoms) || iszero(cell.magmoms)
         return get_symmetry!(rotation, translation, cell, symprec)
     else
         equivalent_atoms = zeros(length(cell.magmoms))
