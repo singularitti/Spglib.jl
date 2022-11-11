@@ -1,3 +1,5 @@
+using Spglib: SpglibError
+
 # This example is from https://spglib.github.io/spglib/definition.html#transformation-to-a-primitive-cell
 @testset "Transformation to a primitive cell" begin
     lattice = [[7.17851431, 0, 0], [0, 3.99943947, 0], [0, 0, 8.57154746]]
@@ -130,4 +132,18 @@ end
         ]
         @test new_cell.types == [1, 1]
     end
+end
+
+@testset "A test that will cause an error" begin
+    # See issue #99
+    lattice = [
+        6.0 0.0 6.0
+        6.0 0.0 6.0
+        0.0 6.0 6.0
+    ]
+    positions = [[0.0, 0.0, 0.0], [0.75, 0.75, 0.75], [0.5, 0.5, 0.5]]
+    types = ["Na", "Na", "Cl"]
+    cell = Cell(lattice, positions, types)
+    @test_throws SpglibError find_primitive(cell)
+    @test_throws SpglibError standardize_cell(cell, to_primitive = true)
 end
