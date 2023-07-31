@@ -1,51 +1,77 @@
-```@meta
-CurrentModule = Spglib
-```
-
 # Spglib
 
-Documentation for [Spglib](https://github.com/singularitti/Spglib.jl).
+Documentation for [Spglib](https://github.com/MineralsCloud/Spglib.jl).
 
-`Spglib` is a Julia wrapper of the C library [`spglib`](https://github.com/spglib/spglib).
-It is used for finding and handling crystal symmetries.
-Thanks to Julia's binary artifact mechanism, the installation and usage of it should be
-smooth after Julia 1.3.
+See the [Index](@ref main-index) for the complete list of documented functions
+and types.
 
-There was already a package [`LibSymspg.jl`](https://github.com/unkcpz/LibSymspg.jl),
-but it is [no longer actively maintained](https://github.com/unkcpz/LibSymspg.jl/issues/4).
-And it does not support the latest versions of `spglib`.
-It also has some different design decisions with this package, including, but not limited to,
-naming conventions, input types, and return types of functions.
-
-The code is [hosted on GitHub](https://github.com/singularitti/Spglib.jl), with some
-continuous integration services to test its validity.
+The code, which is [hosted on GitHub](https://github.com/MineralsCloud/Spglib.jl), is tested
+using various continuous integration services for its validity.
 
 This repository is created and maintained by
-[singularitti](https://github.com/singularitti). Thanks to the contribution from
-[searchengineorientprogramming](https://github.com/searchengineorientprogramming).
+[@singularitti](https://github.com/singularitti), and contributions are highly welcome.
 
-## Compatibility
+## Package features
 
-- [Julia version: `v1.3.0` to `v1.7.0`](https://julialang.org/downloads/)
-- Dependencies:
-  - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
-  - [`StructHelpers.jl`](https://github.com/jw3126/StructHelpers.jl) `v0.1.0` and above
-  - [`spglib_jll.jl`](https://github.com/JuliaBinaryWrappers/spglib_jll.jl) `v1.15.1+0` and above
-- OS: macOS, Linux, Windows, and FreeBSD
-- Architecture: x86, x64, ARM
 
-## Manual Outline
+
+## Installation
+
+The package can be installed with the Julia package manager.
+From [the Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/), type `]` to enter
+the [Pkg mode](https://docs.julialang.org/en/v1/stdlib/REPL/#Pkg-mode) and run:
+
+```julia-repl
+pkg> add Spglib
+```
+
+Or, equivalently, via [`Pkg.jl`](https://pkgdocs.julialang.org/v1/):
+
+```@repl
+import Pkg; Pkg.add("Spglib")
+```
+
+## Documentation
+
+- [**STABLE**](https://MineralsCloud.github.io/Spglib.jl/stable) — **documentation of the most recently tagged version.**
+- [**DEV**](https://MineralsCloud.github.io/Spglib.jl/dev) — _documentation of the in-development version._
+
+## Project status
+
+The package is developed for and tested against Julia `v1.6` and above on Linux, macOS, and
+Windows.
+
+## Questions and contributions
+
+You can post usage questions on
+[our discussion page](https://github.com/MineralsCloud/Spglib.jl/discussions).
+
+We welcome contributions, feature requests, and suggestions. If you encounter any problems,
+please open an [issue](https://github.com/MineralsCloud/Spglib.jl/issues).
+The [Contributing](@ref) page has
+a few guidelines that should be followed when opening pull requests and contributing code.
+
+## Manual outline
 
 ```@contents
 Pages = [
-    "installation.md",
-    "contributing.md",
-    "public.md",
+    "man/installation.md",
+    "man/troubleshooting.md",
+    "developers/contributing.md",
+    "developers/style-guide.md",
+    "developers/design-principles.md",
 ]
 Depth = 3
 ```
 
-## Index
+## Library outline
+
+```@contents
+Pages = ["lib/public.md", "lib/internals.md"]
+```
+
+### [Index](@id main-index)
 
 ```@index
+Pages = ["lib/public.md"]
 ```

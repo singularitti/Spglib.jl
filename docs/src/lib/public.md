@@ -1,10 +1,21 @@
-```@meta
-CurrentModule = Spglib
+# Public API
+
+## Contents
+
+```@contents
+Pages = ["public.md"]
+Depth = 2:2
 ```
 
-# API
+## Index
 
-## Types
+```@index
+Pages = ["public.md"]
+```
+
+## Public interface
+
+### Types
 
 There are two types, `Dataset` and `SpacegroupType`, correspond to `SpglibDataset`
 and `SpglibSpacegroupType`, respectively. They store basic information of a symmetry search.
@@ -29,7 +40,7 @@ Dataset
 SpacegroupType
 ```
 
-## Methods
+### Methods
 
 Some methods are exported here.
 You can find their official documentation [on this page](https://spglib.github.io/spglib/api.html).
