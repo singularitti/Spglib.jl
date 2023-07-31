@@ -1,4 +1,4 @@
-# [Installation Guide](@id installation)
+# Installation Guide
 
 ```@contents
 Pages = ["installation.md"]

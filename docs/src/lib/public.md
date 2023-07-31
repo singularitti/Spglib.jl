@@ -4,7 +4,7 @@
 
 ```@contents
 Pages = ["public.md"]
-Depth = 2:2
+Depth = 2
 ```
 
 ## Index
