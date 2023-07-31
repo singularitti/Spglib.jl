@@ -15,7 +15,7 @@ By participating, you are expected to uphold this code.
 
 ## Join the community forum
 
-First up, join the [community forum](https://github.com/MineralsCloud/Spglib.jl/discussions).
+First up, join the [community forum](https://github.com/singularitti/Spglib.jl/discussions).
 
 The forum is a good place to ask questions about how to use Spglib. You can also
 use the forum to discuss possible feature requests and bugs before raising a
@@ -27,14 +27,14 @@ help answer questions on the forum!
 ## Improve the documentation
 
 Chances are, if you asked (or answered) a question on the community forum, then
-it is a sign that the [documentation](https://MineralsCloud.github.io/Spglib.jl/dev/) could be
+it is a sign that the [documentation](https://singularitti.github.io/Spglib.jl/dev/) could be
 improved. Moreover, since it is your question, you are probably the best-placed
 person to improve it!
 
 The docs are written in Markdown and are built using
 [`Documenter.jl`](https://github.com/JuliaDocs/Documenter.jl).
 You can find the source of all the docs
-[here](https://github.com/MineralsCloud/Spglib.jl/tree/main/docs).
+[here](https://github.com/singularitti/Spglib.jl/tree/main/docs).
 
 If your change is small (like fixing typos or one or two sentence corrections),
 the easiest way to do this is via GitHub's online editor. (GitHub has
@@ -49,15 +49,15 @@ change locally and then use Git to submit a
 ## File a bug report
 
 Another way to contribute to Spglib is to file
-[bug reports](https://github.com/MineralsCloud/Spglib.jl/issues/new?template=bug_report.md).
+[bug reports](https://github.com/singularitti/Spglib.jl/issues/new?template=bug_report.md).
 
 Make sure you read the info in the box where you write the body of the issue
 before posting. You can also find a copy of that info
-[here](https://github.com/MineralsCloud/Spglib.jl/blob/main/.github/ISSUE_TEMPLATE/bug_report.md).
+[here](https://github.com/singularitti/Spglib.jl/blob/main/.github/ISSUE_TEMPLATE/bug_report.md).
 
 !!! tip
     If you're unsure whether you have a real bug, post on the
-    [community forum](https://github.com/MineralsCloud/Spglib.jl/discussions)
+    [community forum](https://github.com/singularitti/Spglib.jl/discussions)
     first. Someone will either help you fix the problem or let you know the
     most appropriate place to open a bug report.
 
@@ -79,7 +79,7 @@ Spglib is similar to the following:
 
 ### Step 1: decide what to work on
 
-The first step is to find an [open issue](https://github.com/MineralsCloud/Spglib.jl/issues)
+The first step is to find an [open issue](https://github.com/singularitti/Spglib.jl/issues)
 (or open a new one) for the problem you want to solve. Then, _before_ spending
 too much time on it, discuss what you are planning to do in the issue to see if
 other contributors are fine with your proposed changes. Getting feedback early can
@@ -93,7 +93,7 @@ Spglib.
 
 ### Step 2: fork Spglib
 
-Go to [https://github.com/MineralsCloud/Spglib.jl](https://github.com/MineralsCloud/Spglib.jl)
+Go to [https://github.com/singularitti/Spglib.jl](https://github.com/singularitti/Spglib.jl)
 and click the "Fork" button in the top-right corner. This will create a copy of
 Spglib under your GitHub account.
 
@@ -227,7 +227,7 @@ git commit -m "A descriptive message of the changes"
 git push -u GITHUB_ACCOUNT my_new_branch
 ```
 
-Then go to [our pull request page](https://github.com/MineralsCloud/Spglib.jl/pulls)
+Then go to [our pull request page](https://github.com/singularitti/Spglib.jl/pulls)
 and follow the instructions that pop up to open a pull request.
 
 ### Step 8: respond to comments

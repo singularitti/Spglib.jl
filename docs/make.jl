@@ -10,7 +10,7 @@ makedocs(;
     sitename="Spglib.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://MineralsCloud.github.io/Spglib.jl",
+        canonical="https://singularitti.github.io/Spglib.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -36,6 +36,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/MineralsCloud/Spglib.jl",
+    repo="github.com/singularitti/Spglib.jl",
     devbranch="main",
 )

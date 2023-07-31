@@ -7,11 +7,11 @@ Depth = 2
 
 This page collects some possible errors you may encounter along with tips on how to fix them.
 If you have some questions about how to use this code, you are welcome to
-[discuss with us](https://github.com/MineralsCloud/Spglib.jl/discussions).
+[discuss with us](https://github.com/singularitti/Spglib.jl/discussions).
 
 If you have additional tips, please either
-[report an issue](https://github.com/MineralsCloud/Spglib.jl/issues/new) or
-[submit a pull request](https://github.com/MineralsCloud/Spglib.jl/compare) with suggestions.
+[report an issue](https://github.com/singularitti/Spglib.jl/issues/new) or
+[submit a pull request](https://github.com/singularitti/Spglib.jl/compare) with suggestions.
 
 ## Cannot find the Julia executable
 

@@ -1,11 +1,11 @@
 # Spglib
 
-Documentation for [Spglib](https://github.com/MineralsCloud/Spglib.jl).
+Documentation for [Spglib](https://github.com/singularitti/Spglib.jl).
 
 See the [Index](@ref main-index) for the complete list of documented functions
 and types.
 
-The code, which is [hosted on GitHub](https://github.com/MineralsCloud/Spglib.jl), is tested
+The code, which is [hosted on GitHub](https://github.com/singularitti/Spglib.jl), is tested
 using various continuous integration services for its validity.
 
 This repository is created and maintained by
@@ -33,8 +33,8 @@ import Pkg; Pkg.add("Spglib")
 
 ## Documentation
 
-- [**STABLE**](https://MineralsCloud.github.io/Spglib.jl/stable) — **documentation of the most recently tagged version.**
-- [**DEV**](https://MineralsCloud.github.io/Spglib.jl/dev) — _documentation of the in-development version._
+- [**STABLE**](https://singularitti.github.io/Spglib.jl/stable) — **documentation of the most recently tagged version.**
+- [**DEV**](https://singularitti.github.io/Spglib.jl/dev) — _documentation of the in-development version._
 
 ## Project status
 
@@ -44,10 +44,10 @@ Windows.
 ## Questions and contributions
 
 You can post usage questions on
-[our discussion page](https://github.com/MineralsCloud/Spglib.jl/discussions).
+[our discussion page](https://github.com/singularitti/Spglib.jl/discussions).
 
 We welcome contributions, feature requests, and suggestions. If you encounter any problems,
-please open an [issue](https://github.com/MineralsCloud/Spglib.jl/issues).
+please open an [issue](https://github.com/singularitti/Spglib.jl/issues).
 The [Contributing](@ref) page has
 a few guidelines that should be followed when opening pull requests and contributing code.
 
