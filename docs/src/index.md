@@ -13,7 +13,8 @@ This repository is created and maintained by
 
 ## Package features
 
-
+- It enables the finding and handling of crystal symmetries.
+- The design of the package includes new naming conventions, input types, and return types of functions.
 
 ## Installation
 
