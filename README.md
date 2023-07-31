@@ -26,7 +26,7 @@ It is used for finding and handling crystal symmetries.
 Thanks to Julia's binary artifact mechanism, the installation and usage of it should be
 smooth after Julia 1.3.
 
-There was already a package [`LibSymspg.jl`](https://github.com/unkcpz/LibSymspg.jl),
+There was already a package [`LibSymspg.jl`](https://juliahub.com/ui/Packages/LibSymspg/D1i7g) by [`@unkcpz`](https://github.com/unkcpz),
 but it is [no longer actively maintained](https://github.com/unkcpz/LibSymspg.jl/issues/4).
 And it does not support the latest versions of `spglib`.
 It also has some different design decisions with this package, including, but not limited to,
