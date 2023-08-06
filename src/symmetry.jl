@@ -224,6 +224,30 @@ function get_symmetry_from_database!(
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
 end
 
+function get_spacegroup_type_from_symmetry(
+    rotation::AbstractArray{T,3},
+    translation::AbstractMatrix,
+    num_operations::Integer,
+    lattice::AbstractMatrix,
+    symprec=1e-5,
+) where {T}
+    rotation = Base.cconvert(Array{Cint,3}, rotation)
+    translation = Base.cconvert(Matrix{Cdouble}, translation)
+    num_operations = Base.cconvert(Cint, num_operations)
+    lattice = Base.convert(Matrix{Cdouble}, lattice)
+    spgtype = ccall(
+        (:spg_get_spacegroup_type_from_symmetry, libsymspg),
+        SpglibSpacegroupType,
+        (Ptr{Cint}, Ptr{Cdouble}, Cint, Ptr{Cdouble}, Cdouble),
+        rotation,
+        translation,
+        num_operations,
+        lattice,
+        symprec,
+    )
+    return convert(SpacegroupType, spgtype)
+end
+
 """
     get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
 
@@ -254,6 +278,8 @@ function get_hall_number_from_symmetry(
         symprec,
     )
 end
+
+@deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
 
 """
     get_multiplicity(cell::Cell, symprec=1e-5)
