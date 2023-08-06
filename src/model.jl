@@ -1,7 +1,8 @@
+using CrystallographyCore: AbstractCell, Cell
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
-export Cell, Dataset, SpacegroupType, basis_vectors, natoms
+export Cell, MagneticCell, Dataset, SpacegroupType, basis_vectors, natoms
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -16,13 +17,13 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values, or a vector of vectors.
 """
-@struct_hash_equal struct Cell{L,P,T,M}
+@struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
     lattice::MMatrix{3,3,L,9}
     positions::Vector{MVector{3,P}}
     types::Vector{T}
     magmoms::M
 end
-function Cell(lattice, positions, types, magmoms=nothing)
+function MagneticCell(lattice, positions, types, magmoms=nothing)
     if !(lattice isa AbstractMatrix)
         lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
     end
@@ -47,7 +48,7 @@ function Cell(lattice, positions, types, magmoms=nothing)
         positions = collect(map(MVector{3,P}, positions))
     end
     L, T, M = eltype(lattice), eltype(types), typeof(magmoms)
-    return Cell{L,P,T,M}(lattice, positions, types, magmoms)
+    return MagneticCell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
 natoms(cell::AbstractCell) = length(cell.types)
