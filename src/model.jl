@@ -1,8 +1,6 @@
-using CrystallographyCore: AbstractCell, Cell, Lattice
+using CrystallographyCore: AbstractCell, Cell, Lattice, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
-
-import CrystallographyCore: basisvectors
 
 export Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
 
@@ -55,12 +53,6 @@ end
 
 natoms(cell::AbstractCell) = length(cell.types)
 
-"""
-    basis_vectors(cell::Cell)
-
-Return the three basis vectors from `cell`.
-"""
-basisvectors(cell::MagneticCell) = basisvectors(cell.lattice)
 const basis_vectors = basisvectors  # For backward compatibility
 
 # This is an internal function, do not export!
