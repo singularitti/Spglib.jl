@@ -21,8 +21,8 @@ end
 
 get_error_code() = ccall((:spg_get_error_code, libsymspg), SpglibReturnCode, ())
 
-get_error_message(spglib_error::SpglibReturnCode) = unsafe_string(
-    ccall((:spg_get_error_message, libsymspg), Cstring, (SpglibReturnCode,), spglib_error),
+get_error_message(code::SpglibReturnCode) = unsafe_string(
+    ccall((:spg_get_error_message, libsymspg), Cstring, (SpglibReturnCode,), code)
 )
 
 function check_error()
