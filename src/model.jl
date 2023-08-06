@@ -233,3 +233,19 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         cchars2string(dataset.pointgroup_symbol),
     )
 end
+function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+    return SpacegroupType(
+        spgtype.number,
+        unsafe_string(pointer(spgtype.international_short)),
+        unsafe_string(pointer(spgtype.international_full)),
+        unsafe_string(pointer(spgtype.international)),
+        unsafe_string(pointer(spgtype.schoenflies)),
+        spgtype.hall_number,
+        unsafe_string(pointer(spgtype.hall_symbol)),
+        unsafe_string(pointer(spgtype.choice)),
+        unsafe_string(pointer(spgtype.pointgroup_international)),
+        unsafe_string(pointer(spgtype.pointgroup_schoenflies)),
+        spgtype.arithmetic_crystal_class_number,
+        unsafe_string(pointer(spgtype.arithmetic_crystal_class_symbol)),
+    )
+end

@@ -423,17 +423,3 @@ function get_schoenflies(cell::Cell, symprec=1e-5)
     end
     return cchars2string(symbol)
 end
-
-function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
-    values = map(fieldnames(SpacegroupType)) do name
-        value = getfield(spgtype, name)
-        if value isa Cint
-            value
-        elseif value isa NTuple{N,Cchar} where {N}
-            cchars2string(value)
-        else  # This should never happen!
-            @assert false "unexpected field type $(typeof(value))!"  # See https://discourse.julialang.org/t/please-stop-using-error-and-errorexception-in-packages-and-base/12096
-        end
-    end
-    return SpacegroupType(values...)
-end
