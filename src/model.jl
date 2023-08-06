@@ -84,6 +84,7 @@ struct SpglibSpacegroupType
     international_full::NTuple{20,Cchar}
     international::NTuple{32,Cchar}
     schoenflies::NTuple{7,Cchar}
+    hall_number::Cint
     hall_symbol::NTuple{17,Cchar}
     choice::NTuple{6,Cchar}
     pointgroup_international::NTuple{6,Cchar}
@@ -98,16 +99,17 @@ end
 Represent `SpglibSpacegroupType`, see its [official documentation](https://spglib.github.io/spglib/api.html#spg-get-spacegroup-type).
 """
 struct SpacegroupType
-    number::Int
+    number::Int32
     international_short::String
     international_full::String
     international::String
     schoenflies::String
+    hall_number::Int32
     hall_symbol::String
     choice::String
     pointgroup_international::String
     pointgroup_schoenflies::String
-    arithmetic_crystal_class_number::Int
+    arithmetic_crystal_class_number::Int32
     arithmetic_crystal_class_symbol::String
 end
 
