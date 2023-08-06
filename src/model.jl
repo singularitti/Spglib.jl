@@ -1,4 +1,4 @@
-using StaticArrays: MMatrix, MVector
+using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
 export Cell, Dataset, SpacegroupType, basis_vectors, natoms
@@ -140,23 +140,23 @@ struct SpglibDataset
     international_symbol::NTuple{11,Cchar}
     hall_symbol::NTuple{17,Cchar}
     choice::NTuple{6,Cchar}
-    transformation_matrix::NTuple{9,Cdouble}
+    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
     origin_shift::NTuple{3,Cdouble}
     n_operations::Cint
-    rotations::Ptr{NTuple{9,Cint}}
+    rotations::Ptr{NTuple{3,NTuple{3,Cint}}}
     translations::Ptr{NTuple{3,Cdouble}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
     site_symmetry_symbols::Ptr{NTuple{7,Cchar}}
     equivalent_atoms::Ptr{Cint}
-    crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
-    primitive_lattice::NTuple{9,Cdouble}  # Added in v1.15.0
+    crystallographic_orbits::Ptr{Cint}
+    primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
     mapping_to_primitive::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{9,Cdouble}
+    std_lattice::NTuple{3,NTuple{3,Cdouble}}
     std_types::Ptr{Cint}
     std_positions::Ptr{NTuple{3,Cdouble}}
-    std_rotation_matrix::NTuple{9,Cdouble}
+    std_rotation_matrix::NTuple{3,NTuple{3,Cdouble}}
     std_mapping_to_primitive::Ptr{Cint}
     pointgroup_symbol::NTuple{6,Cchar}
 end
@@ -170,29 +170,29 @@ Represent `SpglibDataset`, see its [official documentation](https://spglib.githu
     Fields `crystallographic_orbits` and `primitive_lattice` are added after `spglib` `v1.15.0`.
 """
 struct Dataset
-    spacegroup_number::Int
-    hall_number::Int
+    spacegroup_number::Int32
+    hall_number::Int32
     international_symbol::String
     hall_symbol::String
     choice::String
-    transformation_matrix::Matrix{Float64}
-    origin_shift::Vector{Float64}
-    n_operations::Int
-    rotations::Array{Float64,3}
-    translations::Matrix{Float64}
-    n_atoms::Int
+    transformation_matrix::SMatrix{3,3,Float64,9}
+    origin_shift::SVector{3,Float64}
+    n_operations::Int32
+    rotations::Vector{SMatrix{3,3,Int32,9}}
+    translations::Vector{SVector{3,Float64}}
+    n_atoms::Int32
     wyckoffs::Vector{Char}
     site_symmetry_symbols::Vector{String}
-    equivalent_atoms::Vector{Int}
-    crystallographic_orbits::Vector{Int}
-    primitive_lattice::Matrix{Float64}
-    mapping_to_primitive::Vector{Int}
-    n_std_atoms::Int
-    std_lattice::Matrix{Float64}
-    std_types::Vector{Int}
-    std_positions::Matrix{Float64}
-    std_rotation_matrix::Matrix{Float64}
-    std_mapping_to_primitive::Vector{Int}
+    equivalent_atoms::Vector{Int32}
+    crystallographic_orbits::Vector{Int32}
+    primitive_lattice::SMatrix{3,3,Float64,9}
+    mapping_to_primitive::Vector{Int32}
+    n_std_atoms::Int32
+    std_lattice::SMatrix{3,3,Float64,9}
+    std_types::Vector{Int32}
+    std_positions::Vector{SVector{3,Float64}}
+    std_rotation_matrix::SMatrix{3,3,Float64,9}
+    std_mapping_to_primitive::Vector{Int32}
     pointgroup_symbol::String
 end
 
