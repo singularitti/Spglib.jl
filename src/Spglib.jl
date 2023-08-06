@@ -27,6 +27,7 @@ export get_symmetry,
     get_version
 
 include("model.jl")
+include("error.jl")
 include("symmetry.jl")
 include("standardize.jl")
 include("reduce.jl")

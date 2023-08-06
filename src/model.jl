@@ -110,10 +110,6 @@ struct SpacegroupType
     arithmetic_crystal_class_symbol::String
 end
 
-struct SpglibError <: Exception
-    msg::AbstractString
-end
-
 """
     get_version()
 
