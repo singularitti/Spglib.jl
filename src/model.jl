@@ -50,20 +50,20 @@ function Cell(lattice, positions, types, magmoms=nothing)
     return Cell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
-natoms(cell::Cell) = length(cell.types)
+natoms(cell::AbstractCell) = length(cell.types)
 
 """
     basis_vectors(cell::Cell)
 
 Return the three basis vectors from `cell`.
 """
-function basis_vectors(cell::Cell)
+function basis_vectors(cell::AbstractCell)
     lattice = cell.lattice
     return lattice[:, 1], lattice[:, 2], lattice[:, 3]
 end
 
 # This is an internal function, do not export!
-function _expand_cell(cell::Cell)
+function _expand_cell(cell::AbstractCell)
     lattice, positions, types, magmoms = cell.lattice,
     cell.positions, cell.types,
     cell.magmoms
