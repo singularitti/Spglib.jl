@@ -2,6 +2,8 @@ using CrystallographyCore: AbstractCell, Cell, Lattice, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
+import CrystallographyCore: natoms, atomtypes
+
 export Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
 
 """
@@ -51,7 +53,9 @@ function MagneticCell(lattice, positions, types, magmoms)
     return MagneticCell{L,P,T,M}(lattice, positions, types, magmoms)
 end
 
-natoms(cell::AbstractCell) = length(cell.types)
+natoms(cell::MagneticCell) = length(cell.types)
+
+atomtypes(cell::MagneticCell) = unique(cell.types)
 
 const basis_vectors = basisvectors  # For backward compatibility
 
