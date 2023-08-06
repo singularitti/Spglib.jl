@@ -18,14 +18,14 @@ The collinear polarizations `magmoms` only work with `get_symmetry` and are give
 as a list of ``N`` floating point values, or a vector of vectors.
 """
 @struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
-    lattice::MMatrix{3,3,L,9}
+    lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
     types::Vector{T}
     magmoms::M
 end
-function MagneticCell(lattice, positions, types, magmoms=nothing)
-    if !(lattice isa AbstractMatrix)
-        lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
+function MagneticCell(lattice, positions, types, magmoms)
+    if !(lattice isa Lattice)
+        lattice = Lattice(lattice)
     end
     N = length(types)
     if positions isa AbstractMatrix
