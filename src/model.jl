@@ -22,7 +22,7 @@ as a list of ``N`` floating point values, or a vector of vectors.
     types::Vector{T}
     magmoms::M
 end
-function Cell(lattice, positions, types, magmoms = nothing)
+function Cell(lattice, positions, types, magmoms=nothing)
     if !(lattice isa AbstractMatrix)
         lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
     end
@@ -38,7 +38,7 @@ function Cell(lattice, positions, types, magmoms = nothing)
         else
             throw(
                 DimensionMismatch(
-                    "the `positions` has a different number of atoms from the `types`!",
+                    "the `positions` has a different number of atoms from the `types`!"
                 ),
             )
         end
@@ -64,8 +64,9 @@ end
 
 # This is an internal function, do not export!
 function _expand_cell(cell::Cell)
-    lattice, positions, types, magmoms =
-        cell.lattice, cell.positions, cell.types, cell.magmoms
+    lattice, positions, types, magmoms = cell.lattice,
+    cell.positions, cell.types,
+    cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
@@ -108,20 +109,6 @@ struct SpacegroupType
     pointgroup_schoenflies::String
     arithmetic_crystal_class_number::Int
     arithmetic_crystal_class_symbol::String
-end
-
-"""
-    get_version()
-
-Obtain the version number of `spglib`.
-
-This is the mergence of `spg_get_major_version`, `spg_get_minor_version`, and `spg_get_micro_version` in its C-API.
-"""
-function get_version()
-    major = ccall((:spg_get_major_version, libsymspg), Cint, ())
-    minor = ccall((:spg_get_minor_version, libsymspg), Cint, ())
-    micro = ccall((:spg_get_micro_version, libsymspg), Cint, ())
-    return VersionNumber(major, minor, micro)
 end
 
 tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
@@ -224,13 +211,11 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         rotsFromTuple(r, dataset.n_operations),
         transFromTuple(t, dataset.n_operations),
         dataset.n_atoms,
-        [LETTERS[x+1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
+        [LETTERS[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
         map(
             cchars2string,
             unsafe_wrap(
-                Vector{NTuple{7,Cchar}},
-                dataset.site_symmetry_symbols,
-                dataset.n_atoms,
+                Vector{NTuple{7,Cchar}}, dataset.site_symmetry_symbols, dataset.n_atoms
             ),
         ),
         unsafe_wrap(Vector{Cint}, dataset.equivalent_atoms, dataset.n_atoms),
