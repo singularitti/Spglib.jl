@@ -55,9 +55,7 @@ function get_symmetry(cell::Cell, symprec=1e-5, angle_tolerance=-1.0, is_magneti
             symprec,
             angle_tolerance,
         )
-        if num_sym == 0
-            throw(SpglibError("Symmetry operation search failed!"))
-        end
+        check_error()
         return rotation[:, :, 1:num_sym],
         translation[:, 1:num_sym], equivalent_atoms,
         primitive_lattice
@@ -100,9 +98,7 @@ function get_symmetry!(
         num_atom,
         symprec,
     )
-    if num_sym == 0
-        throw(SpglibError("Symmetry operation search failed!"))
-    end
+    check_error()
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
 end
 
@@ -146,9 +142,7 @@ function get_symmetry_with_collinear_spin!(
         num_atom,
         symprec,
     )
-    if num_sym == 0
-        throw(SpglibError("Symmetry operation search failed!"))
-    end
+    check_error()
     return num_sym
 end
 function get_symmetry_with_collinear_spin(cell::Cell, symprec=1e-5)
@@ -202,9 +196,7 @@ function get_symmetry_from_database!(
         translation,
         hall_number,
     )
-    if num_sym == 0
-        throw(SpglibError("Symmetry operation search failed!"))
-    end
+    check_error()
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
 end
 
@@ -283,9 +275,7 @@ function get_multiplicity(cell::Cell, symprec=1e-5)
         num_atom,
         symprec,
     )
-    if num_sym == 0
-        throw(SpglibError("Symmetry operation search failed!"))
-    end
+    check_error()
     return num_sym
 end
 
@@ -382,7 +372,7 @@ Return the space group type in Hermann–Mauguin (international) notation.
 function get_international(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
-    exitcode = ccall(
+    ccall(
         (:spg_get_international, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
@@ -393,9 +383,7 @@ function get_international(cell::Cell, symprec=1e-5)
         length(types),
         symprec,
     )
-    if exitcode == 0
-        throw(SpglibError("Spacegroup search failed!"))
-    end
+    check_error()
     return cchars2string(symbol)
 end
 
@@ -407,7 +395,7 @@ Return the space group type in Schoenflies notation.
 function get_schoenflies(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
-    exitcode = ccall(
+    ccall(
         (:spg_get_schoenflies, libsymspg),
         Cint,
         (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
@@ -418,8 +406,6 @@ function get_schoenflies(cell::Cell, symprec=1e-5)
         length(types),
         symprec,
     )
-    if exitcode == 0
-        throw(SpglibError("Spacegroup search failed!"))
-    end
+    check_error()
     return cchars2string(symbol)
 end

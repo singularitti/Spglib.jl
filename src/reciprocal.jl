@@ -68,9 +68,7 @@ function get_ir_reciprocal_mesh(
         num_atom,
         symprec,
     )
-    if nir <= 0
-        throw(SpglibError("Something wrong happens when finding mesh!"))
-    end
+    check_error()
     grid_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return nir, grid_mapping_table, grid_address
 end
@@ -110,9 +108,7 @@ function get_stabilized_reciprocal_mesh(
         length(qpoints),
         qpoints,
     )
-    if nir <= 0
-        throw(SpglibError("Something wrong happens when finding mesh!"))
-    end
+    check_error()
     mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return nir, mapping, grid_address
 end
