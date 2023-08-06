@@ -5,7 +5,7 @@ function list_points(mapping, grid, mesh, shift, ir_only)
             (grid[:, i] .+ shift) ./ mesh
         end
     else
-        return map(eachslice(grid; dims = 2)) do point
+        return map(eachslice(grid; dims=2)) do point
             (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
         end
     end
@@ -24,11 +24,7 @@ end
     is_shift = [0, 0, 0]
     cell = Cell(lattice, positions, types)
     nir, mapping, grid_address = get_ir_reciprocal_mesh(
-        cell,
-        mesh,
-        is_shift;
-        is_time_reversal = true,
-        symprec = 1e-5,
+        cell, mesh, is_shift; is_time_reversal=true, symprec=1e-5
     )
     @test nir == length(unique(mapping)) == 8
 end
@@ -45,11 +41,7 @@ end
     @testset "No shifts" begin
         shift = [0, 0, 0]
         nir, mapping, grid_address = get_ir_reciprocal_mesh(
-            cell,
-            mesh,
-            shift;
-            is_time_reversal = true,
-            symprec = 1e-5,
+            cell, mesh, shift; is_time_reversal=true, symprec=1e-5
         )
         python_mapping = [
             0,
@@ -605,11 +597,7 @@ end
     @testset "With shifts" begin
         shift = [1, 1, 1]
         nir, mapping, grid_address = get_ir_reciprocal_mesh(
-            cell,
-            mesh,
-            shift;
-            is_time_reversal = true,
-            symprec = 1e-5,
+            cell, mesh, shift; is_time_reversal=true, symprec=1e-5
         )
         python_mapping = [
             0,
@@ -1211,8 +1199,9 @@ end
     @testset "No shift" begin
         shift = [0, 0, 0]
         mesh = [6, 6, 6]
-        nir, mapping, grid_address =
-            get_ir_reciprocal_mesh(rutile, mesh; is_time_reversal = true, symprec = 1e-5)
+        nir, mapping, grid_address = get_ir_reciprocal_mesh(
+            rutile, mesh; is_time_reversal=true, symprec=1e-5
+        )
         @test nir == length(unique(mapping)) == 40
         @test list_points(mapping, grid_address, mesh, shift, true) ≈ [
             [0.0, 0.0, 0.0],
@@ -1480,11 +1469,7 @@ end
         @testset "6×6×6" begin
             mesh = [6, 6, 6]
             nir, mapping, grid_address = get_ir_reciprocal_mesh(
-                rutile,
-                mesh,
-                shift;
-                is_time_reversal = true,
-                symprec = 1e-5,
+                rutile, mesh, shift; is_time_reversal=true, symprec=1e-5
             )
             @test nir == length(unique(mapping)) == 18
             @test list_points(mapping, grid_address, mesh, shift, true) ≈ [
@@ -1511,11 +1496,7 @@ end
         @testset "4×4×4" begin
             mesh = [4, 4, 4]
             nir, mapping, grid_address = get_ir_reciprocal_mesh(
-                rutile,
-                mesh,
-                shift;
-                is_time_reversal = true,
-                symprec = 1e-5,
+                rutile, mesh, shift; is_time_reversal=true, symprec=1e-5
             )
             @test nir == length(unique(mapping)) == 6
             @test list_points(mapping, grid_address, mesh, shift, true) == [
@@ -1596,11 +1577,7 @@ end
         @testset "5×5×5" begin
             mesh = [5, 5, 5]
             nir, mapping, grid_address = get_ir_reciprocal_mesh(
-                rutile,
-                mesh,
-                shift;
-                is_time_reversal = true,
-                symprec = 1e-5,
+                rutile, mesh, shift; is_time_reversal=true, symprec=1e-5
             )
             @test nir == length(unique(mapping)) == 18
             @test list_points(mapping, grid_address, mesh, shift, true) == [
@@ -1773,8 +1750,9 @@ end
     types = [14, 14, 14, 14, 14, 14, 14, 14]
     silicon_dist = Cell(lattice, positions, types)
     mesh = [6, 6, 6]
-    nir, mapping, grid_address =
-        get_ir_reciprocal_mesh(silicon_dist, mesh; is_time_reversal = true, symprec = 1e-5)
+    nir, mapping, grid_address = get_ir_reciprocal_mesh(
+        silicon_dist, mesh; is_time_reversal=true, symprec=1e-5
+    )
     @test nir == length(unique(mapping)) == 112
     @test list_points(mapping, grid_address, mesh, [0, 0, 0], true) ≈ [
         [0.0, 0.0, 0.0],
@@ -1898,8 +1876,9 @@ end
     types = [12, 5, 5]
     MgB₂ = Cell(lattice, positions, types)
     mesh = [7, 7, 7]
-    nir, mapping, grid_address =
-        get_ir_reciprocal_mesh(MgB₂, mesh; is_time_reversal = true, symprec = 1e-5)
+    nir, mapping, grid_address = get_ir_reciprocal_mesh(
+        MgB₂, mesh; is_time_reversal=true, symprec=1e-5
+    )
     @test nir == length(unique(mapping)) == 32
     @test list_points(mapping, grid_address, mesh, [0, 0, 0], true) ≈ [
         [0.0, 0.0, 0.0],

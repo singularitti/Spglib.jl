@@ -4,21 +4,17 @@
 
 Apply Niggli reduction to input basis vectors `lattice`.
 """
-function niggli_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+function niggli_reduce(lattice::AbstractMatrix, symprec=1e-5)
     clattice = convert(Matrix{Cdouble}, transpose(lattice))
     exitcode = ccall(
-        (:spg_niggli_reduce, libsymspg),
-        Cint,
-        (Ptr{Cdouble}, Cdouble),
-        clattice,
-        symprec,
+        (:spg_niggli_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec
     )
     if exitcode == 0
         throw(SpglibError("Niggli reduce failed!"))
     end
     return transpose(clattice)
 end
-function niggli_reduce(cell::Cell, symprec = 1e-5)
+function niggli_reduce(cell::Cell, symprec=1e-5)
     lattice = cell.lattice
     clattice = niggli_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
@@ -33,21 +29,17 @@ end
 
 Apply Delaunay reduction to input basis vectors `lattice`.
 """
-function delaunay_reduce(lattice::AbstractMatrix, symprec = 1e-5)
+function delaunay_reduce(lattice::AbstractMatrix, symprec=1e-5)
     clattice = convert(Matrix{Cdouble}, transpose(lattice))
     exitcode = ccall(
-        (:spg_delaunay_reduce, libsymspg),
-        Cint,
-        (Ptr{Cdouble}, Cdouble),
-        clattice,
-        symprec,
+        (:spg_delaunay_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec
     )
     if exitcode == 0
         throw(SpglibError("Delaunay reduce failed!"))
     end
     return transpose(clattice)
 end
-function delaunay_reduce(cell::Cell, symprec = 1e-5)
+function delaunay_reduce(cell::Cell, symprec=1e-5)
     lattice = cell.lattice
     clattice = delaunay_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106

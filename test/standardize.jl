@@ -18,16 +18,16 @@ using Spglib: SpglibError
     primitive_cell = find_primitive(cell)
     # Write transformation matrix directly
     @test primitive_cell.lattice ==
-          cell.lattice * [
-              1//2 1//2 0
-              -1//2 1//2 0
-              0 0 1
-          ] ==
-          [
-              3.589257155 3.589257155 0.0
-              -1.999719735 1.999719735 0.0
-              0.0 0.0 8.57154746
-          ]
+        cell.lattice * [
+            1//2 1//2 0
+            -1//2 1//2 0
+            0 0 1
+        ] ==
+        [
+            3.589257155 3.589257155 0.0
+            -1.999719735 1.999719735 0.0
+            0.0 0.0 8.57154746
+        ]
     @test reduce(hcat, primitive_cell.positions) ≈ [  # Python results
         0.15311561 0.34688439 0.65311561 0.84688439
         0.84688439 0.65311561 0.34688439 0.15311561
@@ -78,7 +78,7 @@ end
     ]
     @test primitive_cell.types == [8, 8, 8, 8] ./ 8  # Python results
     @testset "Obtain the rotated primitive cell basis vectors" begin
-        @test standardize_cell(cell, to_primitive = true, no_idealize = true).lattice ≈ [
+        @test standardize_cell(cell; to_primitive=true, no_idealize=true).lattice ≈ [
             3.95200346 1.12397269 0.0
             1.12397269 3.95200346 0.0
             0.0 0.0 8.57154746
@@ -145,5 +145,5 @@ end
     types = ["Na", "Na", "Cl"]
     cell = Cell(lattice, positions, types)
     @test_throws SpglibError find_primitive(cell)
-    @test_throws SpglibError standardize_cell(cell, to_primitive = true)
+    @test_throws SpglibError standardize_cell(cell, to_primitive=true)
 end

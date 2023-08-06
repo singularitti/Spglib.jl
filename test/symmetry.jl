@@ -7,7 +7,7 @@ function type2dict(dt)
     for n in propertynames(dt)
         di[n] = getproperty(dt, n)
     end
-    di
+    return di
 end
 
 @testset "Construct a `Cell`" begin
@@ -179,24 +179,27 @@ end
         @testset "Test ferromagnetism" begin
             magmoms = [1.0, 1.0]
             cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms =
-                get_symmetry_with_collinear_spin(cell, 1e-5)
+            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
+                cell, 1e-5
+            )
             @test size(rotation) == (3, 3, 96)
             @test equivalent_atoms == [0, 0]
         end
         @testset "Test antiferromagnetism" begin
             magmoms = [1.0, -1.0]
             cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms =
-                get_symmetry_with_collinear_spin(cell, 1e-5)
+            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
+                cell, 1e-5
+            )
             @test size(rotation) == (3, 3, 96)
             @test equivalent_atoms == [0, 0]
         end
         @testset "Test broken magmoms" begin
             magmoms = [1.0, 2.0]
             cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms =
-                get_symmetry_with_collinear_spin(cell, 1e-5)
+            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
+                cell, 1e-5
+            )
             @test size(rotation) == (3, 3, 48)
             @test size(translation) == (3, 48)
             @test equivalent_atoms == [0, 1]

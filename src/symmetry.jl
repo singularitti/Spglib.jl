@@ -11,12 +11,7 @@ end
 
 Return the symmetry operations of a `cell`.
 """
-function get_symmetry(
-    cell::Cell,
-    symprec = 1e-5,
-    angle_tolerance = -1.0,
-    is_magnetic = false,
-)
+function get_symmetry(cell::Cell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false)
     max_size = length(cell.types) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
@@ -64,17 +59,13 @@ function get_symmetry(
             throw(SpglibError("Symmetry operation search failed!"))
         end
         return rotation[:, :, 1:num_sym],
-        translation[:, 1:num_sym],
-        equivalent_atoms,
+        translation[:, 1:num_sym], equivalent_atoms,
         primitive_lattice
     end
 end
 
 function get_symmetry!(
-    rotation::AbstractArray,
-    translation::AbstractMatrix,
-    cell::Cell,
-    symprec = 1e-5,
+    rotation::AbstractArray, translation::AbstractMatrix, cell::Cell, symprec=1e-5
 )
     if size(rotation, 3) != size(translation, 2)
         throw(DimensionMismatch("`rotation` & `translation` have different max size!"))
@@ -121,7 +112,7 @@ function get_symmetry_with_collinear_spin!(
     equivalent_atoms::AbstractVector,
     max_size::Integer,
     cell::Cell,
-    symprec = 1e-5,
+    symprec=1e-5,
 ) where {T}
     lattice, positions, types, magmoms = _expand_cell(cell)
     rotation = Base.cconvert(Array{Cint,3}, rotation)
@@ -160,19 +151,14 @@ function get_symmetry_with_collinear_spin!(
     end
     return num_sym
 end
-function get_symmetry_with_collinear_spin(cell::Cell, symprec = 1e-5)
+function get_symmetry_with_collinear_spin(cell::Cell, symprec=1e-5)
     num_atom = length(cell.types)
     max_size = num_atom * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, num_atom)
     num_sym = get_symmetry_with_collinear_spin!(
-        rotation,
-        translation,
-        equivalent_atoms,
-        max_size,
-        cell,
-        symprec,
+        rotation, translation, equivalent_atoms, max_size, cell, symprec
     )
     return rotation[:, :, 1:num_sym], translation[:, 1:num_sym], equivalent_atoms
 end
@@ -193,14 +179,12 @@ function get_symmetry_from_database(hall_number)
 end
 
 function get_symmetry_from_database!(
-    rotation::AbstractArray,
-    translation::AbstractMatrix,
-    hall_number,
+    rotation::AbstractArray, translation::AbstractMatrix, hall_number
 )
     if !(size(rotation, 3) == size(translation, 2) == 192)
         throw(
             DimensionMismatch(
-                "`rotation` & `translation` should have space for 192 symmetry operations!",
+                "`rotation` & `translation` should have space for 192 symmetry operations!"
             ),
         )
     end
@@ -263,7 +247,7 @@ function get_hall_number_from_symmetry(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
     num_operations::Integer,
-    symprec = 1e-5,
+    symprec=1e-5,
 ) where {T}
     rotation = Base.cconvert(Array{Cint,3}, rotation)
     translation = Base.cconvert(Matrix{Cdouble}, translation)
@@ -286,7 +270,7 @@ end
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
-function get_multiplicity(cell::Cell, symprec = 1e-5)
+function get_multiplicity(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     num_sym = ccall(
@@ -310,7 +294,7 @@ end
 
 Search symmetry operations of an input unit cell structure.
 """
-function get_dataset(cell::Cell, symprec = 1e-5)
+function get_dataset(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     ptr = ccall(
@@ -336,7 +320,7 @@ end
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
 """
-function get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec = 1e-5)
+function get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     hall_number = Base.cconvert(Cint, hall_number)
@@ -366,10 +350,7 @@ Translate Hall number to space group type information.
 """
 function get_spacegroup_type(hall_number::Integer)
     spgtype = ccall(
-        (:spg_get_spacegroup_type, libsymspg),
-        SpglibSpacegroupType,
-        (Cint,),
-        hall_number,
+        (:spg_get_spacegroup_type, libsymspg), SpglibSpacegroupType, (Cint,), hall_number
     )
     return convert(SpacegroupType, spgtype)
 end
@@ -379,7 +360,7 @@ end
 
 Get the spacegroup number of a `cell`.
 """
-function get_spacegroup_number(cell::Cell, symprec = 1e-5)
+function get_spacegroup_number(cell::Cell, symprec=1e-5)
     dataset = get_dataset(cell, symprec)
     return dataset.spacegroup_number
 end
@@ -388,7 +369,7 @@ end
 
 Get `SpacegroupType` from `cell`.
 """
-function get_spacegroup_type(cell::Cell, symprec = 1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
+function get_spacegroup_type(cell::Cell, symprec=1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
     dataset = get_dataset(cell, symprec)
     return get_spacegroup_type(dataset.hall_number)
 end
@@ -398,7 +379,7 @@ end
 
 Return the space group type in Hermann–Mauguin (international) notation.
 """
-function get_international(cell::Cell, symprec = 1e-5)
+function get_international(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
     exitcode = ccall(
@@ -423,7 +404,7 @@ end
 
 Return the space group type in Schoenflies notation.
 """
-function get_schoenflies(cell::Cell, symprec = 1e-5)
+function get_schoenflies(cell::Cell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
     exitcode = ccall(

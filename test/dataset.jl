@@ -37,7 +37,7 @@
     ]
     # Compared with Python results
     @test isempty(dataset.choice)
-    @test isapprox(dataset.origin_shift, [5.55111512e-17, 0, 0]; atol = 1e-16)
+    @test isapprox(dataset.origin_shift, [5.55111512e-17, 0, 0]; atol=1e-16)
     @test dataset.pointgroup_symbol == "mmm"
     @test dataset.std_types == [35, 35, 35, 35, 35, 35, 35, 35] / 35
     @test dataset.std_positions ≈ [
@@ -54,7 +54,7 @@
     @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 0, 1, 2, 3]
     @test dataset.wyckoffs == ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
     @test dataset.site_symmetry_symbols ==
-          ["m..", "m..", "m..", "m..", "m..", "m..", "m..", "m.."]
+        ["m..", "m..", "m..", "m..", "m..", "m..", "m..", "m.."]
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 0, 0, 0, 0]
     if get_version() >= v"1.15"
         @test dataset.crystallographic_orbits == [0, 0, 0, 0, 0, 0, 0, 0]
@@ -88,9 +88,11 @@
         [-1 0 0; 0 1 0; 0 0 -1],
         [1 0 0; 0 -1 0; 0 0 1],
     ]
-    @test all(map(1:16) do i
-        rotations[:, :, i] == python_rotations[i]
-    end)
+    @test all(
+        map(1:16) do i
+            rotations[:, :, i] == python_rotations[i]
+        end,
+    )
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
 end
 
@@ -173,9 +175,11 @@ end
         [0 1 0; 1 0 0; 0 0 -1],
         [0 -1 0; -1 0 0; 0 0 1],
     ]
-    @test all(map(1:16) do i
-        rotations[:, :, i] == python_rotations[i]
-    end)
+    @test all(
+        map(1:16) do i
+            rotations[:, :, i] == python_rotations[i]
+        end,
+    )
     @test get_symmetry(rutile) == (dataset.rotations, dataset.translations)
 end
 
@@ -204,7 +208,7 @@ end
         @test isempty(dataset.choice)
         @test dataset.equivalent_atoms == [0, 1, 2, 3, 4, 5]
         @test dataset.rotations ==
-              permutedims(cat([1 0 0], [0 1 0], [0 0 1]; dims = 3), [2, 3, 1])  # Different dimensions with Python
+            permutedims(cat([1 0 0], [0 1 0], [0 0 1]; dims=3), [2, 3, 1])  # Different dimensions with Python
         @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a']
         @test dataset.primitive_lattice == [
             0.0 3.97 0.0
@@ -285,11 +289,13 @@ end
         [-1 1 0; 0 1 0; 0 0 -1],
         [1 -1 0; 0 -1 0; 0 0 1],
     ]
-    @test all(map(1:12) do i
-        rotations[:, :, i] == python_rotations[i]
-    end)
+    @test all(
+        map(1:12) do i
+            rotations[:, :, i] == python_rotations[i]
+        end,
+    )
     @test dataset.translations ≈
-          [
+        [
         0 1 0 1 0 1 1 0 1 0 1 0
         0 1 0 1 0 1 1 0 1 0 1 0
         0 1 0 1 0 1 1 0 1 0 1 0
@@ -365,7 +371,7 @@ end
     @test get_symmetry(silicon) == (dataset.rotations, dataset.translations)
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols ==
-          ["-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m"]
+        ["-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m"]
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 0, 0, 0, 0]
     if get_version() >= v"1.15"
         @test dataset.crystallographic_orbits == [0, 0, 0, 0, 0, 0, 0, 0]
@@ -440,7 +446,7 @@ end
             0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.25 0.0
         ]
         @test get_symmetry(silicon_prim) ==
-              (dataset_prim.rotations, dataset_prim.translations)
+            (dataset_prim.rotations, dataset_prim.translations)
         @test dataset_prim.wyckoffs == ['b', 'b']
         @test dataset_prim.site_symmetry_symbols == ["-43m", "-43m"]
         @test dataset_prim.equivalent_atoms == [0, 0]

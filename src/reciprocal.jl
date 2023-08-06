@@ -25,11 +25,7 @@ imposed by setting `is_time_reversal`.
     The returned mapping table is indexed starting at `1`, not `0` as in Python or C.
 """
 function get_ir_reciprocal_mesh(
-    cell::Cell,
-    mesh,
-    is_shift = falses(3);
-    is_time_reversal = true,
-    symprec = 1e-5,
+    cell::Cell, mesh, is_shift=falses(3); is_time_reversal=true, symprec=1e-5
 )
     # Reference: https://github.com/unkcpz/LibSymspg.jl/blob/e912dd3/src/ir-mesh-api.jl#L1-L32
     if !(length(mesh) == length(is_shift) == 3)
@@ -80,11 +76,7 @@ function get_ir_reciprocal_mesh(
 end
 
 function get_stabilized_reciprocal_mesh(
-    rotations,
-    mesh,
-    is_shift = falses(3);
-    qpoints = [[0, 0, 0]],
-    is_time_reversal = true,
+    rotations, mesh, is_shift=falses(3); qpoints=[[0, 0, 0]], is_time_reversal=true
 )
     if !(length(mesh) == length(is_shift) == 3)
         throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
