@@ -113,26 +113,6 @@ struct SpacegroupType
     arithmetic_crystal_class_symbol::String
 end
 
-tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
-
-function rotsFromTuple(rotsTuple::AbstractVector{NTuple{9,Int32}}, nop::Integer)
-    r = Array{Int64,3}(undef, 3, 3, nop)
-    for i in 1:nop
-        r[:, :, i] = reshape(collect(rotsTuple[i]), 3, 3)
-    end
-    return r
-end
-
-function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Integer)
-    t = Matrix{Float64}(undef, 3, nop)
-    for i in 1:nop
-        t[:, i] = collect(transTuple[i])
-    end
-    return t
-end
-
-const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 # This is an internal type, do not export!
 struct SpglibDataset
     spacegroup_number::Cint
@@ -197,39 +177,44 @@ struct Dataset
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
-    r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
-    t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
-    wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    pos = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_std_atoms)
+    wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
         cchars2string(dataset.international_symbol),
         cchars2string(dataset.hall_symbol),
         cchars2string(dataset.choice),
-        tuple2matrix(dataset.transformation_matrix),
-        collect(dataset.origin_shift),
+        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix),
+        SVector{3}(dataset.origin_shift),
         dataset.n_operations,
-        rotsFromTuple(r, dataset.n_operations),
-        transFromTuple(t, dataset.n_operations),
+        [
+            transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
+            i in Base.OneTo(dataset.n_operations)
+        ],  # Note the transpose here!
+        [
+            SVector{3}(unsafe_load(dataset.translations, i)) for
+            i in Base.OneTo(dataset.n_operations)
+        ],
         dataset.n_atoms,
-        [LETTERS[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
-        map(
-            cchars2string,
-            unsafe_wrap(
-                Vector{NTuple{7,Cchar}}, dataset.site_symmetry_symbols, dataset.n_atoms
-            ),
-        ),
-        unsafe_wrap(Vector{Cint}, dataset.equivalent_atoms, dataset.n_atoms),
-        unsafe_wrap(Vector{Cint}, dataset.crystallographic_orbits, dataset.n_atoms),
-        transpose(tuple2matrix(dataset.primitive_lattice)),
-        unsafe_wrap(Vector{Cint}, dataset.mapping_to_primitive, dataset.n_atoms),
+        [('a':'z')[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
+        [
+            cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
+            i in Base.OneTo(dataset.n_atoms)
+        ],
+        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms),
+        unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms),
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms),
         dataset.n_std_atoms,
-        transpose(tuple2matrix(dataset.std_lattice)),
-        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_std_atoms),
-        transFromTuple(pos, dataset.n_std_atoms),
-        tuple2matrix(dataset.std_rotation_matrix),
-        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms),
+        [
+            SVector{3}(unsafe_load(dataset.std_positions, i)) for
+            i in Base.OneTo(dataset.n_std_atoms)
+        ],
+        # Note: Breaking! `std_rotation_matrix` is now transposed!
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
         cchars2string(dataset.pointgroup_symbol),
     )
 end
@@ -249,3 +234,6 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         unsafe_string(pointer(spgtype.arithmetic_crystal_class_symbol)),
     )
 end
+
+_convert(::Type{SMatrix{N,N,T}}, tuple::NTuple{N,NTuple{N,T}}) where {N,T} =
+    SMatrix{N,N,T}(Tuple(Iterators.flatten(tuple)))
