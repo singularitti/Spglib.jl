@@ -1,20 +1,38 @@
-export get_error_code, get_error_message
+export get_error_code, get_error_message, check_error
 
-@enum SpglibError begin
-    SPGLIB_SUCCESS = 0
-    SPGERR_SPACEGROUP_SEARCH_FAILED
-    SPGERR_CELL_STANDARDIZATION_FAILED
-    SPGERR_SYMMETRY_OPERATION_SEARCH_FAILED
-    SPGERR_ATOMS_TOO_CLOSE
-    SPGERR_POINTGROUP_NOT_FOUND
-    SPGERR_NIGGLI_FAILED
-    SPGERR_DELAUNAY_FAILED
-    SPGERR_ARRAY_SIZE_SHORTAGE
-    SPGERR_NONE
+# See https://www.mcobject.com/docs/Content/Programming/C/Return_Codes.htm or
+# https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
+@enum SpglibReturnCode begin
+    SUCCESS  # 0
+    SPACEGROUP_SEARCH_FAILED
+    CELL_STANDARDIZATION_FAILED
+    SYMMETRY_OPERATION_SEARCH_FAILED
+    ATOMS_TOO_CLOSE
+    POINTGROUP_NOT_FOUND
+    NIGGLI_FAILED
+    DELAUNAY_FAILED
+    ARRAY_SIZE_SHORTAGE
+    NONE
 end
 
-get_error_code() = ccall((:spg_get_error_code, libsymspg), SpglibError, ())
+struct SpglibError <: Exception
+    msg::String
+end
 
-get_error_message(spglib_error::SpglibError) = unsafe_string(
-    ccall((:spg_get_error_message, libsymspg), Cstring, (SpglibError,), spglib_error)
+get_error_code() = ccall((:spg_get_error_code, libsymspg), SpglibReturnCode, ())
+
+get_error_message(spglib_error::SpglibReturnCode) = unsafe_string(
+    ccall((:spg_get_error_message, libsymspg), Cstring, (SpglibReturnCode,), spglib_error),
 )
+
+function check_error()
+    code = get_error_code()
+    if code == SUCCESS
+        return nothing
+    else
+        return throw(SpglibError(get_error_message(code)))
+    end
+end
+
+# See https://github.com/JuliaLang/julia/blob/3903fa5/base/missing.jl#L18-L19
+Base.showerror(io::IO, ex::SpglibError) = print(io, "SpglibError: ", ex.msg, '!')
