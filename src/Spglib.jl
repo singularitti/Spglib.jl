@@ -46,5 +46,6 @@ include("symmetry.jl")
 include("standardize.jl")
 include("reduce.jl")
 include("reciprocal.jl")
+include("show.jl")
 
 end
