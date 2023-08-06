@@ -1,10 +1,11 @@
-using CrystallographyCore: AbstractCell, Cell, Lattice, basisvectors
+using CrystallographyCore: AbstractCell, Cell, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
-import CrystallographyCore: natoms, atomtypes
+import CrystallographyCore: Lattice, natoms, atomtypes
 
-export Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
+export Lattice,
+    Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -56,6 +57,13 @@ end
 natoms(cell::MagneticCell) = length(cell.types)
 
 atomtypes(cell::MagneticCell) = unique(cell.types)
+
+"""
+    Lattice(cell::MagneticCell)
+
+Get the lattice of a `MagneticCell`.
+"""
+Lattice(cell::MagneticCell) = cell.lattice
 
 const basis_vectors = basisvectors  # For backward compatibility
 
