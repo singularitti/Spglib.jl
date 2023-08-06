@@ -279,6 +279,8 @@ function get_hall_number_from_symmetry(
     )
 end
 
+@deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
+
 """
     get_multiplicity(cell::Cell, symprec=1e-5)
 
