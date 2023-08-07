@@ -4,7 +4,6 @@ authors = ["singularitti <singularitti@outlook.com> and contributors"]
 version = "0.7.0"
 
 [deps]
-CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 CrystallographyCore = "80545937-1184-4bc9-b283-396e91386b5c"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StructEquality = "6ec83bb0-ed9f-11e9-3b4c-2b04cb4e219c"
