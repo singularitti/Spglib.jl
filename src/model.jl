@@ -257,19 +257,28 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     )
 end
 function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+    international_short = cchars2string(spgtype.international_short)
+    international_full = cchars2string(spgtype.international_full)
+    international = cchars2string(spgtype.international)
+    schoenflies = cchars2string(spgtype.schoenflies)
+    hall_symbol = cchars2string(spgtype.hall_symbol)
+    choice = cchars2string(spgtype.choice)
+    pointgroup_international = cchars2string(spgtype.pointgroup_international)
+    pointgroup_schoenflies = cchars2string(spgtype.pointgroup_schoenflies)
+    arithmetic_crystal_class_symbol = cchars2string(spgtype.arithmetic_crystal_class_symbol)
     return SpacegroupType(
         spgtype.number,
-        unsafe_string(pointer(spgtype.international_short)),
-        unsafe_string(pointer(spgtype.international_full)),
-        unsafe_string(pointer(spgtype.international)),
-        unsafe_string(pointer(spgtype.schoenflies)),
+        international_short,
+        international_full,
+        international,
+        schoenflies,
         spgtype.hall_number,
-        unsafe_string(pointer(spgtype.hall_symbol)),
-        unsafe_string(pointer(spgtype.choice)),
-        unsafe_string(pointer(spgtype.pointgroup_international)),
-        unsafe_string(pointer(spgtype.pointgroup_schoenflies)),
+        hall_symbol,
+        choice,
+        pointgroup_international,
+        pointgroup_schoenflies,
         spgtype.arithmetic_crystal_class_number,
-        unsafe_string(pointer(spgtype.arithmetic_crystal_class_symbol)),
+        arithmetic_crystal_class_symbol,
     )
 end
 
