@@ -8,7 +8,9 @@ The standardized unit cell is generated from an input unit cell structure and
 its symmetry found by the symmetry search. The choice of the setting for each
 space group type is as explained for [`get_dataset`](@ref).
 """
-function standardize_cell(cell::AbstractCell; to_primitive=false, no_idealize=false, symprec=1e-5)
+function standardize_cell(
+    cell::AbstractCell; to_primitive=false, no_idealize=false, symprec=1e-5
+)
     lattice, positions, types = _expand_cell(cell)
     to_primitive = Base.cconvert(Cint, to_primitive)
     no_idealize = Base.cconvert(Cint, no_idealize)
@@ -33,7 +35,7 @@ function standardize_cell(cell::AbstractCell; to_primitive=false, no_idealize=fa
     check_error()
     # We have to `transpose` back because of `_expand_cell`!
     return AbstractCell(
-        transpose(lattice),
+        Lattice(transpose(lattice)),
         collect(eachcol(_positions))[1:num_atom_std],
         _types[1:num_atom_std],
     )

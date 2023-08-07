@@ -4,11 +4,11 @@
 
 Apply Niggli reduction to input basis vectors `lattice`.
 """
-function niggli_reduce(lattice::AbstractMatrix, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))
+function niggli_reduce(lattice::Lattice, symprec=1e-5)
+    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
     ccall((:spg_niggli_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec)
     check_error()
-    return transpose(clattice)
+    return Lattice(transpose(clattice))
 end
 function niggli_reduce(cell::AbstractCell, symprec=1e-5)
     lattice = cell.lattice
@@ -25,13 +25,13 @@ end
 
 Apply Delaunay reduction to input basis vectors `lattice`.
 """
-function delaunay_reduce(lattice::AbstractMatrix, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))
+function delaunay_reduce(lattice::Lattice, symprec=1e-5)
+    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
     ccall(
         (:spg_delaunay_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec
     )
     check_error()
-    return transpose(clattice)
+    return Lattice(transpose(clattice))
 end
 function delaunay_reduce(cell::AbstractCell, symprec=1e-5)
     lattice = cell.lattice
