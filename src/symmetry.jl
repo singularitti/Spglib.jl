@@ -1,7 +1,7 @@
 # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
 # This is an internal function, do not export!
-function cchars2string(itr)
-    vec = collect(Char, Iterators.filter(!iszero, itr))
+function tostring(cchars)
+    vec = collect(Char, Iterators.takewhile(!iszero, cchars))
     return String(vec)
 end
 
@@ -388,7 +388,7 @@ function get_international(cell::AbstractCell, symprec=1e-5)
         symprec,
     )
     check_error()
-    return cchars2string(symbol)
+    return tostring(symbol)
 end
 
 """
@@ -411,5 +411,5 @@ function get_schoenflies(cell::AbstractCell, symprec=1e-5)
         symprec,
     )
     check_error()
-    return cchars2string(symbol)
+    return tostring(symbol)
 end

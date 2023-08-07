@@ -187,9 +187,9 @@ struct Dataset
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
-    international_symbol = cchars2string(dataset.international_symbol)
-    hall_symbol = cchars2string(dataset.hall_symbol)
-    choice = cchars2string(dataset.choice)
+    international_symbol = tostring(dataset.international_symbol)
+    hall_symbol = tostring(dataset.hall_symbol)
+    choice = tostring(dataset.choice)
     transformation_matrix = _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
     rotations = [
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
@@ -202,7 +202,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
     wyckoffs = [('a':'z')[x + 1] for x in wyckoffs]  # Need to add 1 because of C-index starts from 0
     site_symmetry_symbols = [
-        cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
+        tostring(unsafe_load(dataset.site_symmetry_symbols, i)) for
         i in Base.OneTo(dataset.n_atoms)
     ]
     equivalent_atoms = unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms)
@@ -228,7 +228,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     std_mapping_to_primitive = unsafe_wrap(
         Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
     )
-    pointgroup_symbol = cchars2string(dataset.pointgroup_symbol)
+    pointgroup_symbol = tostring(dataset.pointgroup_symbol)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
@@ -257,15 +257,15 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     )
 end
 function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
-    international_short = cchars2string(spgtype.international_short)
-    international_full = cchars2string(spgtype.international_full)
-    international = cchars2string(spgtype.international)
-    schoenflies = cchars2string(spgtype.schoenflies)
-    hall_symbol = cchars2string(spgtype.hall_symbol)
-    choice = cchars2string(spgtype.choice)
-    pointgroup_international = cchars2string(spgtype.pointgroup_international)
-    pointgroup_schoenflies = cchars2string(spgtype.pointgroup_schoenflies)
-    arithmetic_crystal_class_symbol = cchars2string(spgtype.arithmetic_crystal_class_symbol)
+    international_short = tostring(spgtype.international_short)
+    international_full = tostring(spgtype.international_full)
+    international = tostring(spgtype.international)
+    schoenflies = tostring(spgtype.schoenflies)
+    hall_symbol = tostring(spgtype.hall_symbol)
+    choice = tostring(spgtype.choice)
+    pointgroup_international = tostring(spgtype.pointgroup_international)
+    pointgroup_schoenflies = tostring(spgtype.pointgroup_schoenflies)
+    arithmetic_crystal_class_symbol = tostring(spgtype.arithmetic_crystal_class_symbol)
     return SpacegroupType(
         spgtype.number,
         international_short,
