@@ -1,3 +1,4 @@
+using CoordinateTransformations: LinearMap, Translation
 using CrystallographyCore: AbstractCell, Cell, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
@@ -70,7 +71,15 @@ Lattice(cell::MagneticCell) = cell.lattice
 const basis_vectors = basisvectors  # For backward compatibility
 
 # This is an internal function, do not export!
-function _expand_cell(cell::AbstractCell)
+function _expand_cell(cell::Cell)
+    lattice, positions, types = cell.lattice, cell.positions, cell.atoms
+    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
+    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    return clattice, cpositions, ctypes
+end
+function _expand_cell(cell::MagneticCell)
     lattice, positions, types, magmoms = cell.lattice,
     cell.positions, cell.atoms,
     cell.magmoms
@@ -78,9 +87,7 @@ function _expand_cell(cell::AbstractCell)
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    if magmoms !== nothing
-        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
-    end
+    magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     return clattice, cpositions, ctypes, magmoms
 end
 
@@ -162,23 +169,23 @@ struct Dataset
     international_symbol::String
     hall_symbol::String
     choice::String
-    transformation_matrix::SMatrix{3,3,Float64,9}
-    origin_shift::SVector{3,Float64}
+    transformation_matrix::LinearMap{SMatrix{3,3,Float64,9}}
+    origin_shift::Translation{SVector{3,Float64}}
     n_operations::Int32
-    rotations::Vector{SMatrix{3,3,Int32,9}}
-    translations::Vector{SVector{3,Float64}}
+    rotations::Vector{LinearMap{SMatrix{3,3,Int32,9}}}
+    translations::Vector{Translation{SVector{3,Float64}}}
     n_atoms::Int32
     wyckoffs::Vector{Char}
     site_symmetry_symbols::Vector{String}
     equivalent_atoms::Vector{Int32}
     crystallographic_orbits::Vector{Int32}
-    primitive_lattice::SMatrix{3,3,Float64,9}
+    primitive_lattice::Lattice{Float64}
     mapping_to_primitive::Vector{Int32}
     n_std_atoms::Int32
-    std_lattice::SMatrix{3,3,Float64,9}
+    std_lattice::Lattice{Float64}
     std_types::Vector{Int32}
     std_positions::Vector{SVector{3,Float64}}
-    std_rotation_matrix::SMatrix{3,3,Float64,9}
+    std_rotation_matrix::LinearMap{SMatrix{3,3,Float64,9}}
     std_mapping_to_primitive::Vector{Int32}
     pointgroup_symbol::String
 end
@@ -191,15 +198,15 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         cchars2string(dataset.international_symbol),
         cchars2string(dataset.hall_symbol),
         cchars2string(dataset.choice),
-        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix),
-        SVector{3}(dataset.origin_shift),
+        LinearMap(_convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)),
+        Translation(dataset.origin_shift),
         dataset.n_operations,
         [
-            transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
+            LinearMap(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
             i in Base.OneTo(dataset.n_operations)
         ],  # Note the transpose here!
         [
-            SVector{3}(unsafe_load(dataset.translations, i)) for
+            Translation(SVector{3}(unsafe_load(dataset.translations, i))) for
             i in Base.OneTo(dataset.n_operations)
         ],
         dataset.n_atoms,
@@ -210,17 +217,17 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         ],
         unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms),
         unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms),
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice)),  # Note the transpose here!
+        Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))),
         unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms),
         dataset.n_std_atoms,
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)),  # Note the transpose here!
+        Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice))),
         unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms),
         [
             SVector{3}(unsafe_load(dataset.std_positions, i)) for
             i in Base.OneTo(dataset.n_std_atoms)
         ],
         # Note: Breaking! `std_rotation_matrix` is now transposed!
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)),  # Note the transpose here!
+        LinearMap(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix))),  # Note the transpose here!
         unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
         cchars2string(dataset.pointgroup_symbol),
     )
