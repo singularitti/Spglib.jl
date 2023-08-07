@@ -1,10 +1,3 @@
-# Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
-# This is an internal function, do not export!
-function tostring(cchars)
-    vec = collect(Char, Iterators.takewhile(!iszero, cchars))
-    return String(vec)
-end
-
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 """
     get_symmetry(cell::Cell, symprec=1e-5)

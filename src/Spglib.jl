@@ -40,6 +40,13 @@ function get_version()
     return VersionNumber(major, minor, micro)
 end
 
+# Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
+# This is an internal function, do not export!
+function tostring(cchars)
+    vec = collect(Char, Iterators.takewhile(!iszero, cchars))
+    return String(vec)
+end
+
 include("model.jl")
 include("error.jl")
 include("symmetry.jl")
