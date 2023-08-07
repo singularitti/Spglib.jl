@@ -1,7 +1,11 @@
-using StaticArrays: MMatrix, MVector
+using CrystallographyCore: AbstractCell, Cell, basisvectors
+using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
-export Cell, Dataset, SpacegroupType, basis_vectors, natoms
+import CrystallographyCore: Lattice, natoms, atomtypes
+
+export Lattice,
+    Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -16,17 +20,17 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values, or a vector of vectors.
 """
-@struct_hash_equal struct Cell{L,P,T,M}
-    lattice::MMatrix{3,3,L,9}
+@struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
+    lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
-    types::Vector{T}
+    atoms::Vector{T}
     magmoms::M
 end
-function Cell(lattice, positions, types, magmoms=nothing)
-    if !(lattice isa AbstractMatrix)
-        lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
+function MagneticCell(lattice, positions, atoms, magmoms)
+    if !(lattice isa Lattice)
+        lattice = Lattice(lattice)
     end
-    N = length(types)
+    N = length(atoms)
     if positions isa AbstractMatrix
         P = eltype(positions)
         if size(positions) == (3, 3)
@@ -46,26 +50,29 @@ function Cell(lattice, positions, types, magmoms=nothing)
         P = eltype(Base.promote_typeof(positions...))
         positions = collect(map(MVector{3,P}, positions))
     end
-    L, T, M = eltype(lattice), eltype(types), typeof(magmoms)
-    return Cell{L,P,T,M}(lattice, positions, types, magmoms)
+    L, T, M = eltype(lattice), eltype(atoms), typeof(magmoms)
+    return MagneticCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
+MagneticCell(cell::Cell, magmoms) =
+    MagneticCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 
-natoms(cell::Cell) = length(cell.types)
+natoms(cell::MagneticCell) = length(cell.atoms)
+
+atomtypes(cell::MagneticCell) = unique(cell.atoms)
 
 """
-    basis_vectors(cell::Cell)
+    Lattice(cell::MagneticCell)
 
-Return the three basis vectors from `cell`.
+Get the lattice of a `MagneticCell`.
 """
-function basis_vectors(cell::Cell)
-    lattice = cell.lattice
-    return lattice[:, 1], lattice[:, 2], lattice[:, 3]
-end
+Lattice(cell::MagneticCell) = cell.lattice
+
+const basis_vectors = basisvectors  # For backward compatibility
 
 # This is an internal function, do not export!
-function _expand_cell(cell::Cell)
+function _expand_cell(cell::AbstractCell)
     lattice, positions, types, magmoms = cell.lattice,
-    cell.positions, cell.types,
+    cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
@@ -113,26 +120,6 @@ struct SpacegroupType
     arithmetic_crystal_class_symbol::String
 end
 
-tuple2matrix(t::NTuple{9}) = hcat(Iterators.partition(t, 3)...)
-
-function rotsFromTuple(rotsTuple::AbstractVector{NTuple{9,Int32}}, nop::Integer)
-    r = Array{Int64,3}(undef, 3, 3, nop)
-    for i in 1:nop
-        r[:, :, i] = reshape(collect(rotsTuple[i]), 3, 3)
-    end
-    return r
-end
-
-function transFromTuple(transTuple::AbstractVector{NTuple{3,Float64}}, nop::Integer)
-    t = Matrix{Float64}(undef, 3, nop)
-    for i in 1:nop
-        t[:, i] = collect(transTuple[i])
-    end
-    return t
-end
-
-const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 # This is an internal type, do not export!
 struct SpglibDataset
     spacegroup_number::Cint
@@ -140,23 +127,23 @@ struct SpglibDataset
     international_symbol::NTuple{11,Cchar}
     hall_symbol::NTuple{17,Cchar}
     choice::NTuple{6,Cchar}
-    transformation_matrix::NTuple{9,Cdouble}
+    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
     origin_shift::NTuple{3,Cdouble}
     n_operations::Cint
-    rotations::Ptr{NTuple{9,Cint}}
+    rotations::Ptr{NTuple{3,NTuple{3,Cint}}}
     translations::Ptr{NTuple{3,Cdouble}}
     n_atoms::Cint
     wyckoffs::Ptr{Cint}
     site_symmetry_symbols::Ptr{NTuple{7,Cchar}}
     equivalent_atoms::Ptr{Cint}
-    crystallographic_orbits::Ptr{Cint}  # Added in v1.15.0
-    primitive_lattice::NTuple{9,Cdouble}  # Added in v1.15.0
+    crystallographic_orbits::Ptr{Cint}
+    primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
     mapping_to_primitive::Ptr{Cint}
     n_std_atoms::Cint
-    std_lattice::NTuple{9,Cdouble}
+    std_lattice::NTuple{3,NTuple{3,Cdouble}}
     std_types::Ptr{Cint}
     std_positions::Ptr{NTuple{3,Cdouble}}
-    std_rotation_matrix::NTuple{9,Cdouble}
+    std_rotation_matrix::NTuple{3,NTuple{3,Cdouble}}
     std_mapping_to_primitive::Ptr{Cint}
     pointgroup_symbol::NTuple{6,Cchar}
 end
@@ -170,66 +157,71 @@ Represent `SpglibDataset`, see its [official documentation](https://spglib.githu
     Fields `crystallographic_orbits` and `primitive_lattice` are added after `spglib` `v1.15.0`.
 """
 struct Dataset
-    spacegroup_number::Int
-    hall_number::Int
+    spacegroup_number::Int32
+    hall_number::Int32
     international_symbol::String
     hall_symbol::String
     choice::String
-    transformation_matrix::Matrix{Float64}
-    origin_shift::Vector{Float64}
-    n_operations::Int
-    rotations::Array{Float64,3}
-    translations::Matrix{Float64}
-    n_atoms::Int
+    transformation_matrix::SMatrix{3,3,Float64,9}
+    origin_shift::SVector{3,Float64}
+    n_operations::Int32
+    rotations::Vector{SMatrix{3,3,Int32,9}}
+    translations::Vector{SVector{3,Float64}}
+    n_atoms::Int32
     wyckoffs::Vector{Char}
     site_symmetry_symbols::Vector{String}
-    equivalent_atoms::Vector{Int}
-    crystallographic_orbits::Vector{Int}
-    primitive_lattice::Matrix{Float64}
-    mapping_to_primitive::Vector{Int}
-    n_std_atoms::Int
-    std_lattice::Matrix{Float64}
-    std_types::Vector{Int}
-    std_positions::Matrix{Float64}
-    std_rotation_matrix::Matrix{Float64}
-    std_mapping_to_primitive::Vector{Int}
+    equivalent_atoms::Vector{Int32}
+    crystallographic_orbits::Vector{Int32}
+    primitive_lattice::SMatrix{3,3,Float64,9}
+    mapping_to_primitive::Vector{Int32}
+    n_std_atoms::Int32
+    std_lattice::SMatrix{3,3,Float64,9}
+    std_types::Vector{Int32}
+    std_positions::Vector{SVector{3,Float64}}
+    std_rotation_matrix::SMatrix{3,3,Float64,9}
+    std_mapping_to_primitive::Vector{Int32}
     pointgroup_symbol::String
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
-    r = unsafe_wrap(Vector{NTuple{9,Cint}}, dataset.rotations, dataset.n_operations)
-    t = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.translations, dataset.n_operations)
-    wyckoffs = unsafe_wrap(Vector{Cint}, dataset.wyckoffs, dataset.n_atoms)
-    pos = unsafe_wrap(Vector{NTuple{3,Float64}}, dataset.std_positions, dataset.n_std_atoms)
+    wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
         cchars2string(dataset.international_symbol),
         cchars2string(dataset.hall_symbol),
         cchars2string(dataset.choice),
-        tuple2matrix(dataset.transformation_matrix),
-        collect(dataset.origin_shift),
+        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix),
+        SVector{3}(dataset.origin_shift),
         dataset.n_operations,
-        rotsFromTuple(r, dataset.n_operations),
-        transFromTuple(t, dataset.n_operations),
+        [
+            transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
+            i in Base.OneTo(dataset.n_operations)
+        ],  # Note the transpose here!
+        [
+            SVector{3}(unsafe_load(dataset.translations, i)) for
+            i in Base.OneTo(dataset.n_operations)
+        ],
         dataset.n_atoms,
-        [LETTERS[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
-        map(
-            cchars2string,
-            unsafe_wrap(
-                Vector{NTuple{7,Cchar}}, dataset.site_symmetry_symbols, dataset.n_atoms
-            ),
-        ),
-        unsafe_wrap(Vector{Cint}, dataset.equivalent_atoms, dataset.n_atoms),
-        unsafe_wrap(Vector{Cint}, dataset.crystallographic_orbits, dataset.n_atoms),
-        transpose(tuple2matrix(dataset.primitive_lattice)),
-        unsafe_wrap(Vector{Cint}, dataset.mapping_to_primitive, dataset.n_atoms),
+        [('a':'z')[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
+        [
+            cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
+            i in Base.OneTo(dataset.n_atoms)
+        ],
+        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms),
+        unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms),
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms),
         dataset.n_std_atoms,
-        transpose(tuple2matrix(dataset.std_lattice)),
-        unsafe_wrap(Vector{Cint}, dataset.std_types, dataset.n_std_atoms),
-        transFromTuple(pos, dataset.n_std_atoms),
-        tuple2matrix(dataset.std_rotation_matrix),
-        unsafe_wrap(Vector{Cint}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms),
+        [
+            SVector{3}(unsafe_load(dataset.std_positions, i)) for
+            i in Base.OneTo(dataset.n_std_atoms)
+        ],
+        # Note: Breaking! `std_rotation_matrix` is now transposed!
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)),  # Note the transpose here!
+        unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
         cchars2string(dataset.pointgroup_symbol),
     )
 end
@@ -249,3 +241,6 @@ function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
         unsafe_string(pointer(spgtype.arithmetic_crystal_class_symbol)),
     )
 end
+
+_convert(::Type{SMatrix{N,N,T}}, tuple::NTuple{N,NTuple{N,T}}) where {N,T} =
+    SMatrix{N,N,T}(Tuple(Iterators.flatten(tuple)))

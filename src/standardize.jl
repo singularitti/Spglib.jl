@@ -33,7 +33,7 @@ function standardize_cell(cell::Cell; to_primitive=false, no_idealize=false, sym
     check_error()
     # We have to `transpose` back because of `_expand_cell`!
     return Cell(
-        transpose(lattice),
+        Lattice(transpose(lattice)),
         collect(eachcol(_positions))[1:num_atom_std],
         _types[1:num_atom_std],
     )

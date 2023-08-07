@@ -4,19 +4,19 @@
 
 Apply Niggli reduction to input basis vectors `lattice`.
 """
-function niggli_reduce(lattice::AbstractMatrix, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))
+function niggli_reduce(lattice::Lattice, symprec=1e-5)
+    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
     ccall((:spg_niggli_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec)
     check_error()
-    return transpose(clattice)
+    return Lattice(transpose(clattice))
 end
 function niggli_reduce(cell::Cell, symprec=1e-5)
-    lattice = cell.lattice
+    lattice = Lattice(cell)
     clattice = niggli_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return Cell(clattice, new_frac_pos, cell.types, cell.magmoms)
+    return Cell(clattice, new_frac_pos, cell.atoms)
 end
 
 """
@@ -25,19 +25,19 @@ end
 
 Apply Delaunay reduction to input basis vectors `lattice`.
 """
-function delaunay_reduce(lattice::AbstractMatrix, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))
+function delaunay_reduce(lattice::Lattice, symprec=1e-5)
+    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
     ccall(
         (:spg_delaunay_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec
     )
     check_error()
-    return transpose(clattice)
+    return Lattice(transpose(clattice))
 end
 function delaunay_reduce(cell::Cell, symprec=1e-5)
-    lattice = cell.lattice
+    lattice = Lattice(cell)
     clattice = delaunay_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return Cell(clattice, new_frac_pos, cell.types, cell.magmoms)
+    return Cell(clattice, new_frac_pos, cell.atoms)
 end

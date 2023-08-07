@@ -11,8 +11,10 @@ end
 
 Return the symmetry operations of a `cell`.
 """
-function get_symmetry(cell::Cell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false)
-    max_size = length(cell.types) * 48
+function get_symmetry(
+    cell::AbstractCell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false
+)
+    max_size = length(cell.atoms) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
     if isnothing(cell.magmoms) || iszero(cell.magmoms)
@@ -63,7 +65,7 @@ function get_symmetry(cell::Cell, symprec=1e-5, angle_tolerance=-1.0, is_magneti
 end
 
 function get_symmetry!(
-    rotation::AbstractArray, translation::AbstractMatrix, cell::Cell, symprec=1e-5
+    rotation::AbstractArray, translation::AbstractMatrix, cell::AbstractCell, symprec=1e-5
 )
     if size(rotation, 3) != size(translation, 2)
         throw(DimensionMismatch("`rotation` & `translation` have different max size!"))
@@ -107,7 +109,7 @@ function get_symmetry_with_collinear_spin!(
     translation::AbstractMatrix,
     equivalent_atoms::AbstractVector,
     max_size::Integer,
-    cell::Cell,
+    cell::AbstractCell,
     symprec=1e-5,
 ) where {T}
     lattice, positions, types, magmoms = _expand_cell(cell)
@@ -145,8 +147,8 @@ function get_symmetry_with_collinear_spin!(
     check_error()
     return num_sym
 end
-function get_symmetry_with_collinear_spin(cell::Cell, symprec=1e-5)
-    num_atom = length(cell.types)
+function get_symmetry_with_collinear_spin(cell::AbstractCell, symprec=1e-5)
+    num_atom = length(cell.atoms)
     max_size = num_atom * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Matrix{Cdouble}(undef, 3, max_size)
@@ -262,7 +264,7 @@ end
 
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
-function get_multiplicity(cell::Cell, symprec=1e-5)
+function get_multiplicity(cell::AbstractCell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     num_sym = ccall(
@@ -284,7 +286,7 @@ end
 
 Search symmetry operations of an input unit cell structure.
 """
-function get_dataset(cell::Cell, symprec=1e-5)
+function get_dataset(cell::AbstractCell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     ptr = ccall(
@@ -310,7 +312,9 @@ end
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
 """
-function get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec=1e-5)
+function get_dataset_with_hall_number(
+    cell::AbstractCell, hall_number::Integer, symprec=1e-5
+)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     hall_number = Base.cconvert(Cint, hall_number)
@@ -350,7 +354,7 @@ end
 
 Get the spacegroup number of a `cell`.
 """
-function get_spacegroup_number(cell::Cell, symprec=1e-5)
+function get_spacegroup_number(cell::AbstractCell, symprec=1e-5)
     dataset = get_dataset(cell, symprec)
     return dataset.spacegroup_number
 end
@@ -359,7 +363,7 @@ end
 
 Get `SpacegroupType` from `cell`.
 """
-function get_spacegroup_type(cell::Cell, symprec=1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
+function get_spacegroup_type(cell::AbstractCell, symprec=1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
     dataset = get_dataset(cell, symprec)
     return get_spacegroup_type(dataset.hall_number)
 end
@@ -369,7 +373,7 @@ end
 
 Return the space group type in Hermann–Mauguin (international) notation.
 """
-function get_international(cell::Cell, symprec=1e-5)
+function get_international(cell::AbstractCell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
     ccall(
@@ -392,7 +396,7 @@ end
 
 Return the space group type in Schoenflies notation.
 """
-function get_schoenflies(cell::Cell, symprec=1e-5)
+function get_schoenflies(cell::AbstractCell, symprec=1e-5)
     lattice, positions, types = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
     ccall(

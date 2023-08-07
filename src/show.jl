@@ -1,4 +1,4 @@
-function Base.show(io::IO, ::MIME"text/plain", cell::Cell)
+function Base.show(io::IO, ::MIME"text/plain", cell::MagneticCell)
     summary(io, cell)
     println(io)
     println(io, " lattice:")
@@ -11,6 +11,6 @@ function Base.show(io::IO, ::MIME"text/plain", cell::Cell)
         println(io, "  ", position)
     end
     println(io, " $N atoms:")
-    println(io, "  ", cell.types)
+    println(io, "  ", cell.atoms)
     return nothing
 end
