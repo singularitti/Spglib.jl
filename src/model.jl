@@ -23,14 +23,14 @@ as a list of ``N`` floating point values, or a vector of vectors.
 @struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
-    types::Vector{T}
+    atoms::Vector{T}
     magmoms::M
 end
-function MagneticCell(lattice, positions, types, magmoms)
+function MagneticCell(lattice, positions, atoms, magmoms)
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
     end
-    N = length(types)
+    N = length(atoms)
     if positions isa AbstractMatrix
         P = eltype(positions)
         if size(positions) == (3, 3)
@@ -50,13 +50,15 @@ function MagneticCell(lattice, positions, types, magmoms)
         P = eltype(Base.promote_typeof(positions...))
         positions = collect(map(MVector{3,P}, positions))
     end
-    L, T, M = eltype(lattice), eltype(types), typeof(magmoms)
-    return MagneticCell{L,P,T,M}(lattice, positions, types, magmoms)
+    L, T, M = eltype(lattice), eltype(atoms), typeof(magmoms)
+    return MagneticCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
+MagneticCell(cell::Cell, magmoms) =
+    MagneticCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 
-natoms(cell::MagneticCell) = length(cell.types)
+natoms(cell::MagneticCell) = length(cell.atoms)
 
-atomtypes(cell::MagneticCell) = unique(cell.types)
+atomtypes(cell::MagneticCell) = unique(cell.atoms)
 
 """
     Lattice(cell::MagneticCell)
@@ -70,7 +72,7 @@ const basis_vectors = basisvectors  # For backward compatibility
 # This is an internal function, do not export!
 function _expand_cell(cell::AbstractCell)
     lattice, positions, types, magmoms = cell.lattice,
-    cell.positions, cell.types,
+    cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))

@@ -16,7 +16,7 @@ function niggli_reduce(cell::AbstractCell, symprec=1e-5)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return AbstractCell(clattice, new_frac_pos, cell.types, cell.magmoms)
+    return AbstractCell(clattice, new_frac_pos, cell.atoms, cell.magmoms)
 end
 
 """
@@ -39,5 +39,5 @@ function delaunay_reduce(cell::AbstractCell, symprec=1e-5)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return AbstractCell(clattice, new_frac_pos, cell.types, cell.magmoms)
+    return AbstractCell(clattice, new_frac_pos, cell.atoms, cell.magmoms)
 end

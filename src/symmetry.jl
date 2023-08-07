@@ -146,7 +146,7 @@ function get_symmetry_with_collinear_spin!(
     return num_sym
 end
 function get_symmetry_with_collinear_spin(cell::AbstractCell, symprec=1e-5)
-    num_atom = length(cell.types)
+    num_atom = length(cell.atoms)
     max_size = num_atom * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Matrix{Cdouble}(undef, 3, max_size)

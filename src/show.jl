@@ -11,6 +11,6 @@ function Base.show(io::IO, ::MIME"text/plain", cell::MagneticCell)
         println(io, "  ", position)
     end
     println(io, " $N atoms:")
-    println(io, "  ", cell.types)
+    println(io, "  ", cell.atoms)
     return nothing
 end
