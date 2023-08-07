@@ -10,13 +10,13 @@ function niggli_reduce(lattice::Lattice, symprec=1e-5)
     check_error()
     return Lattice(transpose(clattice))
 end
-function niggli_reduce(cell::AbstractCell, symprec=1e-5)
-    lattice = cell.lattice
+function niggli_reduce(cell::Cell, symprec=1e-5)
+    lattice = Lattice(cell)
     clattice = niggli_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return AbstractCell(clattice, new_frac_pos, cell.atoms, cell.magmoms)
+    return Cell(clattice, new_frac_pos, cell.atoms)
 end
 
 """
@@ -33,11 +33,11 @@ function delaunay_reduce(lattice::Lattice, symprec=1e-5)
     check_error()
     return Lattice(transpose(clattice))
 end
-function delaunay_reduce(cell::AbstractCell, symprec=1e-5)
-    lattice = cell.lattice
+function delaunay_reduce(cell::Cell, symprec=1e-5)
+    lattice = Lattice(cell)
     clattice = delaunay_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
     recip = inv(clattice) * cell.lattice
     new_frac_pos = [recip * pos for pos in cell.positions]
-    return AbstractCell(clattice, new_frac_pos, cell.atoms, cell.magmoms)
+    return Cell(clattice, new_frac_pos, cell.atoms)
 end

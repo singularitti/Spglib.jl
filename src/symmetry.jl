@@ -11,8 +11,10 @@ end
 
 Return the symmetry operations of a `cell`.
 """
-function get_symmetry(cell::AbstractCell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false)
-    max_size = length(cell.types) * 48
+function get_symmetry(
+    cell::AbstractCell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false
+)
+    max_size = length(cell.atoms) * 48
     rotation = Array{Cint,3}(undef, 3, 3, max_size)
     translation = Array{Cdouble,2}(undef, 3, max_size)
     if isnothing(cell.magmoms) || iszero(cell.magmoms)
@@ -310,7 +312,9 @@ end
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
 """
-function get_dataset_with_hall_number(cell::AbstractCell, hall_number::Integer, symprec=1e-5)
+function get_dataset_with_hall_number(
+    cell::AbstractCell, hall_number::Integer, symprec=1e-5
+)
     lattice, positions, types = _expand_cell(cell)
     num_atom = Base.cconvert(Cint, length(types))
     hall_number = Base.cconvert(Cint, hall_number)
