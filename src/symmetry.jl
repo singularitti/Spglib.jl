@@ -1,10 +1,3 @@
-# Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L70
-# This is an internal function, do not export!
-function cchars2string(itr)
-    vec = collect(Char, Iterators.filter(!iszero, itr))
-    return String(vec)
-end
-
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 """
     get_symmetry(cell::Cell, symprec=1e-5)
@@ -388,7 +381,7 @@ function get_international(cell::AbstractCell, symprec=1e-5)
         symprec,
     )
     check_error()
-    return cchars2string(symbol)
+    return tostring(symbol)
 end
 
 """
@@ -411,5 +404,5 @@ function get_schoenflies(cell::AbstractCell, symprec=1e-5)
         symprec,
     )
     check_error()
-    return cchars2string(symbol)
+    return tostring(symbol)
 end

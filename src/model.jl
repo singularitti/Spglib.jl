@@ -70,7 +70,15 @@ Lattice(cell::MagneticCell) = cell.lattice
 const basis_vectors = basisvectors  # For backward compatibility
 
 # This is an internal function, do not export!
-function _expand_cell(cell::AbstractCell)
+function _expand_cell(cell::Cell)
+    lattice, positions, types = cell.lattice, cell.positions, cell.atoms
+    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
+    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    return clattice, cpositions, ctypes
+end
+function _expand_cell(cell::MagneticCell)
     lattice, positions, types, magmoms = cell.lattice,
     cell.positions, cell.atoms,
     cell.magmoms
@@ -78,9 +86,7 @@ function _expand_cell(cell::AbstractCell)
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    if magmoms !== nothing
-        magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
-    end
+    magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
     return clattice, cpositions, ctypes, magmoms
 end
 
@@ -152,9 +158,6 @@ end
     Dataset(spacegroup_number, hall_number, international_symbol, hall_symbol, choice, transformation_matrix, origin_shift, n_operations, rotations, translations, n_atoms, wyckoffs, site_symmetry_symbols, equivalent_atoms, crystallographic_orbits, primitive_lattice, mapping_to_primitive, n_std_atoms, std_lattice, std_types, std_positions, std_rotation_matrix, std_mapping_to_primitive, pointgroup_symbol)
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
-
-!!! note
-    Fields `crystallographic_orbits` and `primitive_lattice` are added after `spglib` `v1.15.0`.
 """
 struct Dataset
     spacegroup_number::Int32
@@ -172,10 +175,10 @@ struct Dataset
     site_symmetry_symbols::Vector{String}
     equivalent_atoms::Vector{Int32}
     crystallographic_orbits::Vector{Int32}
-    primitive_lattice::SMatrix{3,3,Float64,9}
+    primitive_lattice::Lattice{Float64}
     mapping_to_primitive::Vector{Int32}
     n_std_atoms::Int32
-    std_lattice::SMatrix{3,3,Float64,9}
+    std_lattice::Lattice{Float64}
     std_types::Vector{Int32}
     std_positions::Vector{SVector{3,Float64}}
     std_rotation_matrix::SMatrix{3,3,Float64,9}
@@ -184,61 +187,98 @@ struct Dataset
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+    international_symbol = tostring(dataset.international_symbol)
+    hall_symbol = tostring(dataset.hall_symbol)
+    choice = tostring(dataset.choice)
+    transformation_matrix = _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
+    rotations = [
+        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+        i in Base.OneTo(dataset.n_operations)
+    ]  # Note the transpose here!
+    translations = [
+        SVector{3}(unsafe_load(dataset.translations, i)) for
+        i in Base.OneTo(dataset.n_operations)
+    ]
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
+    wyckoffs = [('a':'z')[x + 1] for x in wyckoffs]  # Need to add 1 because of C-index starts from 0
+    site_symmetry_symbols = [
+        tostring(unsafe_load(dataset.site_symmetry_symbols, i)) for
+        i in Base.OneTo(dataset.n_atoms)
+    ]
+    equivalent_atoms = unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms)
+    crystallographic_orbits = unsafe_wrap(
+        Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms
+    )
+    primitive_lattice = Lattice(
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))
+    )
+    mapping_to_primitive = unsafe_wrap(
+        Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms
+    )
+    std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
+    std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
+    std_positions = [
+        SVector{3}(unsafe_load(dataset.std_positions, i)) for
+        i in Base.OneTo(dataset.n_std_atoms)
+    ]
+    # Note: Breaking! `std_rotation_matrix` is now transposed!
+    std_rotation_matrix = transpose(
+        _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
+    )
+    std_mapping_to_primitive = unsafe_wrap(
+        Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
+    )
+    pointgroup_symbol = tostring(dataset.pointgroup_symbol)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
-        cchars2string(dataset.international_symbol),
-        cchars2string(dataset.hall_symbol),
-        cchars2string(dataset.choice),
-        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix),
-        SVector{3}(dataset.origin_shift),
+        international_symbol,
+        hall_symbol,
+        choice,
+        transformation_matrix,
+        dataset.origin_shift,
         dataset.n_operations,
-        [
-            transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
-            i in Base.OneTo(dataset.n_operations)
-        ],  # Note the transpose here!
-        [
-            SVector{3}(unsafe_load(dataset.translations, i)) for
-            i in Base.OneTo(dataset.n_operations)
-        ],
+        rotations,
+        translations,
         dataset.n_atoms,
-        [('a':'z')[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
-        [
-            cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
-            i in Base.OneTo(dataset.n_atoms)
-        ],
-        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms),
-        unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms),
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice)),  # Note the transpose here!
-        unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms),
+        wyckoffs,
+        site_symmetry_symbols,
+        equivalent_atoms,
+        crystallographic_orbits,
+        primitive_lattice,
+        mapping_to_primitive,
         dataset.n_std_atoms,
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)),  # Note the transpose here!
-        unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms),
-        [
-            SVector{3}(unsafe_load(dataset.std_positions, i)) for
-            i in Base.OneTo(dataset.n_std_atoms)
-        ],
-        # Note: Breaking! `std_rotation_matrix` is now transposed!
-        transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)),  # Note the transpose here!
-        unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
-        cchars2string(dataset.pointgroup_symbol),
+        std_lattice,
+        std_types,
+        std_positions,
+        std_rotation_matrix,
+        std_mapping_to_primitive,
+        pointgroup_symbol,
     )
 end
 function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+    international_short = tostring(spgtype.international_short)
+    international_full = tostring(spgtype.international_full)
+    international = tostring(spgtype.international)
+    schoenflies = tostring(spgtype.schoenflies)
+    hall_symbol = tostring(spgtype.hall_symbol)
+    choice = tostring(spgtype.choice)
+    pointgroup_international = tostring(spgtype.pointgroup_international)
+    pointgroup_schoenflies = tostring(spgtype.pointgroup_schoenflies)
+    arithmetic_crystal_class_symbol = tostring(spgtype.arithmetic_crystal_class_symbol)
     return SpacegroupType(
         spgtype.number,
-        unsafe_string(pointer(spgtype.international_short)),
-        unsafe_string(pointer(spgtype.international_full)),
-        unsafe_string(pointer(spgtype.international)),
-        unsafe_string(pointer(spgtype.schoenflies)),
+        international_short,
+        international_full,
+        international,
+        schoenflies,
         spgtype.hall_number,
-        unsafe_string(pointer(spgtype.hall_symbol)),
-        unsafe_string(pointer(spgtype.choice)),
-        unsafe_string(pointer(spgtype.pointgroup_international)),
-        unsafe_string(pointer(spgtype.pointgroup_schoenflies)),
+        hall_symbol,
+        choice,
+        pointgroup_international,
+        pointgroup_schoenflies,
         spgtype.arithmetic_crystal_class_number,
-        unsafe_string(pointer(spgtype.arithmetic_crystal_class_symbol)),
+        arithmetic_crystal_class_symbol,
     )
 end
 
