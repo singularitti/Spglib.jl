@@ -1,4 +1,3 @@
-using CoordinateTransformations: LinearMap, Translation
 using CrystallographyCore: AbstractCell, Cell, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
@@ -159,9 +158,6 @@ end
     Dataset(spacegroup_number, hall_number, international_symbol, hall_symbol, choice, transformation_matrix, origin_shift, n_operations, rotations, translations, n_atoms, wyckoffs, site_symmetry_symbols, equivalent_atoms, crystallographic_orbits, primitive_lattice, mapping_to_primitive, n_std_atoms, std_lattice, std_types, std_positions, std_rotation_matrix, std_mapping_to_primitive, pointgroup_symbol)
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
-
-!!! note
-    Fields `crystallographic_orbits` and `primitive_lattice` are added after `spglib` `v1.15.0`.
 """
 struct Dataset
     spacegroup_number::Int32
@@ -169,11 +165,11 @@ struct Dataset
     international_symbol::String
     hall_symbol::String
     choice::String
-    transformation_matrix::LinearMap{SMatrix{3,3,Float64,9}}
-    origin_shift::Translation{SVector{3,Float64}}
+    transformation_matrix::SMatrix{3,3,Float64,9}
+    origin_shift::SVector{3,Float64}
     n_operations::Int32
-    rotations::Vector{LinearMap{SMatrix{3,3,Int32,9}}}
-    translations::Vector{Translation{SVector{3,Float64}}}
+    rotations::Vector{SMatrix{3,3,Int32,9}}
+    translations::Vector{SVector{3,Float64}}
     n_atoms::Int32
     wyckoffs::Vector{Char}
     site_symmetry_symbols::Vector{String}
@@ -185,51 +181,79 @@ struct Dataset
     std_lattice::Lattice{Float64}
     std_types::Vector{Int32}
     std_positions::Vector{SVector{3,Float64}}
-    std_rotation_matrix::LinearMap{SMatrix{3,3,Float64,9}}
+    std_rotation_matrix::SMatrix{3,3,Float64,9}
     std_mapping_to_primitive::Vector{Int32}
     pointgroup_symbol::String
 end
 
 function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+    international_symbol = cchars2string(dataset.international_symbol)
+    hall_symbol = cchars2string(dataset.hall_symbol)
+    choice = cchars2string(dataset.choice)
+    transformation_matrix = _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
+    rotations = [
+        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+        i in Base.OneTo(dataset.n_operations)
+    ]  # Note the transpose here!
+    translations = [
+        SVector{3}(unsafe_load(dataset.translations, i)) for
+        i in Base.OneTo(dataset.n_operations)
+    ]
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
+    wyckoffs = [('a':'z')[x + 1] for x in wyckoffs]  # Need to add 1 because of C-index starts from 0
+    site_symmetry_symbols = [
+        cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
+        i in Base.OneTo(dataset.n_atoms)
+    ]
+    equivalent_atoms = unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms)
+    crystallographic_orbits = unsafe_wrap(
+        Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms
+    )
+    primitive_lattice = Lattice(
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))
+    )
+    mapping_to_primitive = unsafe_wrap(
+        Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms
+    )
+    std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
+    std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
+    std_positions = [
+        SVector{3}(unsafe_load(dataset.std_positions, i)) for
+        i in Base.OneTo(dataset.n_std_atoms)
+    ]
+    # Note: Breaking! `std_rotation_matrix` is now transposed!
+    std_rotation_matrix = transpose(
+        _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
+    )
+    std_mapping_to_primitive = unsafe_wrap(
+        Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
+    )
+    pointgroup_symbol = cchars2string(dataset.pointgroup_symbol)
     return Dataset(
         dataset.spacegroup_number,
         dataset.hall_number,
-        cchars2string(dataset.international_symbol),
-        cchars2string(dataset.hall_symbol),
-        cchars2string(dataset.choice),
-        LinearMap(_convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)),
-        Translation(dataset.origin_shift),
+        international_symbol,
+        hall_symbol,
+        choice,
+        transformation_matrix,
+        dataset.origin_shift,
         dataset.n_operations,
-        [
-            LinearMap(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
-            i in Base.OneTo(dataset.n_operations)
-        ],  # Note the transpose here!
-        [
-            Translation(SVector{3}(unsafe_load(dataset.translations, i))) for
-            i in Base.OneTo(dataset.n_operations)
-        ],
+        rotations,
+        translations,
         dataset.n_atoms,
-        [('a':'z')[x + 1] for x in wyckoffs],  # Need to add 1 because of C-index starts from 0
-        [
-            cchars2string(unsafe_load(dataset.site_symmetry_symbols, i)) for
-            i in Base.OneTo(dataset.n_atoms)
-        ],
-        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms),
-        unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms),
-        Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))),
-        unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms),
+        wyckoffs,
+        site_symmetry_symbols,
+        equivalent_atoms,
+        crystallographic_orbits,
+        primitive_lattice,
+        mapping_to_primitive,
         dataset.n_std_atoms,
-        Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice))),
-        unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms),
-        [
-            SVector{3}(unsafe_load(dataset.std_positions, i)) for
-            i in Base.OneTo(dataset.n_std_atoms)
-        ],
-        # Note: Breaking! `std_rotation_matrix` is now transposed!
-        LinearMap(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix))),  # Note the transpose here!
-        unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms),
-        cchars2string(dataset.pointgroup_symbol),
+        std_lattice,
+        std_types,
+        std_positions,
+        std_rotation_matrix,
+        std_mapping_to_primitive,
+        pointgroup_symbol,
     )
 end
 function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
