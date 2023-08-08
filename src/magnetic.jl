@@ -80,7 +80,7 @@ function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
     translations = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, n)
-    nsym = @ccall libspglib.spg_get_symmetry_with_collinear_spin(
+    nsym = @ccall libsymspg.spg_get_symmetry_with_collinear_spin(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         equivalent_atoms::Ptr{Cint},
