@@ -128,18 +128,14 @@ end
 Search symmetry operations of an input unit cell structure.
 """
 function get_dataset(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    ptr = ccall(
-        (:spg_get_dataset, libsymspg),
-        Ptr{SpglibDataset},
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    ptr = @ccall libsymspg.spg_get_dataset(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Ptr{SpglibDataset}
     if ptr == C_NULL
         return nothing
     else
