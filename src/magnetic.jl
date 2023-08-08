@@ -72,6 +72,35 @@ function _expand_cell(cell::MagneticCell)
     return clattice, cpositions, ctypes, magmoms
 end
 
+function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
+    lattice, positions, atoms, magmoms = _expand_cell(cell)
+    n = length(cell.magmoms)
+    # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
+    max_size = 96n  # 96 = 48 × 2 since we have spins
+    rotations = Array{Cint,3}(undef, 3, 3, max_size)
+    translations = Matrix{Cdouble}(undef, 3, max_size)
+    equivalent_atoms = Vector{Cint}(undef, n)
+    nsym = @ccall libspglib.spg_get_symmetry_with_collinear_spin(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        equivalent_atoms::Ptr{Cint},
+        max_size::Cint,
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        spins::Ptr{Cdouble},
+        n::Cint,
+        symprec::Cdouble,
+    )::Cint
+    check_error()
+    rotations, translations = map(
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),
+    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    return rotations[:, :, 1:nsym], translations[:, 1:nsym]
+end
+const get_magnetic_symmetry = spg_get_symmetry_with_collinear_spin
+
 struct SpglibMagneticDataset
     uni_number::Cint
     msg_type::Cint
