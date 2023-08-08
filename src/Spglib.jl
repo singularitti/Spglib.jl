@@ -6,7 +6,6 @@ using spglib_jll: libsymspg
 export get_symmetry,
     get_symmetry_with_collinear_spin,
     get_symmetry_from_database,
-    get_symmetry_from_database!,
     get_spacegroup_type_from_symmetry,
     get_dataset,
     get_dataset_with_hall_number,

@@ -53,34 +53,6 @@ function get_symmetry_from_database(hall_number)
     return rotations, translations
 end
 
-function get_symmetry_from_database!(
-    rotation::AbstractArray, translation::AbstractMatrix, hall_number
-)
-    if !(size(rotation, 3) == size(translation, 2) == 192)
-        throw(
-            DimensionMismatch(
-                "`rotation` & `translation` should have space for 192 symmetry operations!"
-            ),
-        )
-    end
-    if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
-        throw(DimensionMismatch("`rotation` & `translation` don't have the right size!"))
-    end
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    hall_number = Base.cconvert(Cint, hall_number)
-    num_sym = ccall(
-        (:spg_get_symmetry_from_database, libsymspg),
-        Cint,
-        (Ptr{Cint}, Ptr{Float64}, Cint),
-        rotation,
-        translation,
-        hall_number,
-    )
-    check_error()
-    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
-end
-
 function get_spacegroup_type_from_symmetry(
     rotation::AbstractArray{T,3},
     translation::AbstractMatrix,
