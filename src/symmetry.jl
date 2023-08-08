@@ -169,16 +169,6 @@ function get_spacegroup_type(hall_number::Integer)
 end
 
 """
-    get_spacegroup_type(cell::Cell, symprec=1e-5)
-
-Get `SpacegroupType` from `cell`.
-"""
-function get_spacegroup_type(cell::AbstractCell, symprec=1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
-    dataset = get_dataset(cell, symprec)
-    return get_spacegroup_type(dataset.hall_number)
-end
-
-"""
     get_international(cell::Cell, symprec=1e-5)
 
 Return the space group type in Hermann–Mauguin (international) notation.
