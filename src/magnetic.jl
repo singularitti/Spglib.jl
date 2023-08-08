@@ -88,7 +88,7 @@ function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        spins::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         n::Cint,
         symprec::Cdouble,
     )::Cint
@@ -99,7 +99,7 @@ function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
     map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
     return rotations[:, :, 1:nsym], translations[:, 1:nsym]
 end
-const get_magnetic_symmetry = spg_get_symmetry_with_collinear_spin
+const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
 struct SpglibMagneticDataset
     uni_number::Cint
