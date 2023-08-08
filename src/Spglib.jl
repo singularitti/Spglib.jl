@@ -48,6 +48,7 @@ function tostring(cchars)
 end
 
 include("model.jl")
+include("magnetic.jl")
 include("error.jl")
 include("symmetry.jl")
 include("standardize.jl")
