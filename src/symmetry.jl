@@ -78,24 +78,15 @@ for the set of symmetry operations given by the other source than spglib. Note
 that the definition of `symprec` is different from usual one, but is given in the
 fractional coordinates and so it should be small like `1e-5`.
 """
-function get_hall_number_from_symmetry(
-    rotation::AbstractArray{T,3},
-    translation::AbstractMatrix,
-    num_operations::Integer,
-    symprec=1e-5,
-) where {T}
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    num_operations = Base.cconvert(Cint, num_operations)
-    return ccall(
-        (:spg_get_hall_number_from_symmetry, libsymspg),
-        Cint,
-        (Ptr{Cint}, Ptr{Float64}, Cint, Float64),
-        rotation,
-        translation,
-        num_operations,
-        symprec,
-    )
+function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
+    )::Cint
+    check_error()
+    return hall_number
 end
 
 @deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
