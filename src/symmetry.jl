@@ -106,20 +106,16 @@ end
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
 function get_multiplicity(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    num_sym = ccall(
-        (:spg_get_multiplicity, libsymspg),
-        Cint,
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    nsym = @ccall libsymspg.spg_get_multiplicity(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
-    return num_sym
+    return nsym
 end
 
 """
