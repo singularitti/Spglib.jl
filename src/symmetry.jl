@@ -152,20 +152,15 @@ Search symmetry operations of an input unit cell structure, using a given Hall n
 function get_dataset_with_hall_number(
     cell::AbstractCell, hall_number::Integer, symprec=1e-5
 )
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    hall_number = Base.cconvert(Cint, hall_number)
-    ptr = ccall(
-        (:spg_get_dataset_with_hall_number, libsymspg),
-        Ptr{SpglibDataset},
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        hall_number,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    ptr = @ccall libsymspg.spg_get_dataset_with_hall_number(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        hall_number::Cint,
+        symprec::Cdouble,
+    )::Ptr{SpglibDataset}
     if ptr == C_NULL
         return nothing
     else
