@@ -124,7 +124,7 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
         symprec::Cdouble,
     )::Ptr{SpglibDataset}
     if ptr == C_NULL
-        return nothing
+        check_error()
     else
         raw = unsafe_load(ptr)
         return convert(Dataset, raw)
@@ -149,7 +149,7 @@ function get_dataset_with_hall_number(
         symprec::Cdouble,
     )::Ptr{SpglibDataset}
     if ptr == C_NULL
-        return nothing
+        check_error()
     else
         raw = unsafe_load(ptr)
         return convert(Dataset, raw)
