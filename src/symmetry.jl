@@ -29,61 +29,6 @@ function get_symmetry(cell::Cell, symprec=1e-5)
     return rotations, translations
 end
 
-function get_symmetry_with_collinear_spin!(
-    rotation::AbstractArray{T,3},
-    translation::AbstractMatrix,
-    equivalent_atoms::AbstractVector,
-    max_size::Integer,
-    cell::AbstractCell,
-    symprec=1e-5,
-) where {T}
-    lattice, positions, types, magmoms = _expand_cell(cell)
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
-    max_size = Base.cconvert(Cint, max_size)
-    num_atom = Base.cconvert(Cint, length(types))
-    num_sym = ccall(
-        (:spg_get_symmetry_with_collinear_spin, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Cint,
-            Ptr{Cdouble},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Ptr{Cdouble},
-            Cint,
-            Cdouble,
-        ),
-        rotation,
-        translation,
-        equivalent_atoms,
-        max_size,
-        lattice,
-        positions,
-        types,
-        magmoms,
-        num_atom,
-        symprec,
-    )
-    check_error()
-    return num_sym
-end
-function get_symmetry_with_collinear_spin(cell::AbstractCell, symprec=1e-5)
-    num_atom = length(cell.atoms)
-    max_size = num_atom * 48
-    rotation = Array{Cint,3}(undef, 3, 3, max_size)
-    translation = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, num_atom)
-    num_sym = get_symmetry_with_collinear_spin!(
-        rotation, translation, equivalent_atoms, max_size, cell, symprec
-    )
-    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym], equivalent_atoms
-end
-
 """
     get_symmetry_from_database(hall_number)
 
