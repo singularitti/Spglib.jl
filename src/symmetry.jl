@@ -171,9 +171,9 @@ end
 Translate Hall number to space group type information.
 """
 function get_spacegroup_type(hall_number::Integer)
-    spgtype = ccall(
-        (:spg_get_spacegroup_type, libsymspg), SpglibSpacegroupType, (Cint,), hall_number
-    )
+    spgtype = @ccall libsymspg.spg_get_spacegroup_type(
+        hall_number::Cint
+    )::SpglibSpacegroupType
     return convert(SpacegroupType, spgtype)
 end
 
