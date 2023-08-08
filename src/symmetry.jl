@@ -202,19 +202,16 @@ end
 Return the space group type in Hermann–Mauguin (international) notation.
 """
 function get_international(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
+    lattice, positions, atoms = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
-    ccall(
-        (:spg_get_international, libsymspg),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        symbol,
-        lattice,
-        positions,
-        types,
-        length(types),
-        symprec,
-    )
+    @ccall libsymspg.spg_get_international(
+        symbol::Ptr{Cchar},
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
     return tostring(symbol)
 end
