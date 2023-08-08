@@ -4,6 +4,30 @@
 
 Return the symmetry operations of a `cell`.
 """
+function get_symmetry(cell::Cell, symprec=1e-5)
+    lattice, positions, atoms = _expand_cell(cell)
+    n = natoms(cell)
+    # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
+    max_size = 48n  # Num of symmetry operations = order of the point group of the space group × num of lattice points
+    rotations = Array{Cint,3}(undef, 3, 3, max_size)
+    translations = Array{Cdouble,2}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
+    nsym = @ccall libsymspg.spg_get_symmetry(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        max_size::Cint,
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        n::Cint,
+        symprec::Cdouble,
+    )::Cint
+    check_error()
+    rotations, translations = map(
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),
+    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    return rotations, translations
+end
 
 function get_symmetry_with_collinear_spin!(
     rotation::AbstractArray{T,3},
