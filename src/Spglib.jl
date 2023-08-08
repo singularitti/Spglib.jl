@@ -4,15 +4,11 @@ using spglib_jll: libsymspg
 
 # All public methods
 export get_symmetry,
-    get_symmetry!,
     get_symmetry_with_collinear_spin,
-    get_symmetry_with_collinear_spin!,
     get_symmetry_from_database,
-    get_symmetry_from_database!,
     get_spacegroup_type_from_symmetry,
     get_dataset,
     get_dataset_with_hall_number,
-    get_spacegroup_number,
     get_spacegroup_type,
     get_international,
     get_schoenflies,

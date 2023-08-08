@@ -4,152 +4,29 @@
 
 Return the symmetry operations of a `cell`.
 """
-function get_symmetry(
-    cell::AbstractCell, symprec=1e-5, angle_tolerance=-1.0, is_magnetic=false
-)
-    max_size = length(cell.atoms) * 48
-    rotation = Array{Cint,3}(undef, 3, 3, max_size)
-    translation = Array{Cdouble,2}(undef, 3, max_size)
-    if isnothing(cell.magmoms) || iszero(cell.magmoms)
-        return get_symmetry!(rotation, translation, cell, symprec)
-    else
-        equivalent_atoms = zeros(length(cell.magmoms))
-        primitive_lattice = zeros(Cdouble, 3, 3)
-        if ndims(cell.magmoms) == 1
-            spin_flips = zeros(length(rotation))
-        else
-            spin_flips = nothing
-        end
-        num_sym = ccall(
-            (:spg_symmetry_with_site_tensors, libsymspg),
-            Cint,
-            (
-                Ptr{Cint},
-                Ptr{Cdouble},
-                Ptr{Cint},
-                Ptr{Cint},
-                Ptr{Cint},
-                Cint,
-                Ptr{Cdouble},
-                Ptr{Cdouble},
-                Ptr{Cint},
-                Ptr{Cdouble},
-                Cint,
-                Cdouble,
-            ),
-            rotation,
-            translation,
-            equivalent_atoms,
-            primitive_lattice,
-            spin_flips,
-            lattice,
-            positions,
-            types,
-            magmoms,
-            is_magnetic,
-            symprec,
-            angle_tolerance,
-        )
-        check_error()
-        return rotation[:, :, 1:num_sym],
-        translation[:, 1:num_sym], equivalent_atoms,
-        primitive_lattice
-    end
-end
-
-function get_symmetry!(
-    rotation::AbstractArray, translation::AbstractMatrix, cell::AbstractCell, symprec=1e-5
-)
-    if size(rotation, 3) != size(translation, 2)
-        throw(DimensionMismatch("`rotation` & `translation` have different max size!"))
-    end
-    if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
-        throw(DimensionMismatch("`rotation` & `translation` don't have the right size!"))
-    end
-    lattice, positions, types = _expand_cell(cell)
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    max_size = Base.cconvert(Cint, size(rotation, 3))
-    num_atom = Base.cconvert(Cint, length(types))
-    num_sym = ccall(
-        (:spg_get_symmetry, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Float64},
-            Cint,
-            Ptr{Float64},
-            Ptr{Float64},
-            Ptr{Cint},
-            Cint,
-            Float64,
-        ),
-        rotation,
-        translation,
-        max_size,
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+function get_symmetry(cell::Cell, symprec=1e-5)
+    lattice, positions, atoms = _expand_cell(cell)
+    n = natoms(cell)
+    # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
+    max_size = 48n  # Num of symmetry operations = order of the point group of the space group × num of lattice points
+    rotations = Array{Cint,3}(undef, 3, 3, max_size)
+    translations = Array{Cdouble,2}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
+    nsym = @ccall libsymspg.spg_get_symmetry(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        max_size::Cint,
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        n::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
-    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
-end
-
-function get_symmetry_with_collinear_spin!(
-    rotation::AbstractArray{T,3},
-    translation::AbstractMatrix,
-    equivalent_atoms::AbstractVector,
-    max_size::Integer,
-    cell::AbstractCell,
-    symprec=1e-5,
-) where {T}
-    lattice, positions, types, magmoms = _expand_cell(cell)
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    equivalent_atoms = Base.cconvert(Vector{Cint}, equivalent_atoms)
-    max_size = Base.cconvert(Cint, max_size)
-    num_atom = Base.cconvert(Cint, length(types))
-    num_sym = ccall(
-        (:spg_get_symmetry_with_collinear_spin, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Cint,
-            Ptr{Cdouble},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Ptr{Cdouble},
-            Cint,
-            Cdouble,
-        ),
-        rotation,
-        translation,
-        equivalent_atoms,
-        max_size,
-        lattice,
-        positions,
-        types,
-        magmoms,
-        num_atom,
-        symprec,
-    )
-    check_error()
-    return num_sym
-end
-function get_symmetry_with_collinear_spin(cell::AbstractCell, symprec=1e-5)
-    num_atom = length(cell.atoms)
-    max_size = num_atom * 48
-    rotation = Array{Cint,3}(undef, 3, 3, max_size)
-    translation = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, num_atom)
-    num_sym = get_symmetry_with_collinear_spin!(
-        rotation, translation, equivalent_atoms, max_size, cell, symprec
-    )
-    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym], equivalent_atoms
+    rotations, translations = map(
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),
+    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    return rotations, translations
 end
 
 """
@@ -162,60 +39,31 @@ This function allows to directly access to the space group operations in the
 `hall_number` is used.
 """
 function get_symmetry_from_database(hall_number)
-    rotation = Array{Cint,3}(undef, 3, 3, 192)
-    translation = Array{Cdouble,2}(undef, 3, 192)
-    return get_symmetry_from_database!(rotation, translation, hall_number)
-end
-
-function get_symmetry_from_database!(
-    rotation::AbstractArray, translation::AbstractMatrix, hall_number
-)
-    if !(size(rotation, 3) == size(translation, 2) == 192)
-        throw(
-            DimensionMismatch(
-                "`rotation` & `translation` should have space for 192 symmetry operations!"
-            ),
-        )
-    end
-    if !(size(rotation, 1) == size(rotation, 2) == size(translation, 1) == 3)
-        throw(DimensionMismatch("`rotation` & `translation` don't have the right size!"))
-    end
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    hall_number = Base.cconvert(Cint, hall_number)
-    num_sym = ccall(
-        (:spg_get_symmetry_from_database, libsymspg),
-        Cint,
-        (Ptr{Cint}, Ptr{Float64}, Cint),
-        rotation,
-        translation,
-        hall_number,
-    )
+    # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
+    rotations = Array{Cint,3}(undef, 3, 3, 192)
+    translations = Array{Cdouble,2}(undef, 3, 192)
+    nsym = @ccall libsymspg.spg_get_symmetry_from_database(
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, hall_number::Cint
+    )::Cint
     check_error()
-    return rotation[:, :, 1:num_sym], translation[:, 1:num_sym]
+    rotations, translations = map(
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),
+    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    return rotations, translations
 end
 
-function get_spacegroup_type_from_symmetry(
-    rotation::AbstractArray{T,3},
-    translation::AbstractMatrix,
-    num_operations::Integer,
-    lattice::AbstractMatrix,
-    symprec=1e-5,
-) where {T}
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    num_operations = Base.cconvert(Cint, num_operations)
-    lattice = Base.convert(Matrix{Cdouble}, lattice)
-    spgtype = ccall(
-        (:spg_get_spacegroup_type_from_symmetry, libsymspg),
-        SpglibSpacegroupType,
-        (Ptr{Cint}, Ptr{Cdouble}, Cint, Ptr{Cdouble}, Cdouble),
-        rotation,
-        translation,
-        num_operations,
-        lattice,
-        symprec,
-    )
+function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        nsym::Cint,
+        Lattice(cell)::Ptr{Cdouble},
+        symprec::Cdouble,
+    )::SpglibSpacegroupType
     return convert(SpacegroupType, spgtype)
 end
 
@@ -230,24 +78,15 @@ for the set of symmetry operations given by the other source than spglib. Note
 that the definition of `symprec` is different from usual one, but is given in the
 fractional coordinates and so it should be small like `1e-5`.
 """
-function get_hall_number_from_symmetry(
-    rotation::AbstractArray{T,3},
-    translation::AbstractMatrix,
-    num_operations::Integer,
-    symprec=1e-5,
-) where {T}
-    rotation = Base.cconvert(Array{Cint,3}, rotation)
-    translation = Base.cconvert(Matrix{Cdouble}, translation)
-    num_operations = Base.cconvert(Cint, num_operations)
-    return ccall(
-        (:spg_get_hall_number_from_symmetry, libsymspg),
-        Cint,
-        (Ptr{Cint}, Ptr{Float64}, Cint, Float64),
-        rotation,
-        translation,
-        num_operations,
-        symprec,
-    )
+function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
+    )::Cint
+    check_error()
+    return hall_number
 end
 
 @deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
@@ -258,20 +97,16 @@ end
 Return the exact number of symmetry operations. An error is thrown when it fails.
 """
 function get_multiplicity(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    num_sym = ccall(
-        (:spg_get_multiplicity, libsymspg),
-        Cint,
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    nsym = @ccall libsymspg.spg_get_multiplicity(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
-    return num_sym
+    return nsym
 end
 
 """
@@ -280,20 +115,16 @@ end
 Search symmetry operations of an input unit cell structure.
 """
 function get_dataset(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    ptr = ccall(
-        (:spg_get_dataset, libsymspg),
-        Ptr{SpglibDataset},
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    ptr = @ccall libsymspg.spg_get_dataset(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Ptr{SpglibDataset}
     if ptr == C_NULL
-        return nothing
+        check_error()
     else
         raw = unsafe_load(ptr)
         return convert(Dataset, raw)
@@ -308,22 +139,17 @@ Search symmetry operations of an input unit cell structure, using a given Hall n
 function get_dataset_with_hall_number(
     cell::AbstractCell, hall_number::Integer, symprec=1e-5
 )
-    lattice, positions, types = _expand_cell(cell)
-    num_atom = Base.cconvert(Cint, length(types))
-    hall_number = Base.cconvert(Cint, hall_number)
-    ptr = ccall(
-        (:spg_get_dataset_with_hall_number, libsymspg),
-        Ptr{SpglibDataset},
-        (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cint, Cdouble),
-        lattice,
-        positions,
-        types,
-        num_atom,
-        hall_number,
-        symprec,
-    )
+    lattice, positions, atoms = _expand_cell(cell)
+    ptr = @ccall libsymspg.spg_get_dataset_with_hall_number(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        hall_number::Cint,
+        symprec::Cdouble,
+    )::Ptr{SpglibDataset}
     if ptr == C_NULL
-        return nothing
+        check_error()
     else
         raw = unsafe_load(ptr)
         return convert(Dataset, raw)
@@ -336,29 +162,10 @@ end
 Translate Hall number to space group type information.
 """
 function get_spacegroup_type(hall_number::Integer)
-    spgtype = ccall(
-        (:spg_get_spacegroup_type, libsymspg), SpglibSpacegroupType, (Cint,), hall_number
-    )
+    spgtype = @ccall libsymspg.spg_get_spacegroup_type(
+        hall_number::Cint
+    )::SpglibSpacegroupType
     return convert(SpacegroupType, spgtype)
-end
-
-"""
-    get_spacegroup_number(cell::Cell, symprec=1e-5)
-
-Get the spacegroup number of a `cell`.
-"""
-function get_spacegroup_number(cell::AbstractCell, symprec=1e-5)
-    dataset = get_dataset(cell, symprec)
-    return dataset.spacegroup_number
-end
-"""
-    get_spacegroup_type(cell::Cell, symprec=1e-5)
-
-Get `SpacegroupType` from `cell`.
-"""
-function get_spacegroup_type(cell::AbstractCell, symprec=1e-5)  # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L307-L324
-    dataset = get_dataset(cell, symprec)
-    return get_spacegroup_type(dataset.hall_number)
 end
 
 """
@@ -367,19 +174,16 @@ end
 Return the space group type in Hermann–Mauguin (international) notation.
 """
 function get_international(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
+    lattice, positions, atoms = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 11)
-    ccall(
-        (:spg_get_international, libsymspg),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        symbol,
-        lattice,
-        positions,
-        types,
-        length(types),
-        symprec,
-    )
+    @ccall libsymspg.spg_get_international(
+        symbol::Ptr{Cchar},
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
     return tostring(symbol)
 end
@@ -390,19 +194,16 @@ end
 Return the space group type in Schoenflies notation.
 """
 function get_schoenflies(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
+    lattice, positions, atoms = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
-    ccall(
-        (:spg_get_schoenflies, libsymspg),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        symbol,
-        lattice,
-        positions,
-        types,
-        length(types),
-        symprec,
-    )
+    @ccall libsymspg.spg_get_schoenflies(
+        symbol::Ptr{Cchar},
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
     return tostring(symbol)
 end
