@@ -39,9 +39,18 @@ This function allows to directly access to the space group operations in the
 `hall_number` is used.
 """
 function get_symmetry_from_database(hall_number)
-    rotation = Array{Cint,3}(undef, 3, 3, 192)
-    translation = Array{Cdouble,2}(undef, 3, 192)
-    return get_symmetry_from_database!(rotation, translation, hall_number)
+    # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
+    rotations = Array{Cint,3}(undef, 3, 3, 192)
+    translations = Array{Cdouble,2}(undef, 3, 192)
+    nsym = @ccall libsymspg.spg_get_symmetry_from_database(
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, hall_number::Cint
+    )::Cint
+    check_error()
+    rotations, translations = map(
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),
+    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    return rotations, translations
 end
 
 function get_symmetry_from_database!(
