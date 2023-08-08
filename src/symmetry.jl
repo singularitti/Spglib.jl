@@ -222,19 +222,16 @@ end
 Return the space group type in Schoenflies notation.
 """
 function get_schoenflies(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, types = _expand_cell(cell)
+    lattice, positions, atoms = _expand_cell(cell)
     symbol = Vector{Cchar}(undef, 7)
-    ccall(
-        (:spg_get_schoenflies, libsymspg),
-        Cint,
-        (Ptr{Cchar}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cint}, Cint, Cdouble),
-        symbol,
-        lattice,
-        positions,
-        types,
-        length(types),
-        symprec,
-    )
+    @ccall libsymspg.spg_get_schoenflies(
+        symbol::Ptr{Cchar},
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
     return tostring(symbol)
 end
