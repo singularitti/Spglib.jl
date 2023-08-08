@@ -4,68 +4,7 @@ using StructEquality: @struct_hash_equal
 
 import CrystallographyCore: Lattice, natoms, atomtypes
 
-export Lattice,
-    Cell, MagneticCell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
-
-"""
-    Cell(lattice, positions, types, magmoms=zeros(length(types)))
-
-The basic input data type of `Spglib`.
-
-Lattice parameters `lattice` are given by a ``3×3`` matrix with floating point values,
-where ``𝐚``, ``𝐛``, and ``𝐜`` are given as columns.
-Fractional atomic positions `positions` are given
-by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
-Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
-The collinear polarizations `magmoms` only work with `get_symmetry` and are given
-as a list of ``N`` floating point values, or a vector of vectors.
-"""
-@struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
-    lattice::Lattice{L}
-    positions::Vector{MVector{3,P}}
-    atoms::Vector{T}
-    magmoms::M
-end
-function MagneticCell(lattice, positions, atoms, magmoms)
-    if !(lattice isa Lattice)
-        lattice = Lattice(lattice)
-    end
-    N = length(atoms)
-    if positions isa AbstractMatrix
-        P = eltype(positions)
-        if size(positions) == (3, 3)
-            error("ambiguous `positions` size 3×3! Use a vector of `Vector`s instead!")
-        elseif size(positions) == (3, N)
-            positions = collect(eachcol(positions))
-        elseif size(positions) == (N, 3)
-            positions = collect(eachrow(positions))
-        else
-            throw(
-                DimensionMismatch(
-                    "the `positions` has a different number of atoms from the `types`!"
-                ),
-            )
-        end
-    else  # positions isa AbstractVector or a Tuple
-        P = eltype(Base.promote_typeof(positions...))
-        positions = collect(map(MVector{3,P}, positions))
-    end
-    L, T, M = eltype(lattice), eltype(atoms), typeof(magmoms)
-    return MagneticCell{L,P,T,M}(lattice, positions, atoms, magmoms)
-end
-MagneticCell(cell::Cell, magmoms) =
-    MagneticCell(cell.lattice, cell.positions, cell.atoms, magmoms)
-
-natoms(cell::MagneticCell) = length(cell.atoms)
-
-atomtypes(cell::MagneticCell) = unique(cell.atoms)
-
-"""
-    Lattice(cell::MagneticCell)
-
-Get the lattice of a `MagneticCell`.
-"""
-Lattice(cell::MagneticCell) = cell.lattice
+export Lattice, Cell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
 
 const basis_vectors = basisvectors  # For backward compatibility
 
@@ -77,17 +16,6 @@ function _expand_cell(cell::Cell)
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     return clattice, cpositions, ctypes
-end
-function _expand_cell(cell::MagneticCell)
-    lattice, positions, types, magmoms = cell.lattice,
-    cell.positions, cell.atoms,
-    cell.magmoms
-    # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
-    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
-    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
-    return clattice, cpositions, ctypes, magmoms
 end
 
 # This is an internal type, do not export!
