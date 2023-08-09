@@ -13,7 +13,7 @@ function standardize_cell(
 )
     lattice, _positions, _atoms = _expand_cell(cell)
     n = natoms(cell)
-    allocations = 4
+    allocations = 4  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L440
     positions = Matrix{Cdouble}(undef, 3, n * allocations)
     atoms = Vector{Cint}(undef, n * allocations)
     positions[:, 1:n] .= _positions

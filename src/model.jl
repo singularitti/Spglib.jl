@@ -118,6 +118,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     international_symbol = tostring(dataset.international_symbol)
     hall_symbol = tostring(dataset.hall_symbol)
     choice = tostring(dataset.choice)
+    transformation_matrix = _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
     rotations = [
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
         i in Base.OneTo(dataset.n_operations)
@@ -162,7 +163,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         international_symbol,
         hall_symbol,
         choice,
-        dataset.transformation_matrix,
+        transformation_matrix,
         dataset.origin_shift,
         dataset.n_operations,
         rotations,
