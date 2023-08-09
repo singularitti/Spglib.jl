@@ -19,7 +19,6 @@
     cell = Cell(lattice, positions, numbers)
     dataset = get_dataset(cell, 1e-5)
     # Compared with documented results
-    @test get_spacegroup_number(cell) == 64
     @test dataset.spacegroup_number == 64
     @test dataset.international_symbol == "Cmce"
     @test get_international(cell, 1e-5) == "Cmce"
@@ -31,9 +30,9 @@
         0 0 1
     ]
     @test dataset.std_lattice ≈ Lattice([  # Compared with documented results
-        7.17851431 0 0
-        0 3.99943947 0
-        0 0 8.57154746
+        [7.17851431 0.0 0.0],
+        [0.0 3.99943947 0.0],
+        [0.0 0.0 8.57154746],
     ])
     # Compared with Python results
     @test isempty(dataset.choice)

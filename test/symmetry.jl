@@ -108,14 +108,10 @@ end
         positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
         types = [1, 1]
         cell = Cell(lattice, positions, types)
-        num_atom = length(types)
-        max_size = num_atom * 48
-        rotation = Array{Cint,3}(undef, 3, 3, max_size)
-        translation = Array{Float64,2}(undef, 3, max_size)
-        get_symmetry!(rotation, translation, cell, 1e-5)
-        @test size(rotation) == (3, 3, 96)
-        @test size(translation) == (3, 96)
-        @test get_hall_number_from_symmetry(rotation, translation, max_size, 1e-5) == 529
+        rotations, translations = get_symmetry(cell, 1e-5)
+        @test size(rotations) == (96,)
+        @test size(translations) == (96,)
+        @test get_hall_number_from_symmetry(cell, 1e-5) == 529
     end
     # See https://github.com/spglib/spglib/blob/deb6695/python/test/test_collinear_spin.py#L18-L37
     @testset "Get symmetry with collinear spins" begin
