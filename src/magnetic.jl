@@ -208,6 +208,62 @@ function get_magnetic_dataset(
     end
 end
 
+function get_magnetic_symmetry_from_database(
+    cell::MagneticCell, uni_number::Cint, hall_number::Cint
+)
+    @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
+    @ccall libsymspg.spg_get_magnetic_symmetry_from_database(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        time_reversals::Ptr{Cint},
+        uni_number::Cint,
+        hall_number::Cint,
+    )::Cint
+end
+
+struct SpglibMagneticSpacegroupType
+    uni_number::Cint
+    litvin_number::Cint
+    bns_number::NTuple{8,Cchar}
+    og_number::NTuple{12,Cchar}
+    number::Cint
+    type::Cint
+end
+
+struct MagneticSpacegroupType
+    uni_number::Int32
+    litvin_number::Int32
+    bns_number::String
+    og_number::String
+    number::Int32
+    type::Int32
+end
+
+function get_magnetic_spacegroup_type(uni_number::Integer)
+    spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type(
+        uni_number::Cint
+    )::SpglibMagneticSpacegroupType
+    check_error()
+    return convert(MagneticSpacegroupType, spgtype)
+end
+
+function get_magnetic_spacegroup_type_from_symmetry(cell::MagneticCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    time_reversals = zeros(Int32, nsym)
+    spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type_from_symmetry(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        time_reversals::Ptr{Cint},
+        nsym::Cint,
+        Lattice(cell)::Ptr{Cdouble},
+        symprec::Cdouble,
+    )::SpglibMagneticSpacegroupType
+    check_error()
+    return convert(MagneticSpacegroupType, spgtype)
+end
+
 function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     rotations = [
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
