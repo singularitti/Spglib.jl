@@ -5,8 +5,8 @@
 Apply Niggli reduction to input basis vectors `lattice`.
 """
 function niggli_reduce(lattice::Lattice, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
-    ccall((:spg_niggli_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec)
+    clattice = transpose(convert(Matrix{Cdouble}, lattice))
+    @ccall libsymspg.spg_niggli_reduce(clattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
     check_error()
     return Lattice(transpose(clattice))
 end
@@ -26,10 +26,8 @@ end
 Apply Delaunay reduction to input basis vectors `lattice`.
 """
 function delaunay_reduce(lattice::Lattice, symprec=1e-5)
-    clattice = convert(Matrix{Cdouble}, transpose(lattice))  # `Lattice`s are column-major order
-    ccall(
-        (:spg_delaunay_reduce, libsymspg), Cint, (Ptr{Cdouble}, Cdouble), clattice, symprec
-    )
+    clattice = transpose(convert(Matrix{Cdouble}, lattice))
+    @ccall libsymspg.spg_delaunay_reduce(clattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
     check_error()
     return Lattice(transpose(clattice))
 end
