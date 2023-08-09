@@ -1,4 +1,4 @@
-@testset "Construct a `Cell`" begin
+@testset "Constructors" begin
     lattice = [
         [5.0759761474456697, 5.0759761474456697, 0],  # a
         [-2.8280307701821314, 2.8280307701821314, 0],  # b
@@ -16,13 +16,9 @@
     ]
     atoms = fill(35, length(positions))
     cell = Cell(lattice, positions, atoms)
-    @test cell == Cell(
-        [
-            5.07597614744567 -2.8280307701821314 0.0
-            5.07597614744567 2.8280307701821314 0.0
-            0.0 0.0 8.57154746
-        ],
-        positions,
-        atoms,
-    )
+    @test Lattice(cell) == Lattice([
+        5.07597614744567 -2.8280307701821314 0.0
+        5.07597614744567 2.8280307701821314 0.0
+        0.0 0.0 8.57154746
+    ])
 end
