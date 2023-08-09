@@ -1,3 +1,4 @@
 [deps]
+CrystallographyCore = "80545937-1184-4bc9-b283-396e91386b5c"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Spglib = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
