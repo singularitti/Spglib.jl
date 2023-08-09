@@ -58,41 +58,29 @@ function get_ir_reciprocal_mesh(
 end
 
 function get_stabilized_reciprocal_mesh(
-    rotations, mesh, is_shift=falses(3); qpoints=[[0, 0, 0]], is_time_reversal=true
+    rotations, mesh, qpoints=[[0, 0, 0]], is_shift=falses(3); is_time_reversal=true
 )
     if !(length(mesh) == length(is_shift) == 3)
         throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     @assert size(qpoints, 2) == 3
-    npoints = prod(mesh)
-    grid_address = Matrix{Cint}(undef, npoints, 3)
-    mapping = Vector{Cint}(undef, npoints)
-    nir = ccall(
-        (:spg_get_stabilized_reciprocal_mesh, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Cint},
-            Ptr{Cint},
-            Ptr{Cint},
-            Cint,
-            Cint,
-            Ptr{Cint},
-            Cint,
-            Ptr{Cint},
-        ),
-        grid_address,
-        mapping,
-        mesh,
-        is_shift,
-        is_time_reversal,
-        length(rotations),
-        rotations,
-        length(qpoints),
-        qpoints,
-    )
+    nk = prod(mesh)
+    grid_address = Matrix{Cint}(undef, 3, nk)
+    ir_mapping_table = Vector{Cint}(undef, nk)
+    qpoints = map(Base.Fix1(convert, Vector{Cint}), qpoints)
+    nir = @ccall libsymspg.spg_get_stabilized_reciprocal_mesh(
+        grid_address::Ptr{Cint},
+        ir_mapping_table::Ptr{Cint},
+        mesh::Ptr{Cint},
+        is_shift::Ptr{Cint},
+        is_time_reversal::Cint,
+        length(rotations)::Cint,
+        rotations::Ptr{Cint},
+        length(qpoints)::Cint,
+        qpoints::Ptr{Cdouble},
+    )::Cint
     check_error()
-    mapping .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return nir, mapping, grid_address
+    ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
+    return nir, ir_mapping_table, grid_address
 end
