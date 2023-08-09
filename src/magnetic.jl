@@ -186,6 +186,28 @@ struct MagneticDataset
     primitive_lattice::Lattice{Float64}
 end
 
+function get_magnetic_dataset(
+    cell::MagneticCell, tensor_rank::Cint, is_axial=false, symprec=1e-5
+)
+    lattice, positions, atoms, magmoms = _expand_cell(cell)
+    ptr = @ccall libsymspg.spg_get_magnetic_dataset(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        tensors::Ptr{Cdouble},
+        tensor_rank::Cint,
+        natoms(cell)::Cint,
+        is_axial::Cint,
+        symprec::Cdouble,
+    )::Ptr{SpglibMagneticDataset}
+    if ptr == C_NULL
+        check_error()
+    else
+        raw = unsafe_load(ptr)
+        return convert(Dataset, raw)
+    end
+end
+
 function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     rotations = [
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
