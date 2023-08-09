@@ -33,44 +33,28 @@ function get_ir_reciprocal_mesh(
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
-    lattice, positions, types = _expand_cell(cell)
+    lattice, positions, atoms = _expand_cell(cell)
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
-    is_time_reversal = Base.cconvert(Cint, is_time_reversal)
-    num_atom = Base.cconvert(Cint, length(types))
     # Prepare for output
-    npoints = prod(mesh)
-    grid_address = Matrix{Cint}(undef, 3, npoints)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
-    grid_mapping_table = Vector{Cint}(undef, npoints)
-    nir = ccall(
-        (:spg_get_ir_reciprocal_mesh, libsymspg),
-        Cint,
-        (
-            Ptr{Cint},
-            Ptr{Cint},
-            Ptr{Cint},
-            Ptr{Cint},
-            Cint,
-            Ptr{Cdouble},
-            Ptr{Cdouble},
-            Ptr{Cint},
-            Cint,
-            Cdouble,
-        ),
-        grid_address,
-        grid_mapping_table,
-        mesh,
-        is_shift,
-        is_time_reversal,
-        lattice,
-        positions,
-        types,
-        num_atom,
-        symprec,
-    )
+    nk = prod(mesh)
+    grid_address = Matrix{Cint}(undef, 3, nk)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
+    ir_mapping_table = Vector{Cint}(undef, nk)
+    nir = @ccall libsymspg.spg_get_ir_reciprocal_mesh(
+        grid_address::Ptr{Cint},
+        ir_mapping_table::Ptr{Cint},
+        mesh::Ptr{Cint},
+        is_shift::Ptr{Cint},
+        is_time_reversal::Cint,
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
     check_error()
-    grid_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return nir, grid_mapping_table, grid_address
+    ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
+    return nir, ir_mapping_table, grid_address
 end
 
 function get_stabilized_reciprocal_mesh(
