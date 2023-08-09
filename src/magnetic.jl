@@ -97,7 +97,7 @@ function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
         SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
     ),
     map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
-    return rotations[:, :, 1:nsym], translations[:, 1:nsym]
+    return rotations, translations
 end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
