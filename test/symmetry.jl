@@ -1,24 +1,34 @@
 function type2dict(dt)
-    di = Dict{Symbol,Any}()
+    dict = Dict{Symbol,Any}()
     for n in propertynames(dt)
-        di[n] = getproperty(dt, n)
+        dict[n] = getproperty(dt, n)
     end
-    return di
+    return dict
 end
 
 @testset "Test `get_spacegroup_type`" begin
     # Adapted from https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L7-L12
-    spacegroup_type = get_spacegroup_type(101)
-    @test spacegroup_type.number == 15
-    @test spacegroup_type.hall_symbol == "-I 2a"
-    @test spacegroup_type.arithmetic_crystal_class_symbol == "2/mC"
-    # These results are compared with Python's spglib results.
+    @test type2dict(get_spacegroup_type(101)) == Dict(
+        :number => 15,
+        :international_short => "C2/c",
+        :international_full => "I 1 1 2/a",
+        :international => "C 2/c = I 1 1 2/a",
+        :schoenflies => "C2h^6",
+        :hall_number => 101,
+        :hall_symbol => "-I 2a",
+        :choice => "-c3",
+        :pointgroup_international => "2/m",
+        :pointgroup_schoenflies => "C2h",
+        :arithmetic_crystal_class_number => 8,
+        :arithmetic_crystal_class_symbol => "2/mC",
+    )
     @test type2dict(get_spacegroup_type(419)) == Dict(
         :number => 136,
         :international_short => "P4_2/mnm",
         :international_full => "P 4_2/m 2_1/n 2/m",
         :international => "P 4_2/m n m",
         :schoenflies => "D4h^14",
+        :hall_number => 419,
         :hall_symbol => "-P 4n 2n",
         :choice => "",
         :pointgroup_schoenflies => "D4h",
@@ -32,6 +42,7 @@ end
         :international_full => "P 1",
         :international => "P 1",
         :schoenflies => "C1^1",
+        :hall_number => 1,
         :hall_symbol => "P 1",
         :choice => "",
         :pointgroup_schoenflies => "C1",
@@ -45,6 +56,7 @@ end
         :international_full => "F 4_1/d -3 2/m",
         :international => "F d -3 m",
         :schoenflies => "Oh^7",
+        :hall_number => 525,
         :hall_symbol => "F 4d 2 3 -1d",
         :choice => "1",
         :pointgroup_schoenflies => "Oh",
@@ -58,6 +70,7 @@ end
         :international_full => "P 6/m 2/m 2/m",
         :international => "P 6/m m m",
         :schoenflies => "D6h^1",
+        :hall_number => 485,
         :hall_symbol => "-P 6 2",
         :choice => "",
         :pointgroup_schoenflies => "D6h",
