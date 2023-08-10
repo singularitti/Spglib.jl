@@ -63,7 +63,7 @@ std_lattice_before_idealization = convert(Matrix{Float64}, lattice) * inv(datase
 ```
 
 This is based on formula in
-[Transformation matrix ``\mathbf{P}`` and origin shift ``\mathbf{p}``](@ref)
+[Transformation matrix `\mathbf{P}` and origin shift `\mathbf{p}`](@ref)
 and [Passive/forward/alias transformation](@ref):
 
 ```math
@@ -76,7 +76,7 @@ and [Passive/forward/alias transformation](@ref):
 \end{align}
 ```
 
-Here, ``\mathbf{P}`` is the `dataset.transformation_matrix`.
+Here, `\mathbf{P}` is the `dataset.transformation_matrix`.
 
 Note that in contrast to the Python code:
 
@@ -91,14 +91,14 @@ code since we choose a column-major order of stacking lattice vectors as describ
 [Basis vectors](@ref), and we return transformation matrix in column-major order, too.
 
 Now, we obtain the standardized basis vectors after idealization
-``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``:
+`\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}`:
 
 ```@repl std
 std_lattice_after_idealization = dataset.std_lattice
 ```
 
 This is different from the standardized basis vectors before idealization
-``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``.
+`\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}`.
 Unless this crystal structure is distorted from the crystal structure that has the ideal
 symmetry, this means that the crystal was rotated rigidly in the idealization step by
 
@@ -108,7 +108,7 @@ symmetry, this means that the crystal was rotated rigidly in the idealization st
 ```
 
 as stated in [Rotation introduced by idealization](@ref).
-where ``\mathbf{R}`` is the rotation matrix. This is computed by
+where `\mathbf{R}` is the rotation matrix. This is computed by
 
 ```math
 \mathbf{R} =
@@ -140,7 +140,7 @@ This equals to
 \end{bmatrix}
 ```
 
-where ``\theta = -\pi/4`` and ``\det(\mathbf{R}) = 1`` when no distortion:
+where `\theta = -\pi/4` and `\det(\mathbf{R}) = 1` when no distortion:
 
 ```@repl std
 θ = -π/4
@@ -172,4 +172,3 @@ In summary of the two steps,
     \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}.
 \end{align}
 ```
-
