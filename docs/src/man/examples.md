@@ -11,14 +11,14 @@ To create a `Cell`, we first need to create a `Lattice`.
 There are multiple ways of doing it. For example, if we know the six lattice constants,
 we can do
 
-```@repl 1
+```@repl cell
 using Spglib, Unitful, UnitfulAtomic
 lattice₁ = Lattice(4u"nm", 180u"bohr", 3u"angstrom", 90, 90, 90)
 ```
 
 Or, equivalently,
 
-```@repl 1
+```@repl cell
 lattice₁ == Lattice([
     4u"nm" 0u"m" 0.0u"cm"
     0u"cm" 180.0u"bohr" 0u"m"
@@ -28,7 +28,7 @@ lattice₁ == Lattice([
 
 Then we can add atoms and their positions (in crystal coordinates):
 
-```@repl 1
+```@repl cell
 lattice₂ = [
     -3.0179389205999998 -3.0179389205999998 0.0000000000000000
     -5.2272235447000002 5.2272235447000002 0.0000000000000000
@@ -47,12 +47,12 @@ This example is from
 In this package, rigid rotation is purposely introduced in the idealization step though this
 is unlikely as a crystallographic operation.
 
-```@repl
+```@repl std
 using StaticArrays, Spglib
 lattice = Lattice([
-    [5.0759761474456697, 5.0759761474456697, 0],  # a
-    [-2.8280307701821314, 2.8280307701821314, 0],  # b
-    [0, 0, 8.57154746],  # c
+    [5.0759761474456697, 5.0759761474456697, 0],
+    [-2.8280307701821314, 2.8280307701821314, 0],
+    [0, 0, 8.57154746],
 ]);
 positions = [
     [0.0, 0.84688439, 0.1203133],
@@ -70,8 +70,13 @@ dataset = get_dataset(cell, 1e-5)
 dataset.international_symbol
 dataset.spacegroup_number
 dataset.transformation_matrix
-std_lattice_after_idealization = dataset.std_lattice
-std_lattice_before_idealization = Matrix(lattice) * inv(dataset.transformation_matrix)
+```
+
+We can see the transformation matrix from the given lattice to the standardized lattice
+is the identity matrix, i.e., the given lattice is already a standardized lattice.
+
+```@repl std
+std_lattice_before_idealization = convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)
 ```
 
 This is based on formula in
@@ -88,6 +93,8 @@ and [Passive/forward/alias transformation](@ref):
 \end{align}
 ```
 
+Here, ``\mathbf{P}`` is the `dataset.transformation_matrix`.
+
 Note that in contrast to the Python code:
 
 ```python
@@ -99,3 +106,87 @@ std_lattice_before_idealization = np.dot(
 where there are multiple transpose operations, we do not have to do that in our Julia
 code since we choose a column-major order of stacking lattice vectors as described in
 [Basis vectors](@ref), and we return transformation matrix in column-major order, too.
+
+Now, we obtain the standardized basis vectors after idealization
+``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``:
+
+```@repl std
+std_lattice_after_idealization = dataset.std_lattice
+```
+
+This is different from the standardized basis vectors before idealization
+``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``.
+Unless this crystal structure is distorted from the crystal structure that has the ideal
+symmetry, this means that the crystal was rotated rigidly in the idealization step by
+
+```math
+\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix} =
+\mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix},
+```
+
+as stated in [Rotation introduced by idealization](@ref).
+where ``\mathbf{R}`` is the rotation matrix. This is computed by
+
+```math
+\mathbf{R} =
+\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}
+\bigl(\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}\bigr)^{-1}
+```
+
+In Julia code, this is
+
+```@repl std
+𝐀 = convert(Matrix{Float64}, std_lattice_after_idealization)
+𝐁 = convert(Matrix{Float64}, std_lattice_before_idealization)
+𝐑 = 𝐀 * inv(𝐁)
+```
+
+Note also the transpose is not applied here in contrast to the Python code:
+
+```python
+R = np.dot(dataset['std_lattice'].T, np.linalg.inv(std_lattice_before_idealization.T))
+```
+
+This equals to
+
+```math
+\begin{bmatrix}
+    \cos \theta & -\sin \theta & 0\\
+    \sin \theta & \cos \theta & 0\\
+    0 & 0 & 1
+\end{bmatrix}
+```
+
+where ``\theta = -\pi/4`` and ``\det(\mathbf{R}) = 1`` when no distortion:
+
+```@repl std
+θ = -π/4
+[
+    cos(θ) -sin(θ) 0
+    sin(θ) cos(θ) 0
+    0 0 1
+]
+```
+
+Compared to `dataset.std_rotation_matrix`:
+
+```@repl std
+dataset.std_rotation_matrix
+```
+
+we have approximately the same result.
+
+In summary of the two steps,
+
+```math
+\begin{align}
+    \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix} =
+    \begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix} \mathbf{P}^{-1} &=
+    \mathbf{R}^{-1}
+    \begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix},\\
+    \begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}
+    \mathbf{P} &=
+    \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}.
+\end{align}
+```
+
