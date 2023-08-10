@@ -8,35 +8,18 @@ Depth = 2
 ## Creating a `Cell`
 
 To create a `Cell`, we first need to create a `Lattice`.
-There are multiple ways of doing it. For example, if we know the six lattice constants,
-we can do
-
-```@repl cell
-using Spglib, Unitful, UnitfulAtomic
-lattice₁ = Lattice(4u"nm", 180u"bohr", 3u"angstrom", 90, 90, 90)
-```
-
-Or, equivalently,
-
-```@repl cell
-lattice₁ == Lattice([
-    4u"nm" 0u"m" 0.0u"cm"
-    0u"cm" 180.0u"bohr" 0u"m"
-    0u"bohr" 0u"nm" (3//1)*u"angstrom"
-])
-```
-
 Then we can add atoms and their positions (in crystal coordinates):
 
 ```@repl cell
-lattice₂ = [
+using Spglib
+lattice = [
     -3.0179389205999998 -3.0179389205999998 0.0000000000000000
     -5.2272235447000002 5.2272235447000002 0.0000000000000000
     0.0000000000000000 0.0000000000000000 -9.7736219469000005
 ]
 positions = [[2 / 3, 1 / 3, 1 / 4], [1 / 3, 2 / 3, 3 / 4]]
 atoms = [1, 1]
-cell = Cell(lattice₂, positions, atoms)
+cell = Cell(lattice, positions, atoms)
 ```
 
 ## Computing rigid rotation introduced by idealization
@@ -48,7 +31,7 @@ In this package, rigid rotation is purposely introduced in the idealization step
 is unlikely as a crystallographic operation.
 
 ```@repl std
-using StaticArrays, Spglib
+using StaticArrays, CrystallographyCore, Spglib
 lattice = Lattice([
     [5.0759761474456697, 5.0759761474456697, 0],
     [-2.8280307701821314, 2.8280307701821314, 0],
