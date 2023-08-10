@@ -47,7 +47,8 @@ This example is from
 In this package, rigid rotation is purposely introduced in the idealization step though this
 is unlikely as a crystallographic operation.
 
-```@repl 1
+```@repl
+using StaticArrays, Spglib
 lattice = Lattice([
     [5.0759761474456697, 5.0759761474456697, 0],  # a
     [-2.8280307701821314, 2.8280307701821314, 0],  # b
