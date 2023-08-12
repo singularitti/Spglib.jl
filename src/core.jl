@@ -28,7 +28,7 @@ as a list of ``N`` floating point values, or a vector of vectors.
     atoms::Vector{T}
     magmoms::Vector{M}
 end
-function SpglibCell(lattice, positions, atoms, magmoms)
+function SpglibCell(lattice, positions, atoms, magmoms=[])
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
     end
