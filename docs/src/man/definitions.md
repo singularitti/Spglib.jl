@@ -7,7 +7,8 @@ Depth = 3
 
 !!! warning
     Our definitions and conventions are mostly adapted from
-    [here](https://spglib.readthedocs.io/en/latest/definition.html), with some notable differences, such as the matrix representation of lattices.
+    [here](https://spglib.readthedocs.io/en/latest/definition.html), with some minor
+    differences, such as the matrix representation of lattices.
 
 ## Basis vectors
 
@@ -101,6 +102,22 @@ or
 ```math
 \mathbf{r} = \sum_i x_i \mathbf{a}_i.
 ```
+
+!!! note
+    In the Python version of Spglib,
+    lattice parameters `lattice` are given by a ``3\times 3`` matrix with floating
+    point values, where ``\mathbf{a}``, ``\mathbf{b}``, ``\mathbf{c}`` are
+    given as rows, which results in the transpose of the definition for
+    C-API. That is, in Python, the basis vectors are written as
+    [follows](https://spglib.readthedocs.io/en/latest/variable.html#lattice):
+
+    ```python
+    [ [ a_x, b_x, c_x ],
+      [ a_y, b_y, c_y ],
+      [ a_z, b_z, c_z ] ]
+    ```
+
+    Here, we adopt the C-API convention, i.e., writing basis vectors as columns.
 
 ## Space group operation and change of basis
 
