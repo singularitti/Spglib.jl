@@ -4,7 +4,7 @@
 
 Apply Niggli reduction to input basis vectors `lattice`.
 
-The transformation from original basis vectors 
+The transformation from original basis vectors
 ``\\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}``
 to final basis vectors
 ``\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}``
@@ -43,7 +43,7 @@ end
 
 Apply Delaunay reduction to input basis vectors `lattice`.
 
-The transformation from original basis vectors 
+The transformation from original basis vectors
 ``\\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}``
 to final basis vectors
 ``\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}``
