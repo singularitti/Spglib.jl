@@ -3,6 +3,24 @@
     niggli_reduce(cell::Cell, symprec=1e-5)
 
 Apply Niggli reduction to input basis vectors `lattice`.
+
+The transformation from original basis vectors 
+``\\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}``
+to final basis vectors
+``\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}``
+is achieved by linear
+combination of basis vectors with integer coefficients without
+rotating coordinates. Therefore the transformation matrix is obtained
+by
+
+```math
+\\mathbf{P} = \\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}
+\\bigl(\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}\\bigr)^{-1}
+```
+
+and the matrix elements have to be almost integers.
+
+See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function niggli_reduce(lattice::Lattice, symprec=1e-5)
     clattice = transpose(convert(Matrix{Cdouble}, lattice))
@@ -24,6 +42,24 @@ end
     delaunay_reduce(cell::Cell, symprec=1e-5)
 
 Apply Delaunay reduction to input basis vectors `lattice`.
+
+The transformation from original basis vectors 
+``\\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}``
+to final basis vectors
+``\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}``
+is achieved by linear
+combination of basis vectors with integer coefficients without
+rotating coordinates. Therefore the transformation matrix is obtained
+by
+
+```math
+\\mathbf{P} = \\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}
+\\bigl(\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}\\bigr)^{-1}
+```
+
+and the matrix elements have to be almost integers.
+
+See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function delaunay_reduce(lattice::Lattice, symprec=1e-5)
     clattice = transpose(convert(Matrix{Cdouble}, lattice))

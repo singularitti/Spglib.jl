@@ -2,7 +2,31 @@
 """
     get_symmetry(cell::Cell, symprec=1e-5)
 
-Return the symmetry operations of a `cell`.
+Return the symmetry operations (rotations, translations) of a `cell`.
+
+Returned value `rotations` is a `Vector` of matrices. It has the length of
+"number of symmetry operations". Each matrix is a ``3 \\times 3`` integer matrix.
+Returned value `translations` is a `Vector` of vectors. It has the length of
+"number of symmetry operations". Each vector is a length-``3`` vector of floating point numbers.
+
+The orders of the rotation matrices and the translation
+vectors correspond with each other, e.g., the second symmetry
+operation is organized by the set of the second rotation matrix and second
+translation vector in the respective arrays. Therefore a set of
+symmetry operations may obtained by
+`[(r, t) for r, t in zip(rotations, translations)]`.
+
+The operations are given with respect to the fractional coordinates
+(not for Cartesian coordinates). The rotation matrix and translation
+vector are used as follows:
+
+```math
+new_vector_{3 \\times 1} = rotation_{3 \\times 3} * vector_{3 \\times 1} + translation_{3 \\times 1}.
+```
+
+The three values in the vector are given for the ``a``, ``b``, and ``c`` axes, respectively.
+
+See also [`get_magnetic_symmetry`](@ref) for magnetic symmetry search.
 """
 function get_symmetry(cell::Cell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
