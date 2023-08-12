@@ -53,7 +53,6 @@ get_dataset
 get_dataset_with_hall_number
 get_spacegroup_type
 get_symmetry_from_database
-get_spacegroup_number
 get_international
 get_schoenflies
 standardize_cell
