@@ -1,4 +1,4 @@
-export MagneticCell, MagneticDataset
+export SpglibCell, MagneticDataset
 
 """
     Cell(lattice, positions, types, magmoms=zeros(length(types)))
@@ -13,13 +13,13 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values, or a vector of vectors.
 """
-@struct_hash_equal struct MagneticCell{L,P,T,M} <: AbstractCell
+@struct_hash_equal struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
     atoms::Vector{T}
     magmoms::M
 end
-function MagneticCell(lattice, positions, atoms, magmoms)
+function SpglibCell(lattice, positions, atoms, magmoms)
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
     end
@@ -44,23 +44,23 @@ function MagneticCell(lattice, positions, atoms, magmoms)
         positions = collect(map(MVector{3,P}, positions))
     end
     L, T, M = eltype(lattice), eltype(atoms), typeof(magmoms)
-    return MagneticCell{L,P,T,M}(lattice, positions, atoms, magmoms)
+    return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
-MagneticCell(cell::Cell, magmoms) =
-    MagneticCell(cell.lattice, cell.positions, cell.atoms, magmoms)
+SpglibCell(cell::Cell, magmoms) =
+    SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 
-natoms(cell::MagneticCell) = length(cell.atoms)
+natoms(cell::SpglibCell) = length(cell.atoms)
 
-atomtypes(cell::MagneticCell) = unique(cell.atoms)
+atomtypes(cell::SpglibCell) = unique(cell.atoms)
 
 """
-    Lattice(cell::MagneticCell)
+    Lattice(cell::SpglibCell)
 
-Get the lattice of a `MagneticCell`.
+Get the lattice of a `SpglibCell`.
 """
-Lattice(cell::MagneticCell) = cell.lattice
+Lattice(cell::SpglibCell) = cell.lattice
 
-function _expand_cell(cell::MagneticCell)
+function _expand_cell(cell::SpglibCell)
     lattice, positions, types, magmoms = cell.lattice,
     cell.positions, cell.atoms,
     cell.magmoms
@@ -72,7 +72,7 @@ function _expand_cell(cell::MagneticCell)
     return clattice, cpositions, ctypes, magmoms
 end
 
-function get_symmetry_with_collinear_spin(cell::MagneticCell, symprec=1e-5)
+function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _expand_cell(cell)
     n = length(cell.magmoms)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
@@ -102,7 +102,7 @@ end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
 function get_symmetry_with_site_tensors(
-    cell::MagneticCell, symprec=1e-5; with_time_reversal=true, is_axial=false
+    cell::SpglibCell, symprec=1e-5; with_time_reversal=true, is_axial=false
 )
     lattice, positions, atoms, magmoms = _expand_cell(cell)
     n = length(cell.magmoms)
@@ -187,7 +187,7 @@ struct MagneticDataset
 end
 
 function get_magnetic_dataset(
-    cell::MagneticCell, tensor_rank::Cint, is_axial=false, symprec=1e-5
+    cell::SpglibCell, tensor_rank::Cint, is_axial=false, symprec=1e-5
 )
     lattice, positions, atoms, magmoms = _expand_cell(cell)
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
@@ -209,7 +209,7 @@ function get_magnetic_dataset(
 end
 
 function get_magnetic_symmetry_from_database(
-    cell::MagneticCell, uni_number::Cint, hall_number::Cint
+    cell::SpglibCell, uni_number::Cint, hall_number::Cint
 )
     @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
     @ccall libsymspg.spg_get_magnetic_symmetry_from_database(
@@ -247,7 +247,7 @@ function get_magnetic_spacegroup_type(uni_number::Integer)
     return convert(MagneticSpacegroupType, spgtype)
 end
 
-function get_magnetic_spacegroup_type_from_symmetry(cell::MagneticCell, symprec=1e-5)
+function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
     rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)

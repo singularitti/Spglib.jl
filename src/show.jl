@@ -1,4 +1,4 @@
-function Base.show(io::IO, ::MIME"text/plain", cell::MagneticCell)
+function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
     summary(io, cell)
     println(io)
     println(io, " lattice:")
