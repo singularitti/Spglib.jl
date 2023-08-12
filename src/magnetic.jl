@@ -1,14 +1,15 @@
-export MagneticDataset
+export MagneticDataset, get_symmetry_with_collinear_spin, get_magnetic_symmetry
 
+# Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
-    lattice, positions, atoms, magmoms = _expand_cell(cell)
-    n = length(cell.magmoms)
+    lattice, positions, atoms, spins = _expand_cell(cell)
+    num_atom = length(cell.magmoms)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
-    max_size = 96n  # 96 = 48 × 2 since we have spins
+    max_size = 96num_atom  # 96 = 48 × 2 since we have spins
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
     translations = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, n)
-    nsym = @ccall libsymspg.spg_get_symmetry_with_collinear_spin(
+    equivalent_atoms = Vector{Cint}(undef, num_atom)
+    num_sym = @ccall libsymspg.spg_get_symmetry_with_collinear_spin(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         equivalent_atoms::Ptr{Cint},
@@ -16,16 +17,16 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        magmoms::Ptr{Cdouble},
-        n::Cint,
+        spins::Ptr{Cdouble},
+        num_atom::Cint,
         symprec::Cdouble,
     )::Cint
     check_error()
     rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
+        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:num_sym]; dims=3)
     ),
-    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
-    return rotations, translations
+    map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    return rotations, translations, equivalent_atoms
 end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
