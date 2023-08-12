@@ -5,6 +5,7 @@ using Test
     # Write your own tests here.
     include("cell.jl")
     include("symmetry.jl")
+    include("magnetic.jl")
     include("standardize.jl")
     include("reciprocal.jl")
     include("reduce.jl")
