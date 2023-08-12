@@ -5,12 +5,22 @@ function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
     for row in eachrow(cell.lattice)
         println(io, "  ", join(row, "  "))
     end
-    N = natoms(cell)
-    println(io, " $N atomic positions:")
+    num_atom = natoms(cell)
+    println(io, " $num_atom atomic positions:")
     for position in cell.positions
-        println(io, "  ", position)
+        println(io, "  ", join(position, "  "))
     end
-    println(io, " $N atoms:")
-    println(io, "  ", cell.atoms)
+    println(io, " $num_atom atoms:")
+    println(io, "  ", join(cell.atoms, "  "))
+    if !isempty(cell.magmoms)
+        println(io, " $num_atom magmoms:")
+        if eltype(cell.magmoms) <: AbstractArray
+            for magmom in cell.magmoms
+                println(io, "  ", magmom)
+            end
+        else
+            println(io, "  ", join(cell.magmoms, "  "))
+        end
+    end
     return nothing
 end
