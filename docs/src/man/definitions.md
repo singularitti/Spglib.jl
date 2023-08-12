@@ -41,7 +41,7 @@ is used instead of
 Therefore, a lattice is represented as
 
 ```math
-\mathrm{A} =
+\mathbf{A} =
 \begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix} =
 \begin{bmatrix}
     a_x & b_x & c_x \\
@@ -53,8 +53,8 @@ Therefore, a lattice is represented as
 A reciprocal lattice is its inverse, represented as three row vectors:
 
 ```math
-\mathrm{B} =
-\mathrm{A}^{-1} =
+\mathbf{B} =
+\mathbf{A}^{-1} =
 \begin{bmatrix}
     \mathbf{b}_1 \\
     \mathbf{b}_2 \\
@@ -65,10 +65,10 @@ A reciprocal lattice is its inverse, represented as three row vectors:
 so that
 
 ```math
-\mathrm{A} \mathrm{B} = \mathrm{B} \mathrm{A} = \mathrm{I},
+\mathbf{A} \mathbf{B} = \mathbf{B} \mathbf{A} = \mathbf{I},
 ```
 
-where ``\mathrm{I}`` is the ``3 \times 3`` identity matrix.
+where ``\mathbf{I}`` is the ``3 \times 3`` identity matrix.
 
 ## Crystal coordinates
 
@@ -87,7 +87,13 @@ where ``0 \le x_i < 1``. A position vector ``\mathbf{r}`` in
 Cartesian coordinates is obtained by
 
 ```math
-\mathbf{r} = \mathrm{A} \mathbf{x} = \begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix} \mathbf{x},
+\mathbf{r} = \mathbf{A} \mathbf{x} =
+\begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix}
+\begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3
+\end{bmatrix}
 ```
 
 or
@@ -210,40 +216,40 @@ standardized unit cell by
 ```math
 \begin{bmatrix} \mathbf{a}_\text{p} & \mathbf{b}_\text{p} & \mathbf{c}_\text{p} \end{bmatrix} =
 \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}
-\mathrm{P}
+\mathbf{P}
 ```
 
 where ``\mathbf{a}_\text{p}``, ``\mathbf{b}_\text{p}``, and ``\mathbf{c}_\text{p}``
-are the basis vectors of the primitive cell and ``\mathrm{P}`` is the
+are the basis vectors of the primitive cell and ``\mathbf{P}`` is the
 transformation matrix from the standardized unit cell to the primitive
-cell. Matrices ``\mathrm{P}`` for different centring types are given as follows:
+cell. Matrices ``\mathbf{P}`` for different centring types are given as follows:
 
 ```math
-\mathrm{P}_\text{A} = \begin{bmatrix}
+\mathbf{P}_\text{A} = \begin{bmatrix}
     1 & 0 & 0 \\
     0 & \dfrac{1}{2} & \dfrac{-1}{2} \\
     0 & \dfrac{1}{2} & \dfrac{1}{2}
 \end{bmatrix},
 \quad
-\mathrm{P}_\text{C} = \begin{bmatrix}
+\mathbf{P}_\text{C} = \begin{bmatrix}
     \dfrac{1}{2} & \dfrac{1}{2} & 0 \\
     \dfrac{-1}{2} & \dfrac{1}{2} & 0 \\
     0 & 0 & 1
 \end{bmatrix},
 \quad
-\mathrm{P}_\text{R} = \begin{bmatrix}
+\mathbf{P}_\text{R} = \begin{bmatrix}
     \dfrac{2}{3} & \dfrac{-1}{3} & \dfrac{-1}{3} \\
     \dfrac{1}{3} & \dfrac{1}{3} & \dfrac{\bar{2}}{3} \\
     \dfrac{1}{3} & \dfrac{1}{3} & \dfrac{1}{3}
 \end{bmatrix},
 \quad
-\mathrm{P}_\text{I} = \begin{bmatrix}
+\mathbf{P}_\text{I} = \begin{bmatrix}
     \dfrac{-1}{2} & \dfrac{1}{2} & \dfrac{1}{2} \\
     \dfrac{1}{2} & \dfrac{-1}{2} & \dfrac{1}{2} \\
     \dfrac{1}{2} & \dfrac{1}{2} & \dfrac{-1}{2}
 \end{bmatrix},
 \quad
-\mathrm{P}_\text{F} = \begin{bmatrix}
+\mathbf{P}_\text{F} = \begin{bmatrix}
     0 & \dfrac{1}{2} & \dfrac{1}{2} \\
     \dfrac{1}{2} & 0 & \dfrac{1}{2} \\
     \dfrac{1}{2} & \dfrac{1}{2} & 0
@@ -253,7 +259,7 @@ cell. Matrices ``\mathrm{P}`` for different centring types are given as follows:
 The choice of transformation matrix depends on the purpose.
 
 For rhombohedral lattice systems with the H setting (hexagonal lattice),
-``\mathrm{P}_\text{R}`` is applied to obtain
+``\mathbf{P}_\text{R}`` is applied to obtain
 primitive basis vectors. However, with the R setting (rhombohedral lattice),
 no transformation matrix is used because it is already a primitive cell.
 
