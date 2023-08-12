@@ -79,7 +79,13 @@ function _expand_cell(cell::SpglibCell)
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
+    if !isempty(magmoms)
+        magmoms = if eltype(magmoms) <: AbstractVector
+            map(Base.Fix1(Base.cconvert, Vector{Cdouble}), magmoms)  # `Vector{Vector{Cdouble}}`
+        else
+            Base.cconvert(Vector{Cdouble}, magmoms)
+        end
+    end
     return clattice, cpositions, ctypes, magmoms
 end
 
