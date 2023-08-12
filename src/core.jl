@@ -1,4 +1,4 @@
-using CrystallographyCore: AbstractCell, basisvectors
+using CrystallographyCore: AbstractCell, Cell as CrystallographyCell, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal
 
@@ -26,7 +26,7 @@ as a list of ``N`` floating point values, or a vector of vectors.
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
     atoms::Vector{T}
-    magmoms::M
+    magmoms::Vector{M}
 end
 function SpglibCell(lattice, positions, atoms, magmoms)
     if !(lattice isa Lattice)
@@ -52,10 +52,10 @@ function SpglibCell(lattice, positions, atoms, magmoms)
         P = eltype(Base.promote_typeof(positions...))
         positions = collect(map(MVector{3,P}, positions))
     end
-    L, T, M = eltype(lattice), eltype(atoms), typeof(magmoms)
+    L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
-SpglibCell(cell::Cell, magmoms) =
+SpglibCell(cell::CrystallographyCell, magmoms) =
     SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 const Cell = SpglibCell
 
