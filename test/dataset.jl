@@ -775,6 +775,21 @@ end
             Lattice(cell)
     end
     @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
+    python_rotations = [
+        [1 0 0; 0 1 0; 0 0 1],
+        [1 -1 0; 1 0 0; 0 0 1],
+        [0 -1 0; 1 -1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [-1 1 0; -1 0 0; 0 0 1],
+        [0 1 0; -1 1 0; 0 0 1],
+        [0 1 0; 1 0 0; 0 0 1],
+        [1 0 0; 1 -1 0; 0 0 1],
+        [1 -1 0; 0 -1 0; 0 0 1],
+        [0 -1 0; -1 0 0; 0 0 1],
+        [-1 0 0; -1 1 0; 0 0 1],
+        [-1 1 0; 0 1 0; 0 0 1],
+    ]
+    @test all(dataset.rotations .== python_rotations)
     @test dataset.translations ≈ [
         [0, 0, 0],
         [3.08148791e-33, -5.55111512e-17, 0.5],
