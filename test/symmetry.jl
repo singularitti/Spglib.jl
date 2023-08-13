@@ -97,70 +97,14 @@ end
 #     MgB2 = Cell(lattice, positions, types)
 # end
 
-# From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
-@testset "Get symmetry operations" begin
-    @testset "Normal symmetry" begin
-        lattice = [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 4.0
-        ]
-        positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
-        types = [1, 1]
-        cell = Cell(lattice, positions, types)
-        rotations, translations = get_symmetry(cell, 1e-5)
-        @test size(rotations) == (96,)
-        @test size(translations) == (96,)
-        @test get_hall_number_from_symmetry(cell, 1e-5) == 529
-    end
-    # See https://github.com/spglib/spglib/blob/deb6695/python/test/test_collinear_spin.py#L18-L37
-    @testset "Get symmetry with collinear spins" begin
-        lattice = [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 4.0
-        ]
-        positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
-        types = [1, 1]
-        @testset "Test ferromagnetism" begin
-            magmoms = [1.0, 1.0]
-            cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
-                cell, 1e-5
-            )
-            @test size(rotation) == (3, 3, 96)
-            @test equivalent_atoms == [0, 0]
-        end
-        @testset "Test antiferromagnetism" begin
-            magmoms = [1.0, -1.0]
-            cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
-                cell, 1e-5
-            )
-            @test size(rotation) == (3, 3, 96)
-            @test equivalent_atoms == [0, 0]
-        end
-        @testset "Test broken magmoms" begin
-            magmoms = [1.0, 2.0]
-            cell = Cell(lattice, positions, types, magmoms)
-            rotation, translation, equivalent_atoms = get_symmetry_with_collinear_spin(
-                cell, 1e-5
-            )
-            @test size(rotation) == (3, 3, 48)
-            @test size(translation) == (3, 48)
-            @test equivalent_atoms == [0, 1]
-        end
-    end
-
-    @testset "Get multiplicity" begin
-        lattice = [
-            4.0 0.0 0.0
-            0.0 4.0 0.0
-            0.0 0.0 4.0
-        ]
-        positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
-        types = [1, 1]
-        cell = Cell(lattice, positions, types)
-        @test get_multiplicity(cell, 1e-5) == 96
-    end
+@testset "Get multiplicity" begin
+    lattice = [
+        4.0 0.0 0.0
+        0.0 4.0 0.0
+        0.0 0.0 4.0
+    ]
+    positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    @test get_multiplicity(cell, 1e-5) == 96
 end

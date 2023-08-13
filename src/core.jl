@@ -72,15 +72,21 @@ Lattice(cell::SpglibCell) = cell.lattice
 
 # This is an internal function, do not export!
 function _expand_cell(cell::SpglibCell)
-    lattice, positions, types, magmoms = cell.lattice,
+    lattice, positions, atoms, magmoms = cell.lattice,
     cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
-    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
-    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
-    magmoms = Base.cconvert(Vector{Cdouble}, magmoms)
-    return clattice, cpositions, ctypes, magmoms
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
+    positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    atoms = collect(Cint, findfirst(isequal(u), unique(atoms)) for u in atoms)
+    if !isempty(magmoms)
+        magmoms = if eltype(magmoms) <: AbstractVector
+            Base.cconvert(Matrix{Cdouble}, reduce(hcat, magmoms))
+        else
+            Base.cconvert(Vector{Cdouble}, magmoms)
+        end
+    end
+    return lattice, positions, atoms, magmoms
 end
 
 # This is an internal type, do not export!
@@ -183,7 +189,9 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     international_symbol = tostring(dataset.international_symbol)
     hall_symbol = tostring(dataset.hall_symbol)
     choice = tostring(dataset.choice)
-    transformation_matrix = _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
+    transformation_matrix = transpose(
+        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
+    )
     rotations = [
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
         i in Base.OneTo(dataset.n_operations)
@@ -214,7 +222,6 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         SVector{3}(unsafe_load(dataset.std_positions, i)) for
         i in Base.OneTo(dataset.n_std_atoms)
     ]
-    # Note: Breaking! `std_rotation_matrix` is now transposed!
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )

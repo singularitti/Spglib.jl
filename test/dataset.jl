@@ -1,9 +1,9 @@
 # From https://spglib.github.io/spglib/definition.html#computing-rigid-rotation-introduced-by-idealization
 @testset "Computing rigid rotation introduced by idealization" begin
     lattice = [
-        [5.0759761474456697, 5.0759761474456697, 0],  # a
-        [-2.8280307701821314, 2.8280307701821314, 0],  # b
-        [0, 0, 8.57154746],  # c
+        [5.0759761474456697, 5.0759761474456697, 0],
+        [-2.8280307701821314, 2.8280307701821314, 0],
+        [0, 0, 8.57154746],
     ]
     positions = [
         [0.0, 0.84688439, 0.1203133],
@@ -29,16 +29,22 @@
         0 1 0
         0 0 1
     ]
-    @test dataset.std_lattice ≈ Lattice([  # Compared with documented results
-        [7.17851431 0.0 0.0],
-        [0.0 3.99943947 0.0],
-        [0.0 0.0 8.57154746],
-    ])
-    # Compared with Python results
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈ [
+            5.07597615 -2.82803077 0.0
+            5.07597615 2.82803077 0.0
+            0.0 0.0 8.57154746
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
     @test isempty(dataset.choice)
     @test isapprox(dataset.origin_shift, [5.55111512e-17, 0, 0]; atol=1e-16)
     @test dataset.pointgroup_symbol == "mmm"
-    @test dataset.std_types == [35, 35, 35, 35, 35, 35, 35, 35] / 35
+    @test dataset.std_lattice ≈
+        Lattice([[7.17851431 0.0 0.0], [0.0 3.99943947 0.0], [0.0 0.0 8.57154746]])  # Compared with Python results, the Python version is a transposed version of this
     @test dataset.std_positions ≈ [
         [0.0, 0.84688439, 0.1203133],
         [0.0, 0.65311561, 0.6203133],
@@ -48,12 +54,19 @@
         [0.5, 0.15311561, 0.6203133],
         [0.5, 0.84688439, 0.3796867],
         [0.5, 0.65311561, 0.8796867],
-    ]
+    ]  # Compared with Python results
+    @test dataset.std_types == [35, 35, 35, 35, 35, 35, 35, 35] / 35
     @test dataset.std_rotation_matrix ≈ [
         0.70710678 0.70710678 0.0
         -0.70710678 0.70710678 0.0
         0.0 0.0 1.0
-    ]
+    ]  # Compared with Python results
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
     @test dataset.mapping_to_primitive == [0, 1, 2, 3, 0, 1, 2, 3]
     @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 0, 1, 2, 3]
     @test dataset.wyckoffs == ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
@@ -102,11 +115,7 @@
         [-1 0 0; 0 1 0; 0 0 -1],
         [1 0 0; 0 -1 0; 0 0 1],
     ]
-    @test all(
-        map(zip(dataset.rotations, python_rotations)) do (rotation, python_rotation)
-            rotation == python_rotation
-        end,
-    )
+    @test all(dataset.rotations .== python_rotations)
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
 end
 
@@ -712,4 +721,78 @@ end
             Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
         @test dataset_prim.mapping_to_primitive == [0, 1]
     end
+end
+
+# Example is from here: https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md
+@testset "Test wurtzite structure (P6_3mc)" begin
+    lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]]  # Note this is different from C
+    positions = [
+        [1.0 / 3, 2.0 / 3, 0.0],
+        [2.0 / 3, 1.0 / 3, 0.5],
+        [1.0 / 3, 2.0 / 3, 0.6181],
+        [2.0 / 3, 1.0 / 3, 0.1181],
+    ]
+    atoms = [1, 1, 2, 2]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell, 1e-5)
+    @test get_international(cell) == "P6_3mc"
+    @test dataset.hall_number == 480
+    @test dataset.pointgroup_symbol == "6mm"
+    @test dataset.spacegroup_number == 186  # Compared with C results
+    @test dataset.hall_symbol == "P 6c -2c"
+    @test isempty(dataset.choice)
+    @test dataset.transformation_matrix ≈ [
+        1 -5.55111512e-17 0
+        0 1 0
+        0 0 1
+    ]
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈ [
+            3.111 -1.5555 0
+            0 2.69420503 0
+            0 0 4.988
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
+    @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
+    @test dataset.translations ≈ [
+        [0, 0, 0],
+        [3.08148791e-33, -5.55111512e-17, 0.5],
+        [5.55111512e-17, -5.55111512e-17, 0],
+        [1.11022302e-16, 0, 0.5],
+        [1.11022302e-16, 5.55111512e-17, 0],
+        [5.55111512e-17, 5.55111512e-17, 0.5],
+        [5.55111512e-17, -5.55111512e-17, 0.5],
+        [3.08148791e-33, -5.55111512e-17, 0],
+        [0, 0, 0.5],
+        [5.55111512e-17, 5.55111512e-17, 0],
+        [1.11022302e-16, 5.55111512e-17, 0.5],
+        [1.11022302e-16, 0, 0],
+    ]  # Compared with Python results
+    @test dataset.wyckoffs == ['b', 'b', 'b', 'b']
+    @test dataset.site_symmetry_symbols == ["3m.", "3m.", "3m.", "3m."]
+    @test dataset.crystallographic_orbits == [0, 0, 2, 2]
+    @test dataset.equivalent_atoms == [0, 0, 2, 2]
+    @test dataset.primitive_lattice ≈
+        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
+    @test dataset.mapping_to_primitive == 0:3  # FIXME: should I +1?
+    @test dataset.std_lattice ≈
+        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
+    @test dataset.std_positions ≈ [
+        [0.33333333, 0.66666667, 0],
+        [0.66666667, 0.33333333, 0.5],
+        [0.33333333, 0.66666667, 0.6181],
+        [0.66666667, 0.33333333, 0.1181],
+    ]  # Compared with Python results
+    @test dataset.std_rotation_matrix == I
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
+    @test dataset.std_mapping_to_primitive == 0:3  # FIXME: should I +1?
 end
