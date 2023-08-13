@@ -81,7 +81,7 @@ function _expand_cell(cell::SpglibCell)
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     if !isempty(magmoms)
         magmoms = if eltype(magmoms) <: AbstractVector
-            map(Base.Fix1(Base.cconvert, Vector{Cdouble}), magmoms)  # `Vector{Vector{Cdouble}}`
+            Base.cconvert(Matrix{Cdouble}, reduce(hcat, magmoms))
         else
             Base.cconvert(Vector{Cdouble}, magmoms)
         end
