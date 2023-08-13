@@ -233,6 +233,7 @@ end
     @test dataset.pointgroup_symbol == "4/mmm"
 end
 
+# From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L98-L109
 @testset "Test distorted rutile structure" begin
     lattice = [
         3.97 0.00 0.00
