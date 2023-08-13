@@ -58,3 +58,141 @@ julia --sysimage custom-image.so
 ```
 
 See [Fredrik Ekre's talk](https://youtu.be/IuwxE3m0_QQ?t=313) for details.
+
+## Returned cell symmetry is wrong
+
+Check whether you set the lattice correctly. This is the part where errors can easily occur,
+as we adopt a different convention from the Python and C versions.
+
+For example, [the example](https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md)
+shown in Spglib's official documentation is written as follows:
+
+```c
+#include <assert.h>
+#include "spglib.h"
+
+int main(void) {
+    SpglibDataset *dataset;
+    // Wurtzite structure (P6_3mc)
+    double lattice[3][3] = {
+        {3.111, -1.5555, 0}, {0, 2.6942050311733885, 0}, {0, 0, 4.988}};
+    double position[4][3] = {
+        {1.0 / 3, 2.0 / 3, 0.0},
+        {2.0 / 3, 1.0 / 3, 0.5},
+        {1.0 / 3, 2.0 / 3, 0.6181},
+        {2.0 / 3, 1.0 / 3, 0.1181},
+    };
+    int types[4] = {1, 1, 2, 2};
+    int num_atom = 4;
+    double symprec = 1e-5;
+    dataset = spg_get_dataset(lattice, position, types, num_atom, symprec);
+    assert(dataset->spacegroup_number == 186);
+    spg_free_dataset(dataset);
+}
+```
+
+Thus, the Python correspondence of the code should be:
+
+```python
+import numpy as np
+import spglib
+
+lattice = np.array([
+    [3.111, 0, 0],
+    [-1.5555, 2.6942050311733885, 0],
+    [0, 0, 4.988]
+])
+positions = [
+    [1.0 / 3, 2.0 / 3, 0.0],
+    [2.0 / 3, 1.0 / 3, 0.5],
+    [1.0 / 3, 2.0 / 3, 0.6181],
+    [2.0 / 3, 1.0 / 3, 0.1181]
+]
+types = [1, 1, 2, 2]
+num_atom = 4
+symprec = 1e-5
+cell = (lattice, positions, types)
+dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
+assert dataset['number'] == 186
+```
+
+Note that in Python, the `lattice` is transposed, as explained in its
+[official documentation](https://spglib.readthedocs.io/en/latest/variable.html#lattice).
+
+However, the corresponding code in Julia should be written as follows:
+
+```@repl example
+using Spglib
+
+lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];
+positions = [
+    [1.0 / 3, 2.0 / 3, 0.0],
+    [2.0 / 3, 1.0 / 3, 0.5],
+    [1.0 / 3, 2.0 / 3, 0.6181],
+    [2.0 / 3, 1.0 / 3, 0.1181],
+];
+atoms = [1, 1, 2, 2];
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
+dataset.spacegroup_number
+```
+
+Although the Julia definition of our [Basis vectors](@ref) is not transposed
+(like the C-API), when written one by one, it still resembles a transposed
+version of the lattice in C. However, they both represent the following matrix:
+
+```math
+\begin{bmatrix}
+    3.111 & -1.5555 & 0 \\
+    0 & 2.6942050311733885 & 0 \\
+    0 & 0 & 4.988
+\end{bmatrix}
+```
+
+Of course, you can construct the lattice directly using its matrix form:
+
+```@repl example
+lattice = [
+    3.111  -1.5555  0.0
+    0.0  2.6942050311733885  0.0
+    0.0  0.0  4.988
+];
+```
+
+If you are not careful when writing these matrices, you may encounter unexpected results:
+
+```python
+import spglib
+
+lattice = [
+    [3.111, -1.5555, 0],
+    [0, 2.6942050311733885, 0],
+    [0, 0, 4.988]
+]
+positions = [
+    [1.0 / 3, 2.0 / 3, 0.0],
+    [2.0 / 3, 1.0 / 3, 0.5],
+    [1.0 / 3, 2.0 / 3, 0.6181],
+    [2.0 / 3, 1.0 / 3, 0.1181]
+]
+types = [1, 1, 2, 2]
+num_atom = 4
+symprec = 1e-5
+cell = (lattice, positions, types)
+dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
+
+>>> dataset['number']
+4
+>>> dataset['international']
+'P2_1'
+```
+
+Or this:
+
+```@repl example
+lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]];
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
+dataset.spacegroup_number
+dataset.international_symbol
+```
