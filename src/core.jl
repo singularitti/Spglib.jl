@@ -76,7 +76,7 @@ function _expand_cell(cell::SpglibCell)
     cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, lattice)
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
     if !isempty(magmoms)
