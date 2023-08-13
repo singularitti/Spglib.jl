@@ -193,7 +193,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
     )
     rotations = [
-        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+        transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
         i in Base.OneTo(dataset.n_operations)
     ]
     translations = [
