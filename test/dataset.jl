@@ -402,6 +402,7 @@ end
     @test dataset.pointgroup_symbol == "-3m"
 end
 
+# From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L43-L59
 @testset "Test silicon structure" begin
     lattice = Lattice([[4, 0, 0], [0, 4, 0], [0, 0, 4]])
     positions = [
@@ -415,20 +416,27 @@ end
         [0.75, 0.75, 0.25],
     ]
     types = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon = Cell(lattice, positions, types)
-    dataset = get_dataset(silicon, 1e-5)
+    cell = Cell(lattice, positions, types)
+    dataset = get_dataset(cell, 1e-5)
     # Compared with Python results
     @test dataset.spacegroup_number == 227
     @test dataset.hall_number == 525
     @test dataset.international_symbol == "Fd-3m"
     @test dataset.hall_symbol == "F 4d 2 3 -1d"
-    @test get_international(silicon, 1e-5) == "Fd-3m"
+    @test get_international(cell, 1e-5) == "Fd-3m"
     @test dataset.choice == "1"
-    @test dataset.transformation_matrix == [
-        1 0 0
-        0 1 0
-        0 0 1
-    ]
+    @test dataset.transformation_matrix == I
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈ [
+            4 0 0
+            0 4 0
+            0 0 4
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
     @test dataset.origin_shift == [0, 0, 0]
     @test size(dataset.rotations) == (192,)
     @test dataset.translations == [
@@ -625,7 +633,7 @@ end
         [0.75, 0.25, 0.75],
         [0.5, 0.5, 0.0],
     ]  # Compared with Python `spglib`
-    @test get_symmetry(silicon) == (dataset.rotations, dataset.translations)
+    @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols ==
         ["-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m"]
@@ -652,6 +660,12 @@ end
         0 1 0
         0 0 1
     ]
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
     @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
     @testset "Test primitive silicon structure" begin
