@@ -24,3 +24,11 @@ function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
     end
     return nothing
 end
+function Base.show(io::IO, ::MIME"text/plain", dataset::Dataset)
+    summary(io, dataset)
+    println(io)
+    for name in propertynames(dataset)
+        println(io, "  ", name, ": ", getfield(dataset, name))
+    end
+    return nothing
+end
