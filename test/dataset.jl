@@ -119,6 +119,26 @@
     ]
     @test dataset.rotations == python_rotations
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] ≈ dataset.translations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.5, 0.5],
+        [0.0, 0.5, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.5, 0.5],
+        [0.0, 0.5, 0.5],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.0, 0.5],
+    ]  # Compared with Python results
 end
 
 # From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L85-L96
@@ -200,6 +220,8 @@ end
     ]
     @test dataset.rotations == python_rotations
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
     @test dataset.wyckoffs == ['a', 'a', 'f', 'f', 'f', 'f']
     @test dataset.site_symmetry_symbols == ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"]
     @test dataset.crystallographic_orbits == [0, 0, 2, 2, 2, 2]
@@ -316,6 +338,8 @@ end
     @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
     @test dataset.pointgroup_symbol == "1"
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L14-L32
@@ -386,6 +410,34 @@ end
     )
     @test size(dataset.rotations) == size(dataset.translations) == (12,)
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [0 -1 0; 1 -1 0; 0 0 1],
+        [0 1 0; -1 1 0; 0 0 -1],
+        [-1 1 0; -1 0 0; 0 0 1],
+        [1 -1 0; 1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 1],
+        [1 -1 0; 0 -1 0; 0 0 -1],
+        [-1 1 0; 0 1 0; 0 0 1],
+        [-1 0 0; -1 1 0; 0 0 -1],
+        [1 0 0; 1 -1 0; 0 0 1],
+    ]  # Compared with Python results
+    @test get_symmetry_from_database(dataset.hall_number)[2] == [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+    ]  # Compared with Python results
     @test dataset.wyckoffs == ['d', 'd']
     @test dataset.site_symmetry_symbols == ["3m.", "3m."]
     @test dataset.equivalent_atoms == [0, 0]
@@ -652,8 +704,203 @@ end
         [0.5, 0.0, 0.5],
         [0.75, 0.25, 0.75],
         [0.5, 0.5, 0.0],
-    ]  # Compared with Python `spglib`
+    ]  # Compared with Python results
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == [
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.5, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.25, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.75, 0.75],
+        [0.0, 0.0, 0.0],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.5, 0.5],
+        [0.25, 0.75, 0.75],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.5, 0.5, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.5, 0.0, 0.5],
+        [0.75, 0.75, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.5, 0.5],
+    ]  # Compared with Python results
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols ==
         ["-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m"]
@@ -820,6 +1067,9 @@ end
         [0.0, 0.0, 0.0],
     ]
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test size(get_symmetry_from_database(dataset.hall_number)[1]) ==
+        size(get_symmetry_from_database(dataset.hall_number)[2]) ==
+        (192,)  # Symmetry breaking
     @test dataset.wyckoffs == ['b', 'b']
     @test dataset.site_symmetry_symbols == ["-43m", "-43m"]
     @test dataset.crystallographic_orbits == [0, 0]
@@ -938,6 +1188,8 @@ end
         [0, 0, 0],
     ]  # Compared with Python results
     @test get_symmetry(cell, 1e-5) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
     @test dataset.wyckoffs == ['a', 'd', 'd']
     @test dataset.site_symmetry_symbols == ["6/mmm", "-6m2", "-6m2"]
     @test dataset.crystallographic_orbits == [0, 1, 1]
@@ -1029,6 +1281,22 @@ end
         [1.11022302e-16, 0, 0],
     ]  # Compared with Python results
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
+    @test get_symmetry_from_database(dataset.hall_number)[2] ≈ dataset.translations
+    @test get_symmetry_from_database(dataset.hall_number)[2] == [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [0.0, 0.0, 0.0],
+    ]  # Compared with Python results
     @test dataset.wyckoffs == ['b', 'b', 'b', 'b']
     @test dataset.site_symmetry_symbols == ["3m.", "3m.", "3m.", "3m."]
     @test dataset.crystallographic_orbits == [0, 0, 2, 2]
