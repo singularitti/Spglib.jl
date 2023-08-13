@@ -80,23 +80,6 @@ end
     )
 end
 
-# @testset "Test MgB2 structure" begin
-#     a = 3.07
-#     c = 3.52
-#     lattice = [
-#         a 0 0
-#         -a/2 a/2*sqrt(3) 0
-#         0 0 c
-#     ]
-#     positions = [
-#         0 0 0
-#         1.0/3 2.0/3 0.5
-#         2.0/3 1.0/3 0.5
-#     ]
-#     types = [12, 5, 5]
-#     MgB2 = Cell(lattice, positions, types)
-# end
-
 @testset "Get multiplicity" begin
     lattice = [
         4.0 0.0 0.0

@@ -91,25 +91,21 @@ int main(void) {
 }
 ```
 
-Thus, the Python correspondence of the code should be:
+Thus,
+[the Python correspondence](https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example.py)
+of the code should be:
 
 ```python
-import numpy as np
 import spglib
 
-lattice = np.array([
-    [3.111, 0, 0],
-    [-1.5555, 2.6942050311733885, 0],
-    [0, 0, 4.988]
-])
-positions = [
+lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]]
+position = [
     [1.0 / 3, 2.0 / 3, 0.0],
     [2.0 / 3, 1.0 / 3, 0.5],
     [1.0 / 3, 2.0 / 3, 0.6181],
-    [2.0 / 3, 1.0 / 3, 0.1181]
+    [2.0 / 3, 1.0 / 3, 0.1181],
 ]
 types = [1, 1, 2, 2]
-num_atom = 4
 symprec = 1e-5
 cell = (lattice, positions, types)
 dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
