@@ -81,11 +81,12 @@ function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
     rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    lattice, _, _, _ = _expand_cell(cell)
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         nsym::Cint,
-        Lattice(cell)::Ptr{Cdouble},
+        lattice::Ptr{Cdouble},
         symprec::Cdouble,
     )::SpglibSpacegroupType
     return convert(SpacegroupType, spgtype)
