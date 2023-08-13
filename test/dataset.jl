@@ -852,6 +852,115 @@ end
     @test dataset.pointgroup_symbol == "m-3m"
 end
 
+# From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L111-L117
+@testset "Test MgB2 structure" begin
+    a = 3.07
+    c = 3.52
+    lattice = [[a, 0, 0], [-a / 2, a / 2 * sqrt(3), 0], [0, 0, c]]
+    positions = [[0, 0, 0], [1 / 3, 2 / 3, 1 / 2], [2 / 3, 1 / 3, 1 / 2]]
+    types = [12, 5, 5]
+    cell = Cell(lattice, positions, types)
+    dataset = get_dataset(cell, 1e-5)
+    @test dataset.spacegroup_number == 191  # Compared with C results
+    @test dataset.hall_number == 485
+    @test dataset.hall_symbol == "-P 6 2"
+    @test dataset.international_symbol == "P6/mmm"
+    @test get_international(cell) == "P6/mmm"
+    @test dataset.pointgroup_symbol == "6/mmm"
+    @test isempty(dataset.choice)
+    @test dataset.transformation_matrix ≈ [
+        1 5.55111512e-17 0
+        0 1 0
+        0 0 1
+    ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        @test std_lattice_before_idealization ≈
+            Lattice([[3.07, 0, 0], [-1.535, 2.65869799, 0], [0, 0, 3.52]])  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
+    @test dataset.origin_shift == [0, 0, 0]
+    python_rotations = [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [1 -1 0; 1 0 0; 0 0 1],
+        [-1 1 0; -1 0 0; 0 0 -1],
+        [0 -1 0; 1 -1 0; 0 0 1],
+        [0 1 0; -1 1 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+        [-1 1 0; -1 0 0; 0 0 1],
+        [1 -1 0; 1 0 0; 0 0 -1],
+        [0 1 0; -1 1 0; 0 0 1],
+        [0 -1 0; 1 -1 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 1],
+        [-1 0 0; -1 1 0; 0 0 -1],
+        [1 0 0; 1 -1 0; 0 0 1],
+        [-1 1 0; 0 1 0; 0 0 -1],
+        [1 -1 0; 0 -1 0; 0 0 1],
+        [0 1 0; 1 0 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 1],
+        [1 0 0; 1 -1 0; 0 0 -1],
+        [-1 0 0; -1 1 0; 0 0 1],
+        [1 -1 0; 0 -1 0; 0 0 -1],
+        [-1 1 0; 0 1 0; 0 0 1],
+    ]
+    @test dataset.translations == [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]  # Compared with Python results
+    @test get_symmetry(cell, 1e-5) == (dataset.rotations, dataset.translations)
+    @test dataset.wyckoffs == ['a', 'd', 'd']
+    @test dataset.site_symmetry_symbols == ["6/mmm", "-6m2", "-6m2"]
+    @test dataset.crystallographic_orbits == [0, 1, 1]
+    @test dataset.equivalent_atoms == [0, 1, 1]
+    @test dataset.primitive_lattice ≈
+        Lattice([[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]])
+    @test dataset.mapping_to_primitive == 0:2
+    @test dataset.std_lattice ≈
+        Lattice([[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]])
+    @test dataset.std_types == [1, 2, 2]
+    @test dataset.std_positions ≈
+        [[0.0, 0.0, 0.0], [1 / 3, 2 / 3, 0.5], [2 / 3, 1 / 3, 0.5]]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
+    @test dataset.std_mapping_to_primitive == 0:2
+end
+
 # Example is from here: https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example.py
 @testset "Test wurtzite structure (P6_3mc)" begin
     lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]]  # Note this is different from C
