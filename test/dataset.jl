@@ -716,11 +716,7 @@ end
 
 # Example is from here: https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md
 @testset "Test wurtzite structure (P6_3mc)" begin
-    lattice = [
-        3.111 -1.5555 0
-        0 2.6942050311733885 0
-        0 0 4.988
-    ]  # Note this is a transpose of the C version
+    lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]]  # Note this is different from C
     positions = [
         [1.0 / 3, 2.0 / 3, 0.0],
         [2.0 / 3, 1.0 / 3, 0.5],
@@ -736,6 +732,19 @@ end
     @test dataset.spacegroup_number == 186  # Compared with C results
     @test dataset.hall_symbol == "P 6c -2c"
     @test dataset.choice == ""
+    @test dataset.transformation_matrix ≈ [
+        1 -5.55111512e-17 0
+        0 1 0
+        0 0 1
+    ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)
+    @test std_lattice_before_idealization ≈ [
+        3.111 -1.5555 0
+        0 2.69420503 0
+        0 0 4.988
+    ]  # Compared with Python results, the Python version is a transposed version of this
+    @test std_lattice_before_idealization * dataset.transformation_matrix ≈ Lattice(cell)
     @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
     @test dataset.translations ≈ [
         [0, 0, 0],
