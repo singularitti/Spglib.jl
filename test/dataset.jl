@@ -32,11 +32,13 @@
     std_lattice_before_idealization =
         convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        @test std_lattice_before_idealization ≈ [
-            5.07597615 -2.82803077 0.0
-            5.07597615 2.82803077 0.0
-            0.0 0.0 8.57154746
-        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization ≈ Lattice(
+            [
+                5.07597615 -2.82803077 0.0
+                5.07597615 2.82803077 0.0
+                0.0 0.0 8.57154746
+            ]
+        )  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
@@ -151,11 +153,11 @@ end
     std_lattice_before_idealization =
         convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        @test std_lattice_before_idealization ≈ [
+        @test std_lattice_before_idealization ≈ Lattice([
             4 0 0
             0 4 0
             0 0 3
-        ]  # Compared with Python results, the Python version is a transposed version of this
+        ])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
@@ -340,11 +342,11 @@ end
     std_lattice_before_idealization =
         convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        @test std_lattice_before_idealization ≈ [
+        @test std_lattice_before_idealization ≈ Lattice([
             2.0 2.0 0.0
             -3.4641 3.4641 0.0
             0.0 0.0 12.0
-        ]  # Compared with Python results, the Python version is a transposed version of this
+        ])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
@@ -446,11 +448,11 @@ end
     std_lattice_before_idealization =
         convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        @test std_lattice_before_idealization ≈ [
+        @test std_lattice_before_idealization ≈ Lattice([
             4 0 0
             0 4 0
             0 0 4
-        ]  # Compared with Python results, the Python version is a transposed version of this
+        ])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
@@ -987,11 +989,11 @@ end
     std_lattice_before_idealization =
         convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        @test std_lattice_before_idealization ≈ [
+        @test std_lattice_before_idealization ≈ Lattice([
             3.111 -1.5555 0
             0 2.69420503 0
             0 0 4.988
-        ]  # Compared with Python results, the Python version is a transposed version of this
+        ])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
