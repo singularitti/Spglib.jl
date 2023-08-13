@@ -753,7 +753,7 @@ end
     end
 end
 
-# Example is from here: https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md
+# Example is from here: https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example.py
 @testset "Test wurtzite structure (P6_3mc)" begin
     lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]]  # Note this is different from C
     positions = [
