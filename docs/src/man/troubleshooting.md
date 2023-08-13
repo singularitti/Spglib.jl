@@ -196,3 +196,50 @@ dataset = get_dataset(cell, 1e-5)
 dataset.spacegroup_number
 dataset.international_symbol
 ```
+
+## Julia's results are different from Python's
+
+For the same reason, the returned results from Python, especially lattices, are
+transposed versions of those in Julia.
+
+```python
+>>> dataset['primitive_lattice']
+array([[ 3.111     ,  0.        ,  0.        ],
+       [-1.5555    ,  2.69420503,  0.        ],
+       [ 0.        ,  0.        ,  4.988     ]])
+>>> dataset['std_lattice']
+array([[ 3.111     ,  0.        ,  0.        ],
+       [-1.5555    ,  2.69420503,  0.        ],
+       [ 0.        ,  0.        ,  4.988     ]])
+>>> std_lattice_before_idealization = np.dot(
+        np.transpose(lattice),
+        np.linalg.inv(dataset['transformation_matrix'])
+    ).T
+array([[ 3.111     ,  0.        ,  0.        ],
+       [-1.5555    ,  2.69420503,  0.        ],
+       [ 0.        ,  0.        ,  4.988     ]])
+```
+
+These are equivalent to the following Julia matrices:
+
+```@repl
+[
+    3.111   0.0      0.0
+    -1.5555  2.69421  0.0
+    0.0     0.0      4.988
+];
+[
+    3.111   0.0      0.0
+    -1.5555  2.69421  0.0
+    0.0     0.0      4.988
+];
+```
+
+However, the actual Julia results should be:
+
+```@repl example
+dataset.primitive_lattice
+dataset.std_lattice
+std_lattice_before_idealization =
+    convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)
+```
