@@ -119,6 +119,7 @@
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
 end
 
+# From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L85-L96
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
@@ -134,50 +135,31 @@ end
         [0.8, 0.2, 0.5],
     ]
     types = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(lattice, positions, types)
-    dataset = get_dataset(rutile, 1e-5)
+    cell = Cell(lattice, positions, types)
+    dataset = get_dataset(cell, 1e-5)
     @test dataset.spacegroup_number == 136
-    @test dataset.site_symmetry_symbols == ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"]
     @test dataset.hall_number == 419
-    @test isempty(dataset.choice)
-    @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2]
-    @test dataset.wyckoffs == ['a', 'a', 'f', 'f', 'f', 'f']
-    @test dataset.std_positions == [
-        [0.0, 0.0, 0.0],
-        [0.5, 0.5, 0.5],
-        [0.3, 0.3, 0.0],
-        [0.7, 0.7, 0.0],
-        [0.2, 0.8, 0.5],
-        [0.8, 0.2, 0.5],
-    ]
-    @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.international_symbol == "P4_2/mnm"
-    @test get_international(rutile, 1e-5) == "P4_2/mnm"
-    @test dataset.std_lattice == Lattice([
-        4.0 0.0 0.0
-        0.0 4.0 0.0
-        0.0 0.0 3.0
-    ])
-    @test dataset.std_types == [1, 1, 2, 2, 2, 2]  # 14, 14, 8, 8, 8, 8
-    @test dataset.pointgroup_symbol == "4/mmm"
+    @test get_international(cell, 1e-5) == "P4_2/mnm"
     @test dataset.hall_symbol == "-P 4n 2n"
+    @test isempty(dataset.choice)
     @test dataset.transformation_matrix == [
-        1.0 0.0 0.0
-        0.0 1.0 0.0
-        0.0 0.0 1.0
+        1 0 0
+        0 1 0
+        0 0 1
     ]
-    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
-    @test dataset.crystallographic_orbits == [0, 0, 2, 2, 2, 2]
-    @test dataset.primitive_lattice == Lattice([
-        0.0 4.0 0.0
-        0.0 0.0 4.0
-        3.0 0.0 0.0
-    ])
-    @test dataset.std_rotation_matrix == [
-        1.0 0.0 0.0
-        0.0 1.0 0.0
-        0.0 0.0 1.0
-    ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        @test std_lattice_before_idealization ≈ [
+            4 0 0
+            0 4 0
+            0 0 3
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.translations == [
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0],
@@ -199,12 +181,12 @@ end
     python_rotations = [
         [1 0 0; 0 1 0; 0 0 1],
         [-1 0 0; 0 -1 0; 0 0 -1],
-        [0 1 0; -1 0 0; 0 0 1],
-        [0 -1 0; 1 0 0; 0 0 -1],
-        [-1 0 0; 0 -1 0; 0 0 1],
-        [1 0 0; 0 1 0; 0 0 -1],
         [0 -1 0; 1 0 0; 0 0 1],
         [0 1 0; -1 0 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+        [0 1 0; -1 0 0; 0 0 1],
+        [0 -1 0; 1 0 0; 0 0 -1],
         [1 0 0; 0 -1 0; 0 0 -1],
         [-1 0 0; 0 1 0; 0 0 1],
         [0 -1 0; -1 0 0; 0 0 -1],
@@ -214,12 +196,39 @@ end
         [0 1 0; 1 0 0; 0 0 -1],
         [0 -1 0; -1 0 0; 0 0 1],
     ]
-    @test all(
-        map(zip(dataset.rotations, python_rotations)) do (rotation, python_rotation)
-            rotation == python_rotation
-        end,
-    )
-    @test get_symmetry(rutile) == (dataset.rotations, dataset.translations)
+    @test dataset.rotations == python_rotations
+    @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test dataset.wyckoffs == ['a', 'a', 'f', 'f', 'f', 'f']
+    @test dataset.site_symmetry_symbols == ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"]
+    @test dataset.crystallographic_orbits == [0, 0, 2, 2, 2, 2]
+    @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2]
+    @test dataset.primitive_lattice ==
+        Lattice([[0.0, 0.0, 3.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0]])  # Compared with Python results, the Python version is a transposed version of this
+    @test dataset.mapping_to_primitive == 0:5
+    @test dataset.std_lattice ==
+        Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 3.0]])  # Compared with Python results, the Python version is a transposed version of this
+    @test dataset.std_positions == [
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.3, 0.3, 0.0],
+        [0.7, 0.7, 0.0],
+        [0.2, 0.8, 0.5],
+        [0.8, 0.2, 0.5],
+    ]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
+    @test dataset.std_types == [1, 1, 2, 2, 2, 2]  # 14, 14, 8, 8, 8, 8
+    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+    @test dataset.pointgroup_symbol == "4/mmm"
 end
 
 @testset "Test distorted rutile structure" begin
