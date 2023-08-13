@@ -731,20 +731,23 @@ end
     @test dataset.pointgroup_symbol == "6mm"
     @test dataset.spacegroup_number == 186  # Compared with C results
     @test dataset.hall_symbol == "P 6c -2c"
-    @test dataset.choice == ""
+    @test isempty(dataset.choice)
     @test dataset.transformation_matrix ≈ [
         1 -5.55111512e-17 0
         0 1 0
         0 0 1
     ]
-    std_lattice_before_idealization =
-        convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)
-    @test std_lattice_before_idealization ≈ [
-        3.111 -1.5555 0
-        0 2.69420503 0
-        0 0 4.988
-    ]  # Compared with Python results, the Python version is a transposed version of this
-    @test std_lattice_before_idealization * dataset.transformation_matrix ≈ Lattice(cell)
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈ [
+            3.111 -1.5555 0
+            0 2.69420503 0
+            0 0 4.988
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
     @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
     @test dataset.translations ≈ [
         [0, 0, 0],
@@ -776,5 +779,11 @@ end
         [0.66666667, 0.33333333, 0.1181],
     ]  # Compared with Python results
     @test dataset.std_rotation_matrix == I
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
     @test dataset.std_mapping_to_primitive == 0:3  # FIXME: should I +1?
 end
