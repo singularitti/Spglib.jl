@@ -233,13 +233,19 @@ These are equivalent to the following Julia matrices:
     -1.5555  2.69421  0.0
     0.0     0.0      4.988
 ];
+[
+    3.111   0.0      0.0
+    -1.5555  2.69421  0.0
+    0.0     0.0      4.988
+];
 ```
 
 However, the actual Julia results should be:
 
 ```@repl example
+using Spglib: Lattice
 dataset.primitive_lattice
 dataset.std_lattice
 std_lattice_before_idealization =
-    convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)
+    convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
 ```
