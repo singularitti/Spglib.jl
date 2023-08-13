@@ -71,8 +71,8 @@ function get_symmetry_from_database(hall_number)
     )::Cint
     check_error()
     rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
-    ),
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
     map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
     return rotations, translations
 end
