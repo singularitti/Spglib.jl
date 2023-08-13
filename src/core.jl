@@ -72,13 +72,13 @@ Lattice(cell::SpglibCell) = cell.lattice
 
 # This is an internal function, do not export!
 function _expand_cell(cell::SpglibCell)
-    lattice, positions, types, magmoms = cell.lattice,
+    lattice, positions, atoms, magmoms = cell.lattice,
     cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
-    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
-    ctypes = Cint[findfirst(isequal(u), unique(types)) for u in types]
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))
+    positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    atoms = collect(Cint, findfirst(isequal(u), unique(atoms)) for u in atoms)
     if !isempty(magmoms)
         magmoms = if eltype(magmoms) <: AbstractVector
             Base.cconvert(Matrix{Cdouble}, reduce(hcat, magmoms))
@@ -86,7 +86,7 @@ function _expand_cell(cell::SpglibCell)
             Base.cconvert(Vector{Cdouble}, magmoms)
         end
     end
-    return clattice, cpositions, ctypes, magmoms
+    return lattice, positions, atoms, magmoms
 end
 
 # This is an internal type, do not export!
