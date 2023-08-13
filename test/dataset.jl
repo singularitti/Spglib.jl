@@ -713,3 +713,55 @@ end
         @test dataset_prim.mapping_to_primitive == [0, 1]
     end
 end
+
+# Example is from here: https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md
+@testset "Test wurtzite structure (P6_3mc)" begin
+    lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]]
+    positions = [
+        [1.0 / 3, 2.0 / 3, 0.0],
+        [2.0 / 3, 1.0 / 3, 0.5],
+        [1.0 / 3, 2.0 / 3, 0.6181],
+        [2.0 / 3, 1.0 / 3, 0.1181],
+    ]
+    atoms = [1, 1, 2, 2]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell, 1e-5)
+    @test get_international(cell) == "P6_3mc"
+    @test dataset.hall_number == 480
+    @test dataset.pointgroup_symbol == "6mm"
+    @test dataset.spacegroup_number == 186  # Compared with C results
+    @test dataset.hall_symbol == "P 6c -2c"
+    @test dataset.choice == ""
+    @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
+    @test dataset.translations ≈ [
+        [0, 0, 0],
+        [3.08148791e-33, -5.55111512e-17, 0.5],
+        [5.55111512e-17, -5.55111512e-17, 0],
+        [1.11022302e-16, 0, 0.5],
+        [1.11022302e-16, 5.55111512e-17, 0],
+        [5.55111512e-17, 5.55111512e-17, 0.5],
+        [5.55111512e-17, -5.55111512e-17, 0.5],
+        [3.08148791e-33, -5.55111512e-17, 0],
+        [0, 0, 0.5],
+        [5.55111512e-17, 5.55111512e-17, 0],
+        [1.11022302e-16, 5.55111512e-17, 0.5],
+        [1.11022302e-16, 0, 0],
+    ]  # Compared with Python results
+    @test dataset.wyckoffs == ['b', 'b', 'b', 'b']
+    @test dataset.site_symmetry_symbols == ["3m.", "3m.", "3m.", "3m."]
+    @test dataset.crystallographic_orbits == [0, 0, 2, 2]
+    @test dataset.equivalent_atoms == [0, 0, 2, 2]
+    @test dataset.primitive_lattice ≈
+        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
+    @test dataset.mapping_to_primitive == 0:3  # FIXME: should I +1?
+    @test dataset.std_lattice ≈
+        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
+    @test dataset.std_positions ≈ [
+        [0.33333333, 0.66666667, 0],
+        [0.66666667, 0.33333333, 0.5],
+        [0.33333333, 0.66666667, 0.6181],
+        [0.66666667, 0.33333333, 0.1181],
+    ]  # Compared with Python results
+    @test dataset.std_rotation_matrix == I
+    @test dataset.std_mapping_to_primitive == 0:3  # FIXME: should I +1?
+end
