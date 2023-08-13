@@ -17,16 +17,16 @@ symmetry operations may obtained by
 `[(r, t) for r, t in zip(rotations, translations)]`.
 
 The operations are given with respect to the fractional coordinates
-(not for Cartesian coordinates). The rotation matrix and translation
-vector are used as follows:
+(not for Cartesian coordinates). The rotation matrix ``\\mathbf{W}`` and translation
+vector ``\\text{w}`` are used as follows:
 
 ```math
-new_vector_{3 \\times 1} = rotation_{3 \\times 3} * vector_{3 \\times 1} + translation_{3 \\times 1}.
+\\tilde{\\mathbf{x}}_{3\\times 1} = \\mathbf{W}_{3\\times 3} \\mathbf{x}_{3\\times 1} + \\text{w}_{3\\times 1}.
 ```
 
 The three values in the vector are given for the ``a``, ``b``, and ``c`` axes, respectively.
 
-See also [`get_magnetic_symmetry`](@ref) for magnetic symmetry search.
+See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search.
 """
 function get_symmetry(cell::Cell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
