@@ -31,7 +31,7 @@ In this package, rigid rotation is purposely introduced in the idealization step
 is unlikely as a crystallographic operation.
 
 ```@repl std
-using StaticArrays, CrystallographyCore, Spglib
+using StaticArrays, Spglib
 lattice = Lattice([
     [5.0759761474456697, 5.0759761474456697, 0],
     [-2.8280307701821314, 2.8280307701821314, 0],
@@ -47,8 +47,8 @@ positions = [
     [0.5, 0.84688439, 0.3796867],
     [0.5, 0.65311561, 0.8796867],
 ];
-numbers = fill(35, length(positions))
-cell = Cell(lattice, positions, numbers)
+atoms = fill(35, length(positions));
+cell = Cell(lattice, positions, atoms)
 dataset = get_dataset(cell, 1e-5)
 dataset.international_symbol
 dataset.spacegroup_number

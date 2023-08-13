@@ -123,7 +123,6 @@ However, the corresponding code in Julia should be written as follows:
 
 ```@repl example
 using Spglib
-
 lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];
 positions = [
     [1.0 / 3, 2.0 / 3, 0.0],
@@ -243,7 +242,17 @@ These are equivalent to the following Julia matrices:
 However, the actual Julia results should be:
 
 ```@repl example
-using Spglib: Lattice
+using Spglib
+lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];
+positions = [
+    [1.0 / 3, 2.0 / 3, 0.0],
+    [2.0 / 3, 1.0 / 3, 0.5],
+    [1.0 / 3, 2.0 / 3, 0.6181],
+    [2.0 / 3, 1.0 / 3, 0.1181],
+];
+atoms = [1, 1, 2, 2];
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
 dataset.primitive_lattice
 dataset.std_lattice
 std_lattice_before_idealization =
