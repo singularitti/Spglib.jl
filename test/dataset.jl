@@ -290,15 +290,15 @@ end
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L14-L32
-@testset "Test `get_dataset` for a P-3m1 crystal" begin
+@testset "Test on P-3m1 space group" begin
     lattice = [
         4.0 2.0 0.0
         0.0 3.4641 0.0
         0.0 0.0 12.0
     ]
     positions = [[0.0, 0.0, 0.0], [1 / 3, 1 / 3, 1 / 3]]
-    types = [1, 1]
-    cell = Cell(lattice, positions, types)
+    atoms = [1, 1]
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-3)
     # Compared results with Python spglib
     @test dataset.spacegroup_number == 164
@@ -307,31 +307,38 @@ end
     @test get_international(cell, 1e-3) == "P-3m1"
     @test isempty(dataset.choice)
     @test dataset.transformation_matrix ≈ [
-        1.0 1.0 0.0
-        0.0 1.0 0.0
-        0.0 0.0 1.0
+        1 0 0
+        1 1 0
+        0 0 1
     ]
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈ [
+            2.0 2.0 0.0
+            -3.4641 3.4641 0.0
+            0.0 0.0 12.0
+        ]  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
     @test dataset.origin_shift ≈ [1 / 3, 2 / 3, 1 / 3]
     @test dataset.n_operations == 12
     python_rotations = [
         [1 0 0; 0 1 0; 0 0 1],
         [-1 0 0; 0 -1 0; 0 0 -1],
-        [-1 1 0; -1 0 0; 0 0 1],
-        [1 -1 0; 1 0 0; 0 0 -1],
-        [0 -1 0; 1 -1 0; 0 0 1],
-        [0 1 0; -1 1 0; 0 0 -1],
-        [1 0 0; 1 -1 0; 0 0 -1],
-        [-1 0 0; -1 1 0; 0 0 1],
+        [-1 -1 0; 1 0 0; 0 0 1],
+        [1 1 0; -1 0 0; 0 0 -1],
+        [0 1 0; -1 -1 0; 0 0 1],
+        [0 -1 0; 1 1 0; 0 0 -1],
+        [1 1 0; 0 -1 0; 0 0 -1],
+        [-1 -1 0; 0 1 0; 0 0 1],
         [0 -1 0; -1 0 0; 0 0 -1],
         [0 1 0; 1 0 0; 0 0 1],
-        [-1 1 0; 0 1 0; 0 0 -1],
-        [1 -1 0; 0 -1 0; 0 0 1],
+        [-1 0 0; 1 1 0; 0 0 -1],
+        [1 0 0; -1 -1 0; 0 0 1],
     ]
-    @test all(
-        map(zip(dataset.rotations, python_rotations)) do (rotation, python_rotation)
-            rotation == python_rotation
-        end,
-    )
+    @test all(dataset.rotations .== python_rotations)
     @test all(
         dataset.translations .≈ [
             [0.0, 0.0, 0.0],
@@ -348,26 +355,36 @@ end
             [0.0, 0.0, 0.0],
         ],
     )
-    @test size(dataset.rotations) == (12,)
-    @test size(dataset.translations) == (12,)
+    @test size(dataset.rotations) == size(dataset.translations) == (12,)
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test dataset.wyckoffs == ['d', 'd']
     @test dataset.site_symmetry_symbols == ["3m.", "3m."]
     @test dataset.equivalent_atoms == [0, 0]
     @test dataset.crystallographic_orbits == [0, 0]
     @test dataset.primitive_lattice ==
-        Lattice([[0.0, 3.4641, 0.0], [-4.0, 1.4641, 0.0], [0.0, 0.0, 12.0]])
+        Lattice([[2.0, -3.4641, 0], [-2.0, -3.4641, 0], [0.0, 0.0, -12.0]])
     @test dataset.mapping_to_primitive == [0, 1]
     @test dataset.std_lattice ≈
-        Lattice([[3.4641, 0, 0], [-1.4641, 4, 0], [7.34788079e-16, 1.05141362e-15, 12]]) # ??
+        Lattice([[3.9999986, 0, 0], [-1.9999993, 3.4641004, 0], [0, 0, 12.0]])
     @test dataset.std_types == [1, 1]
-    @test dataset.std_positions ≈
-        [[0.66666667, 0.83333333, 0.66666667], [0.33333333, 0.16666667, 0.33333333]]
+    @test dataset.std_positions ≈ [[1 / 3, 2 / 3, 1 / 3], [2 / 3, 1 / 3, 2 / 3]]
     @test dataset.std_rotation_matrix ≈ [
-        0.50000017 0.8660253 0.0
-        -0.8660253 0.50000017 0.0
-        0.0 0.0 1.0
-    ]  # ??
+        0.50000017 -0.8660253 0
+        0.8660253 0.50000017 0
+        0 0 1
+    ]
+    @testset "Test the rotation of idealization" begin
+        @test isapprox(
+            dataset.std_rotation_matrix,
+            dataset.std_lattice * inv(std_lattice_before_idealization);
+            atol=1e-6,
+        )
+        @test isapprox(
+            dataset.std_lattice,
+            dataset.std_rotation_matrix * std_lattice_before_idealization;
+            atol=5e-6,
+        )
+    end
     @test dataset.std_mapping_to_primitive == [0, 1]
     @test dataset.pointgroup_symbol == "-3m"
 end
