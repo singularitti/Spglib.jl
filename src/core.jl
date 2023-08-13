@@ -224,7 +224,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     ]
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
-    )  # FIXME: Not sure if `transpose` is needed here
+    )
     std_mapping_to_primitive = unsafe_wrap(
         Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
     )
