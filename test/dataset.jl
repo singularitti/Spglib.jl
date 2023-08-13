@@ -716,7 +716,11 @@ end
 
 # Example is from here: https://github.com/spglib/spglib/blob/v2.1.0-rc2/README.md
 @testset "Test wurtzite structure (P6_3mc)" begin
-    lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]]
+    lattice = [
+        3.111 -1.5555 0
+        0 2.6942050311733885 0
+        0 0 4.988
+    ]  # Note this is a transpose of the C version
     positions = [
         [1.0 / 3, 2.0 / 3, 0.0],
         [2.0 / 3, 1.0 / 3, 0.5],
