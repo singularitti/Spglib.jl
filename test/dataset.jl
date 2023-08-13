@@ -672,33 +672,145 @@ end
 
 # From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L79-L83
 @testset "Test primitive silicon structure" begin
-    lattice = ([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
+    lattice = [[0, 2, 2], [2, 0, 2], [2, 2, 0]]
     positions = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
-    types = [14, 14]
-    silicon_prim = Cell(lattice, positions, types)
-    dataset_prim = get_dataset(silicon_prim, 1e-5)
-    for f in (
-        :spacegroup_number,
-        :hall_number,
-        :hall_symbol,
-        :international_symbol,
-        :choice,
-        :std_lattice,
-        :std_rotation_matrix,
-        :std_mapping_to_primitive,
-        :pointgroup_symbol,
-    )
-        @test getfield(dataset_prim, f) == getfield(dataset, f)
-    end
-    @test dataset_prim.transformation_matrix == [
+    atoms = [14, 14]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell, 1e-5)
+    # Compared with Python results
+    @test dataset.spacegroup_number == 227
+    @test dataset.hall_number == 525
+    @test dataset.international_symbol == "Fd-3m"
+    @test dataset.hall_symbol == "F 4d 2 3 -1d"
+    @test get_international(cell, 1e-5) == "Fd-3m"
+    @test dataset.choice == "1"
+    @test dataset.transformation_matrix == [
         0.0 0.5 0.5
         0.5 0.0 0.5
         0.5 0.5 0.0
     ]
-    @test dataset_prim.origin_shift == [0, 0, 1 / 2]
-    @test size(dataset_prim.rotations) == (48,)
-    @test dataset_prim.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
-    @test dataset_prim.std_positions == [
+    @testset "Test the transformation between an arbitrary system and a standardized system" begin
+        std_lattice_before_idealization =
+            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
+        @test std_lattice_before_idealization ≈
+            Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])  # Compared with Python results, the Python version is a transposed version of this
+        @test std_lattice_before_idealization * dataset.transformation_matrix ≈
+            Lattice(cell)
+    end
+    @test dataset.origin_shift == [0, 0, 1 / 2]
+    python_rotations = [
+        [1 0 0; 0 1 0; 0 0 1],
+        [1 1 1; 0 0 -1; -1 0 0],
+        [0 1 0; 1 0 0; -1 -1 -1],
+        [0 0 -1; 1 1 1; 0 -1 0],
+        [-1 -1 -1; 0 0 1; 0 1 0],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 0 1; -1 -1 -1; 1 0 0],
+        [-1 0 0; 0 -1 0; 1 1 1],
+        [0 0 1; 1 0 0; 0 1 0],
+        [-1 0 0; 1 1 1; 0 0 -1],
+        [-1 -1 -1; 0 1 0; 1 0 0],
+        [0 -1 0; 0 0 -1; 1 1 1],
+        [0 1 0; -1 -1 -1; 0 0 1],
+        [0 0 -1; 0 -1 0; -1 0 0],
+        [1 0 0; 0 0 1; -1 -1 -1],
+        [1 1 1; -1 0 0; 0 -1 0],
+        [0 1 0; 0 0 1; 1 0 0],
+        [0 0 -1; -1 0 0; 1 1 1],
+        [1 0 0; -1 -1 -1; 0 1 0],
+        [1 1 1; 0 -1 0; 0 0 -1],
+        [0 0 1; 0 1 0; -1 -1 -1],
+        [-1 0 0; 0 0 -1; 0 -1 0],
+        [-1 -1 -1; 1 0 0; 0 0 1],
+        [0 -1 0; 1 1 1; -1 0 0],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [-1 -1 -1; 0 0 1; 1 0 0],
+        [0 -1 0; -1 0 0; 1 1 1],
+        [0 0 1; -1 -1 -1; 0 1 0],
+        [1 1 1; 0 0 -1; 0 -1 0],
+        [0 1 0; 1 0 0; 0 0 1],
+        [0 0 -1; 1 1 1; -1 0 0],
+        [1 0 0; 0 1 0; -1 -1 -1],
+        [0 0 -1; -1 0 0; 0 -1 0],
+        [1 0 0; -1 -1 -1; 0 0 1],
+        [1 1 1; 0 -1 0; -1 0 0],
+        [0 1 0; 0 0 1; -1 -1 -1],
+        [0 -1 0; 1 1 1; 0 0 -1],
+        [0 0 1; 0 1 0; 1 0 0],
+        [-1 0 0; 0 0 -1; 1 1 1],
+        [-1 -1 -1; 1 0 0; 0 1 0],
+        [0 -1 0; 0 0 -1; -1 0 0],
+        [0 0 1; 1 0 0; -1 -1 -1],
+        [-1 0 0; 1 1 1; 0 -1 0],
+        [-1 -1 -1; 0 1 0; 0 0 1],
+        [0 0 -1; 0 -1 0; 1 1 1],
+        [1 0 0; 0 0 1; 0 1 0],
+        [1 1 1; -1 0 0; 0 0 -1],
+        [0 1 0; -1 -1 -1; 1 0 0],
+    ]  # Compared with Python results
+    @test dataset.rotations == python_rotations
+    @test dataset.translations == [
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+    ]
+    @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
+    @test dataset.wyckoffs == ['b', 'b']
+    @test dataset.site_symmetry_symbols == ["-43m", "-43m"]
+    @test dataset.crystallographic_orbits == [0, 0]
+    @test dataset.equivalent_atoms == [0, 0]
+    @test dataset.primitive_lattice ==
+        Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
+    @test dataset.mapping_to_primitive == [0, 1]
+    @test dataset.std_lattice ==
+        Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])
+    @test dataset.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
+    @test dataset.std_positions == [
         [0.0, 0.0, 0.5],
         [0.25, 0.75, 0.25],
         [0.0, 0.5, 0.0],
@@ -708,64 +820,15 @@ end
         [0.5, 0.5, 0.5],
         [0.75, 0.25, 0.25],
     ]
-    @test dataset_prim.translations == [
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-        [0.25, 0.25, 0.25],
-        [0.0, 0.0, 0.0],
-    ]
-    @test get_symmetry(silicon_prim) == (dataset_prim.rotations, dataset_prim.translations)
-    @test dataset_prim.wyckoffs == ['b', 'b']
-    @test dataset_prim.site_symmetry_symbols == ["-43m", "-43m"]
-    @test dataset_prim.equivalent_atoms == [0, 0]
-    @test dataset_prim.crystallographic_orbits == [0, 0]
-    @test dataset_prim.primitive_lattice ==
-        Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
-    @test dataset_prim.mapping_to_primitive == [0, 1]
+    @test dataset.std_rotation_matrix == I
+    @testset "Test the rotation of idealization" begin
+        @test dataset.std_rotation_matrix ≈
+            dataset.std_lattice * inv(std_lattice_before_idealization)
+        @test dataset.std_lattice ≈
+            dataset.std_rotation_matrix * std_lattice_before_idealization
+    end
+    @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
+    @test dataset.pointgroup_symbol == "m-3m"
 end
 
 # Example is from here: https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example.py
