@@ -756,10 +756,10 @@ end
     @test dataset.crystallographic_orbits == [0, 0, 2, 2]
     @test dataset.equivalent_atoms == [0, 0, 2, 2]
     @test dataset.primitive_lattice ≈
-        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
+        Lattice([[3.111, -1.5555, 0], [0, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
     @test dataset.mapping_to_primitive == 0:3  # FIXME: should I +1?
     @test dataset.std_lattice ≈
-        Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
+        Lattice([[3.111, -1.5555, 0], [0, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results
     @test dataset.std_positions ≈ [
         [0.33333333, 0.66666667, 0],
         [0.66666667, 0.33333333, 0.5],
