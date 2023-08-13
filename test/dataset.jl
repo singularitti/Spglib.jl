@@ -29,9 +29,9 @@
         0 1 0
         0 0 1
     ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈ [
             5.07597615 -2.82803077 0.0
             5.07597615 2.82803077 0.0
@@ -115,7 +115,7 @@
         [-1 0 0; 0 1 0; 0 0 -1],
         [1 0 0; 0 -1 0; 0 0 1],
     ]
-    @test all(dataset.rotations .== python_rotations)
+    @test dataset.rotations == python_rotations
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
 end
 
@@ -251,16 +251,20 @@ end
         1 0 0
         0 1 0
     ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈
             Lattice([[0.0, 0.0, 3.0], [3.97, 0.0, 0.0], [0.0, 4.03, 0.0]])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
     @test dataset.origin_shift == [0.0, 0.0, 0.0]
-    @test only(dataset.rotations) == I
+    @test only(dataset.rotations) == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
     @test dataset.translations == [[0.0, 0.0, 0.0]]
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
@@ -324,9 +328,9 @@ end
         1 1 0
         0 0 1
     ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈ [
             2.0 2.0 0.0
             -3.4641 3.4641 0.0
@@ -351,7 +355,7 @@ end
         [-1 0 0; 1 1 0; 0 0 -1],
         [1 0 0; -1 -1 0; 0 0 1],
     ]
-    @test all(dataset.rotations .== python_rotations)
+    @test dataset.rotations == python_rotations
     @test all(
         dataset.translations .≈ [
             [0.0, 0.0, 0.0],
@@ -425,10 +429,14 @@ end
     @test dataset.hall_symbol == "F 4d 2 3 -1d"
     @test get_international(cell, 1e-5) == "Fd-3m"
     @test dataset.choice == "1"
-    @test dataset.transformation_matrix == I
+    @test dataset.transformation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈ [
             4 0 0
             0 4 0
@@ -689,9 +697,9 @@ end
         0.5 0.0 0.5
         0.5 0.5 0.0
     ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈
             Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])  # Compared with Python results, the Python version is a transposed version of this
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
@@ -820,7 +828,11 @@ end
         [0.5, 0.5, 0.5],
         [0.75, 0.25, 0.25],
     ]
-    @test dataset.std_rotation_matrix == I
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
     @testset "Test the rotation of idealization" begin
         @test dataset.std_rotation_matrix ≈
             dataset.std_lattice * inv(std_lattice_before_idealization)
@@ -854,9 +866,9 @@ end
         0 1 0
         0 0 1
     ]
+    std_lattice_before_idealization =
+        convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
     @testset "Test the transformation between an arbitrary system and a standardized system" begin
-        std_lattice_before_idealization =
-            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
         @test std_lattice_before_idealization ≈ [
             3.111 -1.5555 0
             0 2.69420503 0
@@ -880,7 +892,7 @@ end
         [-1 0 0; -1 1 0; 0 0 1],
         [-1 1 0; 0 1 0; 0 0 1],
     ]
-    @test all(dataset.rotations .== python_rotations)
+    @test dataset.rotations == python_rotations
     @test dataset.translations ≈ [
         [0, 0, 0],
         [3.08148791e-33, -5.55111512e-17, 0.5],
@@ -895,6 +907,7 @@ end
         [1.11022302e-16, 5.55111512e-17, 0.5],
         [1.11022302e-16, 0, 0],
     ]  # Compared with Python results
+    @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test dataset.wyckoffs == ['b', 'b', 'b', 'b']
     @test dataset.site_symmetry_symbols == ["3m.", "3m.", "3m.", "3m."]
     @test dataset.crystallographic_orbits == [0, 0, 2, 2]
@@ -910,7 +923,11 @@ end
         [0.33333333, 0.66666667, 0.6181],
         [0.66666667, 0.33333333, 0.1181],
     ]  # Compared with Python results
-    @test dataset.std_rotation_matrix == I
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
     @testset "Test the rotation of idealization" begin
         @test dataset.std_rotation_matrix ≈
             dataset.std_lattice * inv(std_lattice_before_idealization)
