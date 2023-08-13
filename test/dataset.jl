@@ -668,103 +668,104 @@ end
     end
     @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
-    @testset "Test primitive silicon structure" begin
-        lattice = ([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
-        positions = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
-        types = [14, 14]
-        silicon_prim = Cell(lattice, positions, types)
-        dataset_prim = get_dataset(silicon_prim, 1e-5)
-        for f in (
-            :spacegroup_number,
-            :hall_number,
-            :hall_symbol,
-            :international_symbol,
-            :choice,
-            :std_lattice,
-            :std_rotation_matrix,
-            :std_mapping_to_primitive,
-            :pointgroup_symbol,
-        )
-            @test getfield(dataset_prim, f) == getfield(dataset, f)
-        end
-        @test dataset_prim.transformation_matrix == [
-            0.0 0.5 0.5
-            0.5 0.0 0.5
-            0.5 0.5 0.0
-        ]
-        @test dataset_prim.origin_shift == [0, 0, 1 / 2]
-        @test size(dataset_prim.rotations) == (48,)
-        @test dataset_prim.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
-        @test dataset_prim.std_positions == [
-            [0.0, 0.0, 0.5],
-            [0.25, 0.75, 0.25],
-            [0.0, 0.5, 0.0],
-            [0.25, 0.25, 0.75],
-            [0.5, 0.0, 0.0],
-            [0.75, 0.75, 0.75],
-            [0.5, 0.5, 0.5],
-            [0.75, 0.25, 0.25],
-        ]
-        @test dataset_prim.translations == [
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-            [0.25, 0.25, 0.25],
-            [0.0, 0.0, 0.0],
-        ]
-        @test get_symmetry(silicon_prim) ==
-            (dataset_prim.rotations, dataset_prim.translations)
-        @test dataset_prim.wyckoffs == ['b', 'b']
-        @test dataset_prim.site_symmetry_symbols == ["-43m", "-43m"]
-        @test dataset_prim.equivalent_atoms == [0, 0]
-        @test dataset_prim.crystallographic_orbits == [0, 0]
-        @test dataset_prim.primitive_lattice ==
-            Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
-        @test dataset_prim.mapping_to_primitive == [0, 1]
+end
+
+# From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L79-L83
+@testset "Test primitive silicon structure" begin
+    lattice = ([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
+    positions = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
+    types = [14, 14]
+    silicon_prim = Cell(lattice, positions, types)
+    dataset_prim = get_dataset(silicon_prim, 1e-5)
+    for f in (
+        :spacegroup_number,
+        :hall_number,
+        :hall_symbol,
+        :international_symbol,
+        :choice,
+        :std_lattice,
+        :std_rotation_matrix,
+        :std_mapping_to_primitive,
+        :pointgroup_symbol,
+    )
+        @test getfield(dataset_prim, f) == getfield(dataset, f)
     end
+    @test dataset_prim.transformation_matrix == [
+        0.0 0.5 0.5
+        0.5 0.0 0.5
+        0.5 0.5 0.0
+    ]
+    @test dataset_prim.origin_shift == [0, 0, 1 / 2]
+    @test size(dataset_prim.rotations) == (48,)
+    @test dataset_prim.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
+    @test dataset_prim.std_positions == [
+        [0.0, 0.0, 0.5],
+        [0.25, 0.75, 0.25],
+        [0.0, 0.5, 0.0],
+        [0.25, 0.25, 0.75],
+        [0.5, 0.0, 0.0],
+        [0.75, 0.75, 0.75],
+        [0.5, 0.5, 0.5],
+        [0.75, 0.25, 0.25],
+    ]
+    @test dataset_prim.translations == [
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+        [0.25, 0.25, 0.25],
+        [0.0, 0.0, 0.0],
+    ]
+    @test get_symmetry(silicon_prim) == (dataset_prim.rotations, dataset_prim.translations)
+    @test dataset_prim.wyckoffs == ['b', 'b']
+    @test dataset_prim.site_symmetry_symbols == ["-43m", "-43m"]
+    @test dataset_prim.equivalent_atoms == [0, 0]
+    @test dataset_prim.crystallographic_orbits == [0, 0]
+    @test dataset_prim.primitive_lattice ==
+        Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
+    @test dataset_prim.mapping_to_primitive == [0, 1]
 end
 
 # Example is from here: https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example.py
