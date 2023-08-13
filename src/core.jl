@@ -222,10 +222,9 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         SVector{3}(unsafe_load(dataset.std_positions, i)) for
         i in Base.OneTo(dataset.n_std_atoms)
     ]
-    # Note: Breaking! `std_rotation_matrix` is now transposed!
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
-    )
+    )  # FIXME: Not sure if `transpose` is needed here
     std_mapping_to_primitive = unsafe_wrap(
         Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
     )
