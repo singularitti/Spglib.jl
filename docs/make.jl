@@ -24,10 +24,10 @@ makedocs(;
         ],
         "Reference" => Any[
             "Public API" => "lib/public.md",
-            # "Internals" => map(
-            #     s -> "lib/internals/$(s)",
-            #     sort(readdir(joinpath(@__DIR__, "src/lib/internals")))
-            # ),
+            "Internals" => map(
+                s -> "lib/internals/$(s)",
+                sort(readdir(joinpath(@__DIR__, "src/lib/internals")))
+            ),
         ],
         "Developer Docs" => [
             "Contributing" => "developers/contributing.md",
