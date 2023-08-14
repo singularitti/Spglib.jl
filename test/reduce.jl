@@ -71,3 +71,14 @@ end
     # Cartesian coordinates should remain the same
     @test c1 == c2
 end
+
+# From https://github.com/spglib/spglib/blob/4aa0806/test/functional/c/test_delaunay.cpp
+@testset "Test an example from C" begin
+    lattice = Lattice([
+        1 0 0
+        0 37 10
+        0 11 3
+    ])
+    @test niggli_reduce(lattice, 1e-5) == Lattice([[0, 1, 0], [1, 0, 0], [0, 0, -1]])  # Compared with Python result
+    @test delaunay_reduce(lattice, 1e-5) ≈ Lattice([[1, 0, 0], [0, -1, 0], [0, 0, -1]])  # Compared with Python result
+end
