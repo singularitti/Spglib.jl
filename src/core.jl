@@ -1,6 +1,6 @@
 using CrystallographyCore: AbstractCell, Cell as CrystallographyCell, basisvectors
 using StaticArrays: MMatrix, MVector, SMatrix, SVector
-using StructEquality: @struct_hash_equal
+using StructEquality: @struct_hash_equal_isequal
 
 import CrystallographyCore: Lattice, natoms, atomtypes
 
@@ -22,7 +22,7 @@ Numbers to distinguish atomic species `types` are given by a list of ``N`` integ
 The collinear polarizations `magmoms` only work with `get_symmetry` and are given
 as a list of ``N`` floating point values, or a vector of vectors.
 """
-@struct_hash_equal struct SpglibCell{L,P,T,M} <: AbstractCell
+@struct_hash_equal_isequal struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
     atoms::Vector{T}
@@ -158,7 +158,7 @@ end
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
 """
-struct Dataset
+@struct_hash_equal_isequal struct Dataset
     spacegroup_number::Int32
     hall_number::Int32
     international_symbol::String
