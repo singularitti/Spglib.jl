@@ -80,7 +80,8 @@ end
 function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
-    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
     lattice, _, _, _ = _expand_cell(cell)
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
