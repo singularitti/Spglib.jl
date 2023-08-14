@@ -48,36 +48,36 @@
   0.5  0.65311561  0.8796867
  8 atoms:
   35  35  35  35  35  35  35  35</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
-  spacegroup_number: 14
-  hall_number: 81
-  international_symbol: P2_1/c
-  hall_symbol: -P 2ybc
-  choice: b1
-  transformation_matrix: [0.0 -2.0 0.0; 0.0 0.0 1.0; -1.0 -1.0 0.0]
-  origin_shift: [0.0, 0.0, 0.0]
-  n_operations: 8
-  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 -1 0; 0 0 1], [1 0 0; 0 1 0; 0 0 -1], [1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 -1 0; 0 0 1], [1 0 0; 0 1 0; 0 0 -1]]
-  translations: StaticArraysCore.SVector{3, Float64}[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0], [0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [0.0, 0.5, 0.5]]
+  spacegroup_number: 64
+  hall_number: 304
+  international_symbol: Cmce
+  hall_symbol: -C 2bc 2
+  choice:
+  transformation_matrix: [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
+  origin_shift: [5.551115123125783e-17, 0.0, 0.0]
+  n_operations: 16
+  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 -1 0; 0 0 1], [1 0 0; 0 1 0; 0 0 -1], [1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 1 0; 0 0 -1], [1 0 0; 0 -1 0; 0 0 1], [1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 -1 0; 0 0 1], [1 0 0; 0 1 0; 0 0 -1], [1 0 0; 0 -1 0; 0 0 -1], [-1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 1 0; 0 0 -1], [1 0 0; 0 -1 0; 0 0 1]]
+  translations: StaticArraysCore.SVector{3, Float64}[[0.0, 0.0, 0.0], [-1.1102230246251565e-16, 2.465190328815662e-32, 0.0], [-1.1102230246251565e-16, 0.5, 0.5], [0.0, 0.5, 0.5], [0.0, 0.0, 0.0], [-1.1102230246251565e-16, 2.465190328815662e-32, 0.0], [-1.1102230246251565e-16, 0.5, 0.5], [0.0, 0.5, 0.5], [0.5, 0.5, 0.0], [0.4999999999999999, 0.5, 0.0], [0.4999999999999999, 0.0, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0], [0.4999999999999999, 0.5, 0.0], [0.4999999999999999, 0.0, 0.5], [0.5, 0.0, 0.5]]
   n_atoms: 8
-  wyckoffs: [&#39;e&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;]
-  site_symmetry_symbols: [&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;]
+  wyckoffs: [&#39;f&#39;, &#39;f&#39;, &#39;f&#39;, &#39;f&#39;, &#39;f&#39;, &#39;f&#39;, &#39;f&#39;, &#39;f&#39;]
+  site_symmetry_symbols: [&quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;, &quot;m..&quot;]
   equivalent_atoms: Int32[0, 0, 0, 0, 0, 0, 0, 0]
   crystallographic_orbits: Int32[0, 0, 0, 0, 0, 0, 0, 0]
-  primitive_lattice: [0.0 5.07597614744567 0.0; -2.8280307701821314 0.0 0.0; 0.0 0.0 8.57154746]
+  primitive_lattice: [2.8280307701821314 1.1239726886317691 0.0; -2.8280307701821314 3.9520034588139006 0.0; 0.0 0.0 8.57154746]
   mapping_to_primitive: Int32[0, 1, 2, 3, 0, 1, 2, 3]
-  n_std_atoms: 4
-  std_lattice: [2.8280307701821314 0.0 -2.828030770182132; 0.0 8.57154746 0.0; 0.0 0.0 5.075976147445669]
-  std_types: Int32[1, 1, 1, 1]
-  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3062312199999999, 0.1203133, 0.15311560999999996], [0.6937687800000001, 0.6203133, 0.34688439000000004], [0.3062312199999999, 0.3796867, 0.65311561], [0.6937687800000001, 0.8796867, 0.84688439]]
-  std_rotation_matrix: [0.0 -1.0 0.0; 0.0 0.0 1.0; -1.0 0.0 0.0]
-  std_mapping_to_primitive: Int32[0, 1, 2, 3]
-  pointgroup_symbol: 2/m</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.international_symbol</code><code class="nohighlight hljs ansi" style="display:block;">&quot;P2_1/c&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">14</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.transformation_matrix</code><code class="nohighlight hljs ansi" style="display:block;">3×3 StaticArraysCore.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
-  0.0  -2.0  0.0
-  0.0   0.0  1.0
- -1.0  -1.0  0.0</code></pre><p>We can see the transformation matrix from the given lattice to the standardized lattice is the identity matrix, i.e., the given lattice is already a standardized lattice.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; std_lattice_before_idealization = convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- 3.952    0.0      -5.07598
- 1.12397  0.0      -5.07598
- 0.0      8.57155   0.0</code></pre><p>This is based on formula in <a href="../definitions/#Transformation-matrix-\\mathbf{P}-and-origin-shift-\\mathbf{p}">Transformation matrix <span>$\mathbf{P}$</span> and origin shift <span>$\mathbf{p}$</span></a> and <a href="../definitions/#Passive/forward/alias-transformation">Passive/forward/alias transformation</a>:</p><p class="math-container">\[\begin{align}
+  n_std_atoms: 8
+  std_lattice: [7.178514309999999 0.0 0.0; 0.0 3.99943947 0.0; 0.0 0.0 8.57154746]
+  std_types: Int32[1, 1, 1, 1, 1, 1, 1, 1]
+  std_positions: StaticArraysCore.SVector{3, Float64}[[0.0, 0.84688439, 0.1203133], [0.0, 0.65311561, 0.6203133], [0.0, 0.34688439000000004, 0.3796867], [0.0, 0.15311560999999996, 0.8796867], [0.5, 0.34688439000000004, 0.1203133], [0.5, 0.15311560999999996, 0.6203133], [0.5, 0.84688439, 0.3796867], [0.5, 0.65311561, 0.8796867]]
+  std_rotation_matrix: [0.7071067811865475 0.7071067811865475 0.0; -0.7071067811865475 0.7071067811865475 0.0; 0.0 0.0 1.0]
+  std_mapping_to_primitive: Int32[0, 1, 2, 3, 0, 1, 2, 3]
+  pointgroup_symbol: mmm</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.international_symbol</code><code class="nohighlight hljs ansi" style="display:block;">&quot;Cmce&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">64</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.transformation_matrix</code><code class="nohighlight hljs ansi" style="display:block;">3×3 StaticArraysCore.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
+ 1.0  0.0  0.0
+ 0.0  1.0  0.0
+ 0.0  0.0  1.0</code></pre><p>We can see the transformation matrix from the given lattice to the standardized lattice is the identity matrix, i.e., the given lattice is already a standardized lattice.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; std_lattice_before_idealization = convert(Matrix{Float64}, lattice) * inv(dataset.transformation_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 5.07598  -2.82803  0.0
+ 5.07598   2.82803  0.0
+ 0.0       0.0      8.57155</code></pre><p>This is based on formula in <a href="../definitions/#Transformation-matrix-\\mathbf{P}-and-origin-shift-\\mathbf{p}">Transformation matrix <span>$\mathbf{P}$</span> and origin shift <span>$\mathbf{p}$</span></a> and <a href="../definitions/#Passive/forward/alias-transformation">Passive/forward/alias transformation</a>:</p><p class="math-container">\[\begin{align}
     \begin{bmatrix} \mathbf{a} &amp; \mathbf{b} &amp; \mathbf{c} \end{bmatrix} &amp;=
     \begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}
     \mathbf{P},\\
@@ -86,21 +86,21 @@
 \end{align}\]</p><p>Here, <span>$\mathbf{P}$</span> is the <code>dataset.transformation_matrix</code>.</p><p>Note that in contrast to the Python code:</p><pre><code class="language-python hljs">std_lattice_before_idealization = np.dot(
     np.transpose(lattice),
     np.linalg.inv(dataset[&#39;transformation_matrix&#39;])).T</code></pre><p>where there are multiple transpose operations, we do not have to do that in our Julia code since we choose a column-major order of stacking lattice vectors as described in <a href="../definitions/#Basis-vectors">Basis vectors</a>, and we return transformation matrix in column-major order, too.</p><p>Now, we obtain the standardized basis vectors after idealization <span>$\begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix}$</span>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; std_lattice_after_idealization = dataset.std_lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
- 2.8280307701821314  0.0  -2.828030770182132
- 0.0  8.57154746  0.0
- 0.0  0.0  5.075976147445669</code></pre><p>This is different from the standardized basis vectors before idealization <span>$\begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}$</span>. Unless this crystal structure is distorted from the crystal structure that has the ideal symmetry, this means that the crystal was rotated rigidly in the idealization step by</p><p class="math-container">\[\begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix} =
+ 7.178514309999999  0.0  0.0
+ 0.0  3.99943947  0.0
+ 0.0  0.0  8.57154746</code></pre><p>This is different from the standardized basis vectors before idealization <span>$\begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}$</span>. Unless this crystal structure is distorted from the crystal structure that has the ideal symmetry, this means that the crystal was rotated rigidly in the idealization step by</p><p class="math-container">\[\begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix} =
 \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix},\]</p><p>as stated in <a href="../definitions/#Rotation-introduced-by-idealization">Rotation introduced by idealization</a>. where <span>$\mathbf{R}$</span> is the rotation matrix. This is computed by</p><p class="math-container">\[\mathbf{R} =
 \begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix}
 \bigl(\begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}\bigr)^{-1}\]</p><p>In Julia code, this is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; 𝐀 = convert(Matrix{Float64}, std_lattice_after_idealization)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- 2.82803  0.0      -2.82803
- 0.0      8.57155   0.0
- 0.0      0.0       5.07598</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 𝐁 = convert(Matrix{Float64}, std_lattice_before_idealization)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- 3.952    0.0      -5.07598
- 1.12397  0.0      -5.07598
- 0.0      8.57155   0.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 𝐑 = 𝐀 * inv(𝐁)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- 0.77857  -0.22143  0.0
- 0.0       0.0      1.0
- 0.39744  -1.39744  0.0</code></pre><p>Note also the transpose is not applied here in contrast to the Python code:</p><pre><code class="language-python hljs">R = np.dot(dataset[&#39;std_lattice&#39;].T, np.linalg.inv(std_lattice_before_idealization.T))</code></pre><p>This equals to</p><p class="math-container">\[\begin{bmatrix}
+ 7.17851  0.0      0.0
+ 0.0      3.99944  0.0
+ 0.0      0.0      8.57155</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 𝐁 = convert(Matrix{Float64}, std_lattice_before_idealization)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 5.07598  -2.82803  0.0
+ 5.07598   2.82803  0.0
+ 0.0       0.0      8.57155</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 𝐑 = 𝐀 * inv(𝐁)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+  0.707107  0.707107  0.0
+ -0.707107  0.707107  0.0
+  0.0       0.0       1.0</code></pre><p>Note also the transpose is not applied here in contrast to the Python code:</p><pre><code class="language-python hljs">R = np.dot(dataset[&#39;std_lattice&#39;].T, np.linalg.inv(std_lattice_before_idealization.T))</code></pre><p>This equals to</p><p class="math-container">\[\begin{bmatrix}
     \cos \theta &amp; -\sin \theta &amp; 0\\
     \sin \theta &amp; \cos \theta &amp; 0\\
     0 &amp; 0 &amp; 1
@@ -112,9 +112,9 @@
   0.707107  0.707107  0.0
  -0.707107  0.707107  0.0
   0.0       0.0       1.0</code></pre><p>Compared to <code>dataset.std_rotation_matrix</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.std_rotation_matrix</code><code class="nohighlight hljs ansi" style="display:block;">3×3 StaticArraysCore.SMatrix{3, 3, Float64, 9} with indices SOneTo(3)×SOneTo(3):
-  0.0  -1.0  0.0
-  0.0   0.0  1.0
- -1.0   0.0  0.0</code></pre><p>we have approximately the same result.</p><p>In summary of the two steps,</p><p class="math-container">\[\begin{align}
+  0.707107  0.707107  0.0
+ -0.707107  0.707107  0.0
+  0.0       0.0       1.0</code></pre><p>we have approximately the same result.</p><p>In summary of the two steps,</p><p class="math-container">\[\begin{align}
     \begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix} =
     \begin{bmatrix} \mathbf{a} &amp; \mathbf{b} &amp; \mathbf{c} \end{bmatrix} \mathbf{P}^{-1} &amp;=
     \mathbf{R}^{-1}
@@ -122,4 +122,4 @@
     \begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix}
     \mathbf{P} &amp;=
     \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}.
-\end{align}\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../definitions/">« Definitions and conventions</a><a class="docs-footer-nextpage" href="../troubleshooting/">Troubleshooting »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 14 August 2023 22:35">Monday 14 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+\end{align}\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../definitions/">« Definitions and conventions</a><a class="docs-footer-nextpage" href="../troubleshooting/">Troubleshooting »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 14 August 2023 22:45">Monday 14 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

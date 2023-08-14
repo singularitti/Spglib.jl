@@ -49,30 +49,30 @@ assert dataset[&#39;number&#39;] == 186</code></pre><p>Note that in Python, the 
   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
-  spacegroup_number: 4
-  hall_number: 6
-  international_symbol: P2_1
-  hall_symbol: P 2yb
-  choice: b
-  transformation_matrix: [-0.9999999999999999 0.9999999999999999 0.0; -0.0 0.0 -0.9999999999999999; -1.0 0.0 0.0]
-  origin_shift: [0.0, 0.0, 0.0]
-  n_operations: 2
-  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1]]
-  translations: StaticArraysCore.SVector{3, Float64}[[-0.0, -0.0, -0.0], [-0.0, -0.0, 0.5]]
+  spacegroup_number: 186
+  hall_number: 480
+  international_symbol: P6_3mc
+  hall_symbol: P 6c -2c
+  choice:
+  transformation_matrix: [1.0 -5.551115123125783e-17 0.0; 0.0 0.9999999999999999 0.0; 0.0 0.0 0.9999999999999999]
+  origin_shift: [-5.551115123125783e-17, 0.0, 0.0]
+  n_operations: 12
+  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [1 -1 0; 1 0 0; 0 0 1], [0 -1 0; 1 -1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1], [-1 1 0; -1 0 0; 0 0 1], [0 1 0; -1 1 0; 0 0 1], [0 1 0; 1 0 0; 0 0 1], [1 0 0; 1 -1 0; 0 0 1], [1 -1 0; 0 -1 0; 0 0 1], [0 -1 0; -1 0 0; 0 0 1], [-1 0 0; -1 1 0; 0 0 1], [-1 1 0; 0 1 0; 0 0 1]]
+  translations: StaticArraysCore.SVector{3, Float64}[[0.0, 0.0, 0.0], [3.0814879110195774e-33, -5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 0.0, 0.5], [1.1102230246251565e-16, 5.551115123125782e-17, 0.0], [5.551115123125783e-17, 5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.5], [3.0814879110195774e-33, -5.551115123125782e-17, 0.0], [0.0, 0.0, 0.5], [5.551115123125783e-17, 5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 5.551115123125782e-17, 0.5], [1.1102230246251565e-16, 0.0, 0.0]]
   n_atoms: 4
-  wyckoffs: [&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;]
-  site_symmetry_symbols: [&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;]
+  wyckoffs: [&#39;b&#39;, &#39;b&#39;, &#39;b&#39;, &#39;b&#39;]
+  site_symmetry_symbols: [&quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;]
   equivalent_atoms: Int32[0, 0, 2, 2]
   crystallographic_orbits: Int32[0, 0, 2, 2]
-  primitive_lattice: [-0.0 -3.111 -0.0; -2.6942050311733885 -1.1387050311733884 -0.0; -0.0 -0.0 -4.988]
+  primitive_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
   mapping_to_primitive: Int32[0, 1, 2, 3]
   n_std_atoms: 4
-  std_lattice: [2.6942050311733885 0.0 -1.1387050311733886; 0.0 4.988 0.0; 0.0 0.0 3.1110000000000007]
+  std_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
   std_types: Int32[1, 1, 2, 2]
-  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333336, 0.0, 0.6666666666666667], [0.6666666666666664, 0.5, 0.33333333333333326], [0.3333333333333336, 0.3818999999999999, 0.6666666666666667], [0.6666666666666664, 0.8818999999999999, 0.33333333333333326]]
-  std_rotation_matrix: [0.0 1.0 0.0; 0.0 0.0 -1.0; -1.0 0.0 0.0]
+  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333333, 0.6666666666666666, 0.0], [0.6666666666666667, 0.3333333333333333, 0.5], [0.3333333333333333, 0.6666666666666666, 0.6181], [0.6666666666666667, 0.3333333333333333, 0.1181000000000001]]
+  std_rotation_matrix: [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
   std_mapping_to_primitive: Int32[0, 1, 2, 3]
-  pointgroup_symbol: 2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">4</code></pre><p>Although the Julia definition of our <a href="../definitions/#Basis-vectors">Basis vectors</a> is not transposed (like the C-API), when written one by one, it still resembles a transposed version of the lattice in C. However, they both represent the following matrix:</p><p class="math-container">\[\begin{bmatrix}
+  pointgroup_symbol: 6mm</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">186</code></pre><p>Although the Julia definition of our <a href="../definitions/#Basis-vectors">Basis vectors</a> is not transposed (like the C-API), when written one by one, it still resembles a transposed version of the lattice in C. However, they both represent the following matrix:</p><p class="math-container">\[\begin{bmatrix}
     3.111 &amp; -1.5555 &amp; 0 \\
     0 &amp; 2.6942050311733885 &amp; 0 \\
     0 &amp; 0 &amp; 4.988
@@ -114,30 +114,30 @@ dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
-  spacegroup_number: 186
-  hall_number: 480
-  international_symbol: P6_3mc
-  hall_symbol: P 6c -2c
-  choice:
-  transformation_matrix: [1.0 -5.551115123125783e-17 0.0; 0.0 0.9999999999999999 0.0; 0.0 0.0 0.9999999999999999]
-  origin_shift: [-5.551115123125783e-17, 0.0, 0.0]
-  n_operations: 12
-  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [1 -1 0; 1 0 0; 0 0 1], [0 -1 0; 1 -1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1], [-1 1 0; -1 0 0; 0 0 1], [0 1 0; -1 1 0; 0 0 1], [0 1 0; 1 0 0; 0 0 1], [1 0 0; 1 -1 0; 0 0 1], [1 -1 0; 0 -1 0; 0 0 1], [0 -1 0; -1 0 0; 0 0 1], [-1 0 0; -1 1 0; 0 0 1], [-1 1 0; 0 1 0; 0 0 1]]
-  translations: StaticArraysCore.SVector{3, Float64}[[0.0, 0.0, 0.0], [3.0814879110195774e-33, -5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 0.0, 0.5], [1.1102230246251565e-16, 5.551115123125782e-17, 0.0], [5.551115123125783e-17, 5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.5], [3.0814879110195774e-33, -5.551115123125782e-17, 0.0], [0.0, 0.0, 0.5], [5.551115123125783e-17, 5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 5.551115123125782e-17, 0.5], [1.1102230246251565e-16, 0.0, 0.0]]
+  spacegroup_number: 4
+  hall_number: 6
+  international_symbol: P2_1
+  hall_symbol: P 2yb
+  choice: b
+  transformation_matrix: [-0.9999999999999999 0.9999999999999999 0.0; -0.0 0.0 -0.9999999999999999; -1.0 0.0 0.0]
+  origin_shift: [0.0, 0.0, 0.0]
+  n_operations: 2
+  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1]]
+  translations: StaticArraysCore.SVector{3, Float64}[[-0.0, -0.0, -0.0], [-0.0, -0.0, 0.5]]
   n_atoms: 4
-  wyckoffs: [&#39;b&#39;, &#39;b&#39;, &#39;b&#39;, &#39;b&#39;]
-  site_symmetry_symbols: [&quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;]
+  wyckoffs: [&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;]
+  site_symmetry_symbols: [&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;]
   equivalent_atoms: Int32[0, 0, 2, 2]
   crystallographic_orbits: Int32[0, 0, 2, 2]
-  primitive_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
+  primitive_lattice: [-0.0 -3.111 -0.0; -2.6942050311733885 -1.1387050311733884 -0.0; -0.0 -0.0 -4.988]
   mapping_to_primitive: Int32[0, 1, 2, 3]
   n_std_atoms: 4
-  std_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
+  std_lattice: [2.6942050311733885 0.0 -1.1387050311733886; 0.0 4.988 0.0; 0.0 0.0 3.1110000000000007]
   std_types: Int32[1, 1, 2, 2]
-  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333333, 0.6666666666666666, 0.0], [0.6666666666666667, 0.3333333333333333, 0.5], [0.3333333333333333, 0.6666666666666666, 0.6181], [0.6666666666666667, 0.3333333333333333, 0.1181000000000001]]
-  std_rotation_matrix: [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
+  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333336, 0.0, 0.6666666666666667], [0.6666666666666664, 0.5, 0.33333333333333326], [0.3333333333333336, 0.3818999999999999, 0.6666666666666667], [0.6666666666666664, 0.8818999999999999, 0.33333333333333326]]
+  std_rotation_matrix: [0.0 1.0 0.0; 0.0 0.0 -1.0; -1.0 0.0 0.0]
   std_mapping_to_primitive: Int32[0, 1, 2, 3]
-  pointgroup_symbol: 6mm</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">186</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.international_symbol</code><code class="nohighlight hljs ansi" style="display:block;">&quot;P6_3mc&quot;</code></pre><h2 id="Julia&#39;s-results-are-different-from-Python&#39;s"><a class="docs-heading-anchor" href="#Julia&#39;s-results-are-different-from-Python&#39;s">Julia&#39;s results are different from Python&#39;s</a><a id="Julia&#39;s-results-are-different-from-Python&#39;s-1"></a><a class="docs-heading-anchor-permalink" href="#Julia&#39;s-results-are-different-from-Python&#39;s" title="Permalink"></a></h2><p>For the same reason, the returned results from Python, especially lattices, are transposed versions of those in Julia.</p><pre><code class="language-python hljs">&gt;&gt;&gt; dataset[&#39;primitive_lattice&#39;]
+  pointgroup_symbol: 2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.spacegroup_number</code><code class="nohighlight hljs ansi" style="display:block;">4</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.international_symbol</code><code class="nohighlight hljs ansi" style="display:block;">&quot;P2_1&quot;</code></pre><h2 id="Julia&#39;s-results-are-different-from-Python&#39;s"><a class="docs-heading-anchor" href="#Julia&#39;s-results-are-different-from-Python&#39;s">Julia&#39;s results are different from Python&#39;s</a><a id="Julia&#39;s-results-are-different-from-Python&#39;s-1"></a><a class="docs-heading-anchor-permalink" href="#Julia&#39;s-results-are-different-from-Python&#39;s" title="Permalink"></a></h2><p>For the same reason, the returned results from Python, especially lattices, are transposed versions of those in Julia.</p><pre><code class="language-python hljs">&gt;&gt;&gt; dataset[&#39;primitive_lattice&#39;]
 array([[ 3.111     ,  0.        ,  0.        ],
        [-1.5555    ,  2.69420503,  0.        ],
        [ 0.        ,  0.        ,  4.988     ]])
@@ -180,37 +180,37 @@ array([[ 3.111     ,  0.        ,  0.        ],
   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
-  spacegroup_number: 4
-  hall_number: 6
-  international_symbol: P2_1
-  hall_symbol: P 2yb
-  choice: b
-  transformation_matrix: [-0.9999999999999999 0.9999999999999999 0.0; -0.0 0.0 -0.9999999999999999; -1.0 0.0 0.0]
-  origin_shift: [0.0, 0.0, 0.0]
-  n_operations: 2
-  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1]]
-  translations: StaticArraysCore.SVector{3, Float64}[[-0.0, -0.0, -0.0], [-0.0, -0.0, 0.5]]
+  spacegroup_number: 186
+  hall_number: 480
+  international_symbol: P6_3mc
+  hall_symbol: P 6c -2c
+  choice:
+  transformation_matrix: [1.0 -5.551115123125783e-17 0.0; 0.0 0.9999999999999999 0.0; 0.0 0.0 0.9999999999999999]
+  origin_shift: [-5.551115123125783e-17, 0.0, 0.0]
+  n_operations: 12
+  rotations: StaticArraysCore.SMatrix{3, 3, Int32, 9}[[1 0 0; 0 1 0; 0 0 1], [1 -1 0; 1 0 0; 0 0 1], [0 -1 0; 1 -1 0; 0 0 1], [-1 0 0; 0 -1 0; 0 0 1], [-1 1 0; -1 0 0; 0 0 1], [0 1 0; -1 1 0; 0 0 1], [0 1 0; 1 0 0; 0 0 1], [1 0 0; 1 -1 0; 0 0 1], [1 -1 0; 0 -1 0; 0 0 1], [0 -1 0; -1 0 0; 0 0 1], [-1 0 0; -1 1 0; 0 0 1], [-1 1 0; 0 1 0; 0 0 1]]
+  translations: StaticArraysCore.SVector{3, Float64}[[0.0, 0.0, 0.0], [3.0814879110195774e-33, -5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 0.0, 0.5], [1.1102230246251565e-16, 5.551115123125782e-17, 0.0], [5.551115123125783e-17, 5.551115123125782e-17, 0.5], [5.551115123125783e-17, -5.551115123125782e-17, 0.5], [3.0814879110195774e-33, -5.551115123125782e-17, 0.0], [0.0, 0.0, 0.5], [5.551115123125783e-17, 5.551115123125782e-17, 0.0], [1.1102230246251565e-16, 5.551115123125782e-17, 0.5], [1.1102230246251565e-16, 0.0, 0.0]]
   n_atoms: 4
-  wyckoffs: [&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;]
-  site_symmetry_symbols: [&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;]
+  wyckoffs: [&#39;b&#39;, &#39;b&#39;, &#39;b&#39;, &#39;b&#39;]
+  site_symmetry_symbols: [&quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;, &quot;3m.&quot;]
   equivalent_atoms: Int32[0, 0, 2, 2]
   crystallographic_orbits: Int32[0, 0, 2, 2]
-  primitive_lattice: [-0.0 -3.111 -0.0; -2.6942050311733885 -1.1387050311733884 -0.0; -0.0 -0.0 -4.988]
+  primitive_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
   mapping_to_primitive: Int32[0, 1, 2, 3]
   n_std_atoms: 4
-  std_lattice: [2.6942050311733885 0.0 -1.1387050311733886; 0.0 4.988 0.0; 0.0 0.0 3.1110000000000007]
+  std_lattice: [3.111 -1.5555 0.0; 0.0 2.6942050311733885 0.0; 0.0 0.0 4.988]
   std_types: Int32[1, 1, 2, 2]
-  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333336, 0.0, 0.6666666666666667], [0.6666666666666664, 0.5, 0.33333333333333326], [0.3333333333333336, 0.3818999999999999, 0.6666666666666667], [0.6666666666666664, 0.8818999999999999, 0.33333333333333326]]
-  std_rotation_matrix: [0.0 1.0 0.0; 0.0 0.0 -1.0; -1.0 0.0 0.0]
+  std_positions: StaticArraysCore.SVector{3, Float64}[[0.3333333333333333, 0.6666666666666666, 0.0], [0.6666666666666667, 0.3333333333333333, 0.5], [0.3333333333333333, 0.6666666666666666, 0.6181], [0.6666666666666667, 0.3333333333333333, 0.1181000000000001]]
+  std_rotation_matrix: [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
   std_mapping_to_primitive: Int32[0, 1, 2, 3]
-  pointgroup_symbol: 2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.primitive_lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
- -0.0  -3.111  -0.0
- -2.6942050311733885  -1.1387050311733884  -0.0
- -0.0  -0.0  -4.988</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.std_lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
- 2.6942050311733885  0.0  -1.1387050311733886
- 0.0  4.988  0.0
- 0.0  0.0  3.1110000000000007</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; std_lattice_before_idealization =
+  pointgroup_symbol: 6mm</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.primitive_lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+ 3.111  -1.5555  0.0
+ 0.0  2.6942050311733885  0.0
+ 0.0  0.0  4.988</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset.std_lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+ 3.111  -1.5555  0.0
+ 0.0  2.6942050311733885  0.0
+ 0.0  0.0  4.988</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; std_lattice_before_idealization =
            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- -1.5555    0.0    -1.5555
-  2.69421   0.0    -2.69421
-  0.0      -4.988   0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 14 August 2023 22:35">Monday 14 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 3.111  -1.5555   0.0
+ 0.0     2.69421  0.0
+ 0.0     0.0      4.988</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 14 August 2023 22:45">Monday 14 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
