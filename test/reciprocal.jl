@@ -1726,6 +1726,13 @@ end
                 [-0.1, -0.1, -0.1],
             ]
         end
+        @testset "8×8×8" begin  # See https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L268-L273
+            mesh = [8, 8, 8]
+            nir, mapping, grid_address = get_ir_reciprocal_mesh(
+                rutile, mesh, shift; is_time_reversal=true, symprec=1e-5
+            )
+            @test nir == length(unique(mapping)) == 40  # Number of irreducible k-points
+        end
     end
 end
 
