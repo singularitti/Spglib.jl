@@ -1933,4 +1933,13 @@ end
         [0.28571429, 0.28571429, 0.42857143],
     ]
     @test length(list_points(mapping, grid_address, mesh, [0, 0, 0], false)) == 343
+    # From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L275-L280
+    @testset "Example from Python" begin
+        mesh = [9, 9, 8]
+        shift = [false, false, true]
+        nir, mapping, grid_address = get_ir_reciprocal_mesh(
+            MgB₂, mesh, shift; is_time_reversal=true, symprec=1e-5
+        )
+        @test nir == length(unique(mapping)) == 48  # Number of irreducible k-points
+    end
 end
