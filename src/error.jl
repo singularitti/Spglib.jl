@@ -19,11 +19,10 @@ struct SpglibError <: Exception
     msg::String
 end
 
-get_error_code() = ccall((:spg_get_error_code, libsymspg), SpglibReturnCode, ())
+get_error_code() = unsafe_string(@ccall libsymspg.spg_get_error_code::SpglibReturnCode())
 
-get_error_message(code::SpglibReturnCode) = unsafe_string(
-    ccall((:spg_get_error_message, libsymspg), Cstring, (SpglibReturnCode,), code)
-)
+get_error_message(code::SpglibReturnCode) =
+    unsafe_string(@ccall libsymspg.spg_get_error_message(code::SpglibReturnCode)::Cstring)
 
 function check_error()
     code = get_error_code()
