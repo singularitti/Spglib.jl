@@ -107,7 +107,8 @@ fractional coordinates and so it should be small like `1e-5`.
 function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
-    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
     )::Cint
