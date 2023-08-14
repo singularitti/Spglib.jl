@@ -12,13 +12,13 @@ function list_points(mapping, grid, mesh, shift, ir_only)
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L89-L99
-@testset "Test reciprocal mesh" begin
+@testset "Test reciprocal mesh using the example from `LibSymspg.jl`" begin
     lattice = [
         -2.0 2.0 2.0
         2.0 -2.0 2.0
         2.0 2.0 -2.0
     ]
-    positions = [0.0 0.0 0.0]'
+    positions = [[0.0, 0.0, 0.0]]
     atoms = [1]
     mesh = [4, 4, 4]
     is_shift = [0, 0, 0]
@@ -1726,6 +1726,13 @@ end
                 [-0.1, -0.1, -0.1],
             ]
         end
+        @testset "8×8×8" begin  # See https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L268-L273
+            mesh = [8, 8, 8]
+            nir, mapping, grid_address = get_ir_reciprocal_mesh(
+                rutile, mesh, shift; is_time_reversal=true, symprec=1e-5
+            )
+            @test nir == length(unique(mapping)) == 40  # Number of irreducible k-points
+        end
     end
 end
 
@@ -1868,6 +1875,19 @@ end
     ]
 end
 
+# From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L259-L266
+@testset "Test the primitive cell of silicon" begin
+    lattice = Lattice([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
+    positions = [[0, 0, 0], [0.25, 0.25, 0.25]]
+    atoms = [14, 14]
+    cell = Cell(lattice, positions, atoms)
+    mesh = [11, 11, 11]
+    nir, mapping, grid_address = get_ir_reciprocal_mesh(
+        cell, mesh; is_time_reversal=true, symprec=1e-5
+    )
+    @test length(unique(mapping)) == 56  # Number of irreducible k-points
+end
+
 @testset "Test MgB₂ structure" begin
     lattice = [[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]]
     positions = [[0, 0, 0], [0.33333333, 0.66666667, 0.5], [0.66666667, 0.33333333, 0.5]]
@@ -1913,4 +1933,13 @@ end
         [0.28571429, 0.28571429, 0.42857143],
     ]
     @test length(list_points(mapping, grid_address, mesh, [0, 0, 0], false)) == 343
+    # From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L275-L280
+    @testset "Example from Python" begin
+        mesh = [9, 9, 8]
+        shift = [false, false, true]
+        nir, mapping, grid_address = get_ir_reciprocal_mesh(
+            MgB₂, mesh, shift; is_time_reversal=true, symprec=1e-5
+        )
+        @test nir == length(unique(mapping)) == 48  # Number of irreducible k-points
+    end
 end
