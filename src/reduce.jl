@@ -23,10 +23,10 @@ and the matrix elements have to be almost integers.
 See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function niggli_reduce(lattice::Lattice, symprec=1e-5)
-    clattice = transpose(convert(Matrix{Cdouble}, lattice))
-    @ccall libsymspg.spg_niggli_reduce(clattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
+    niggli_lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    @ccall libsymspg.spg_niggli_reduce(niggli_lattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
     check_error()
-    return Lattice(transpose(clattice))
+    return Lattice(transpose(niggli_lattice))
 end
 function niggli_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
