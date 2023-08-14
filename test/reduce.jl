@@ -28,19 +28,19 @@ end
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/test/runtests.jl#L87-89
-@testset "Delaunay reduce" begin
+@testset "Test Delaunay reduction" begin
     lattice = Lattice([
-        4.0 0.0 0.0
-        20.0 2.0 0.0
-        0.0 0.0 12.0
+        4 0 0
+        20 2 0
+        0 0 12
+    ])  # Note in `LibSymspg.jl`, the lattice is transposed
+    @test delaunay_reduce(lattice, 1e-3) == Lattice([
+        0 -4 0
+        2 0 0
+        0 0 12
     ])
-    @test delaunay_reduce(lattice, 1e-3) ≈ [
-        0.0 -4.0 0.0
-        2.0 0.0 0.0
-        0.0 0.0 12.0
-    ]
     cell = Cell(lattice, [[0.0, 0.0, 0.0], [0.05, 0.05, 0.05]], [1, 1])
-    rcell = niggli_reduce(cell)
+    rcell = delaunay_reduce(cell)
     c1 = Ref(cell.lattice) .* cell.positions
     c2 = Ref(rcell.lattice) .* rcell.positions
     # Cartesian coordinates should remain the same
