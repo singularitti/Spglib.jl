@@ -47,8 +47,8 @@ function get_symmetry(cell::Cell, symprec=1e-5)
     )::Cint
     check_error()
     rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
-    ),
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
     map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
     return rotations, translations
 end
@@ -71,8 +71,8 @@ function get_symmetry_from_database(hall_number)
     )::Cint
     check_error()
     rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
-    ),
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:nsym]; dims=3)
+    ),  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
     map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
     return rotations, translations
 end
@@ -80,12 +80,14 @@ end
 function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
-    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
+    lattice, _, _, _ = _expand_cell(cell)
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         nsym::Cint,
-        Lattice(cell)::Ptr{Cdouble},
+        lattice::Ptr{Cdouble},
         symprec::Cdouble,
     )::SpglibSpacegroupType
     return convert(SpacegroupType, spgtype)
@@ -105,7 +107,8 @@ fractional coordinates and so it should be small like `1e-5`.
 function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
-    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
     )::Cint
