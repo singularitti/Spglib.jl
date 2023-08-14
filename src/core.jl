@@ -158,7 +158,7 @@ end
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
 """
-struct Dataset
+@struct_hash_equal_isequal struct Dataset
     spacegroup_number::Int32
     hall_number::Int32
     international_symbol::String
