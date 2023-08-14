@@ -1868,6 +1868,19 @@ end
     ]
 end
 
+# From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L259-L266
+@testset "Test the primitive cell of silicon" begin
+    lattice = Lattice([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
+    positions = [[0, 0, 0], [0.25, 0.25, 0.25]]
+    atoms = [14, 14]
+    cell = Cell(lattice, positions, atoms)
+    mesh = [11, 11, 11]
+    nir, mapping, grid_address = get_ir_reciprocal_mesh(
+        cell, mesh; is_time_reversal=true, symprec=1e-5
+    )
+    @test length(unique(mapping)) == 56  # Number of irreducible k-points
+end
+
 @testset "Test MgB₂ structure" begin
     lattice = [[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]]
     positions = [[0, 0, 0], [0.33333333, 0.66666667, 0.5], [0.66666667, 0.33333333, 0.5]]
