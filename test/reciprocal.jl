@@ -19,10 +19,10 @@ end
         2.0 2.0 -2.0
     ]
     positions = [0.0 0.0 0.0]'
-    types = [1]
+    atoms = [1]
     mesh = [4, 4, 4]
     is_shift = [0, 0, 0]
-    cell = Cell(lattice, positions, types)
+    cell = Cell(lattice, positions, atoms)
     nir, mapping, grid_address = get_ir_reciprocal_mesh(
         cell, mesh, is_shift; is_time_reversal=true, symprec=1e-5
     )
@@ -33,8 +33,8 @@ end
 @testset "Python example" begin
     lattice = [[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]] * 5.4
     positions = [[0.875, 0.875, 0.875], [0.125, 0.125, 0.125]]
-    types = [1, 1]
-    cell = Cell(lattice, positions, types)
+    atoms = [1, 1]
+    cell = Cell(lattice, positions, atoms)
     mesh = [8, 8, 8]
     @testset "No shifts" begin
         shift = [0, 0, 0]
@@ -1192,8 +1192,8 @@ end
         0.0 0.5 0.3 0.7 0.8 0.2
         0.0 0.5 0.0 0.0 0.5 0.5
     ]
-    types = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(lattice, positions, types)
+    atoms = [14, 14, 8, 8, 8, 8]
+    rutile = Cell(lattice, positions, atoms)
     @testset "No shift" begin
         shift = [0, 0, 0]
         mesh = [6, 6, 6]
@@ -1745,8 +1745,8 @@ end
         0.75 0.25 0.75
         0.75 0.75 0.25
     ]
-    types = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon_dist = Cell(lattice, positions, types)
+    atoms = [14, 14, 14, 14, 14, 14, 14, 14]
+    silicon_dist = Cell(lattice, positions, atoms)
     mesh = [6, 6, 6]
     nir, mapping, grid_address = get_ir_reciprocal_mesh(
         silicon_dist, mesh; is_time_reversal=true, symprec=1e-5
@@ -1871,8 +1871,8 @@ end
 @testset "Test MgB₂ structure" begin
     lattice = [[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]]
     positions = [[0, 0, 0], [0.33333333, 0.66666667, 0.5], [0.66666667, 0.33333333, 0.5]]
-    types = [12, 5, 5]
-    MgB₂ = Cell(lattice, positions, types)
+    atoms = [12, 5, 5]
+    MgB₂ = Cell(lattice, positions, atoms)
     mesh = [7, 7, 7]
     nir, mapping, grid_address = get_ir_reciprocal_mesh(
         MgB₂, mesh; is_time_reversal=true, symprec=1e-5
