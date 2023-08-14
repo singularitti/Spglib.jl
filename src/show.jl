@@ -24,6 +24,14 @@ function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
     end
     return nothing
 end
+function Base.show(io::IO, ::MIME"text/plain", spgtype::SpacegroupType)
+    summary(io, spgtype)
+    println(io)
+    for name in propertynames(spgtype)
+        println(io, "  ", name, ": ", getfield(spgtype, name))
+    end
+    return nothing
+end
 function Base.show(io::IO, ::MIME"text/plain", dataset::Dataset)
     summary(io, dataset)
     println(io)
