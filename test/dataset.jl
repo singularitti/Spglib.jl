@@ -153,6 +153,7 @@
         :arithmetic_crystal_class_number => 19,
         :arithmetic_crystal_class_symbol => "mmmC",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "D2h^18"
 end
 
@@ -282,6 +283,7 @@ end
         :arithmetic_crystal_class_number => 36,
         :arithmetic_crystal_class_symbol => "4/mmmP",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "D4h^14"
 end
 
@@ -384,6 +386,7 @@ end
         :arithmetic_crystal_class_number => 1,
         :arithmetic_crystal_class_symbol => "1P",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "C1^1"
 end
 
@@ -528,6 +531,7 @@ end
         :arithmetic_crystal_class_number => 49,
         :arithmetic_crystal_class_symbol => "-3m1P",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "D3d^3"
 end
 
@@ -1010,6 +1014,7 @@ end
         :arithmetic_crystal_class_number => 72,
         :arithmetic_crystal_class_symbol => "m-3mF",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "Oh^7"
 end
 
@@ -1193,6 +1198,7 @@ end
         :arithmetic_crystal_class_number => 72,
         :arithmetic_crystal_class_symbol => "m-3mF",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "Oh^7"
 end
 
@@ -1319,6 +1325,7 @@ end
         :arithmetic_crystal_class_number => 58,
         :arithmetic_crystal_class_symbol => "6/mmm",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "D6h^1"
 end
 
@@ -1444,5 +1451,6 @@ end
         :arithmetic_crystal_class_number => 55,
         :arithmetic_crystal_class_symbol => "6mmP",
     )  # Compared with Python results
+    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_schoenflies(cell, 1e-5) == "C6v^4"
 end
