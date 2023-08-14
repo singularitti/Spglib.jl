@@ -12,13 +12,13 @@ function list_points(mapping, grid, mesh, shift, ir_only)
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L89-L99
-@testset "Test reciprocal mesh" begin
+@testset "Test reciprocal mesh using the example from `LibSymspg.jl`" begin
     lattice = [
         -2.0 2.0 2.0
         2.0 -2.0 2.0
         2.0 2.0 -2.0
     ]
-    positions = [0.0 0.0 0.0]'
+    positions = [[0.0, 0.0, 0.0]]
     atoms = [1]
     mesh = [4, 4, 4]
     is_shift = [0, 0, 0]
