@@ -1,4 +1,4 @@
-export get_error_code, get_error_message, check_error
+export get_error_code, get_error_message
 
 # See https://www.mcobject.com/docs/Content/Programming/C/Return_Codes.htm or
 # https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
