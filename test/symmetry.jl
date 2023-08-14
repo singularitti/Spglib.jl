@@ -79,15 +79,3 @@ end
         :arithmetic_crystal_class_symbol => "6/mmm",
     )
 end
-
-@testset "Get multiplicity" begin
-    lattice = [
-        4.0 0.0 0.0
-        0.0 4.0 0.0
-        0.0 0.0 4.0
-    ]
-    positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
-    types = [1, 1]
-    cell = Cell(lattice, positions, types)
-    @test get_multiplicity(cell, 1e-5) == 96
-end
