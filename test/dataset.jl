@@ -139,19 +139,19 @@
         [0.5, 0.0, 0.5],
         [0.5, 0.0, 0.5],
     ]  # Compared with Python results
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 64,
-        :international_short => "Cmce",
-        :international_full => "C 2/m 2/c 2_1/e",
-        :international => "C m c e",
-        :schoenflies => "D2h^18",
-        :hall_number => 304,
-        :hall_symbol => "-C 2bc 2",
-        :choice => "",
-        :pointgroup_international => "mmm",
-        :pointgroup_schoenflies => "D2h",
-        :arithmetic_crystal_class_number => 19,
-        :arithmetic_crystal_class_symbol => "mmmC",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        64,
+        "Cmce",
+        "C 2/m 2/c 2_1/e",
+        "C m c e",
+        "D2h^18",
+        304,
+        "-C 2bc 2",
+        "",
+        "mmm",
+        "D2h",
+        19,
+        "mmmC",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -271,19 +271,19 @@ end
     @test dataset.std_types == [1, 1, 2, 2, 2, 2]  # 14, 14, 8, 8, 8, 8
     @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
     @test dataset.pointgroup_symbol == "4/mmm"
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 136,
-        :international_short => "P4_2/mnm",
-        :international_full => "P 4_2/m 2_1/n 2/m",
-        :international => "P 4_2/m n m",
-        :schoenflies => "D4h^14",
-        :hall_number => 419,
-        :hall_symbol => "-P 4n 2n",
-        :choice => "",
-        :pointgroup_international => "4/mmm",
-        :pointgroup_schoenflies => "D4h",
-        :arithmetic_crystal_class_number => 36,
-        :arithmetic_crystal_class_symbol => "4/mmmP",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        136,
+        "P4_2/mnm",
+        "P 4_2/m 2_1/n 2/m",
+        "P 4_2/m n m",
+        "D4h^14",
+        419,
+        "-P 4n 2n",
+        "",
+        "4/mmm",
+        "D4h",
+        36,
+        "4/mmmP",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -376,20 +376,8 @@ end
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
     @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 1,
-        :international_short => "P1",
-        :international_full => "P 1",
-        :international => "P 1",
-        :schoenflies => "C1^1",
-        :hall_number => 1,
-        :hall_symbol => "P 1",
-        :choice => "",
-        :pointgroup_international => "1",
-        :pointgroup_schoenflies => "C1",
-        :arithmetic_crystal_class_number => 1,
-        :arithmetic_crystal_class_symbol => "1P",
-    )  # Compared with Python results
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) ==
+        SpacegroupType(1, "P1", "P 1", "P 1", "C1^1", 1, "P 1", "", "1", "C1", 1, "1P")  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
@@ -523,19 +511,19 @@ end
     end
     @test dataset.std_mapping_to_primitive == [0, 1]
     @test dataset.pointgroup_symbol == "-3m"
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 164,
-        :international_short => "P-3m1",
-        :international_full => "P -3 2/m 1",
-        :international => "P -3 m 1",
-        :schoenflies => "D3d^3",
-        :hall_number => 456,
-        :hall_symbol => "-P 3 2\"",
-        :choice => "",
-        :pointgroup_international => "-3m",
-        :pointgroup_schoenflies => "D3d",
-        :arithmetic_crystal_class_number => 49,
-        :arithmetic_crystal_class_symbol => "-3m1P",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        164,
+        "P-3m1",
+        "P -3 2/m 1",
+        "P -3 m 1",
+        "D3d^3",
+        456,
+        "-P 3 2\"",
+        "",
+        "-3m",
+        "D3d",
+        49,
+        "-3m1P",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -1008,19 +996,19 @@ end
     end
     @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 227,
-        :international_short => "Fd-3m",
-        :international_full => "F 4_1/d -3 2/m",
-        :international => "F d -3 m",
-        :schoenflies => "Oh^7",
-        :hall_number => 525,
-        :hall_symbol => "F 4d 2 3 -1d",
-        :choice => "1",
-        :pointgroup_international => "m-3m",
-        :pointgroup_schoenflies => "Oh",
-        :arithmetic_crystal_class_number => 72,
-        :arithmetic_crystal_class_symbol => "m-3mF",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        227,
+        "Fd-3m",
+        "F 4_1/d -3 2/m",
+        "F d -3 m",
+        "Oh^7",
+        525,
+        "F 4d 2 3 -1d",
+        "1",
+        "m-3m",
+        "Oh",
+        72,
+        "m-3mF",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -1194,19 +1182,19 @@ end
     end
     @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 227,
-        :international_short => "Fd-3m",
-        :international_full => "F 4_1/d -3 2/m",
-        :international => "F d -3 m",
-        :schoenflies => "Oh^7",
-        :hall_number => 525,
-        :hall_symbol => "F 4d 2 3 -1d",
-        :choice => "1",
-        :pointgroup_international => "m-3m",
-        :pointgroup_schoenflies => "Oh",
-        :arithmetic_crystal_class_number => 72,
-        :arithmetic_crystal_class_symbol => "m-3mF",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        227,
+        "Fd-3m",
+        "F 4_1/d -3 2/m",
+        "F d -3 m",
+        "Oh^7",
+        525,
+        "F 4d 2 3 -1d",
+        "1",
+        "m-3m",
+        "Oh",
+        72,
+        "m-3mF",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -1323,19 +1311,19 @@ end
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
     @test dataset.std_mapping_to_primitive == 0:2
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 191,
-        :international_short => "P6/mmm",
-        :international_full => "P 6/m 2/m 2/m",
-        :international => "P 6/m m m",
-        :schoenflies => "D6h^1",
-        :hall_number => 485,
-        :hall_symbol => "-P 6 2",
-        :choice => "",
-        :pointgroup_international => "6/mmm",
-        :pointgroup_schoenflies => "D6h",
-        :arithmetic_crystal_class_number => 58,
-        :arithmetic_crystal_class_symbol => "6/mmm",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        191,
+        "P6/mmm",
+        "P 6/m 2/m 2/m",
+        "P 6/m m m",
+        "D6h^1",
+        485,
+        "-P 6 2",
+        "",
+        "6/mmm",
+        "D6h",
+        58,
+        "6/mmm",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
@@ -1451,19 +1439,19 @@ end
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
     @test dataset.std_mapping_to_primitive == 0:3  # FIXME: should I +1?
-    @test type2dict(get_spacegroup_type_from_symmetry(cell, 1e-5)) == Dict(
-        :number => 186,
-        :international_short => "P6_3mc",
-        :international_full => "P 6_3 m c",
-        :international => "P 6_3 m c",
-        :schoenflies => "C6v^4",
-        :hall_number => 480,
-        :hall_symbol => "P 6c -2c",
-        :choice => "",
-        :pointgroup_international => "6mm",
-        :pointgroup_schoenflies => "C6v",
-        :arithmetic_crystal_class_number => 55,
-        :arithmetic_crystal_class_symbol => "6mmP",
+    @test get_spacegroup_type_from_symmetry(cell, 1e-5) == SpacegroupType(
+        186,
+        "P6_3mc",
+        "P 6_3 m c",
+        "P 6_3 m c",
+        "C6v^4",
+        480,
+        "P 6c -2c",
+        "",
+        "6mm",
+        "C6v",
+        55,
+        "6mmP",
     )  # Compared with Python results
     @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
