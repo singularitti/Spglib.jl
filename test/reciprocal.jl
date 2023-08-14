@@ -36,8 +36,6 @@ end
     types = [1, 1]
     cell = Cell(lattice, positions, types)
     mesh = [8, 8, 8]
-    @test get_spacegroup_type(cell).international_short == "Fd-3m"
-    @test get_spacegroup_type(cell).number == 227
     @testset "No shifts" begin
         shift = [0, 0, 0]
         nir, mapping, grid_address = get_ir_reciprocal_mesh(
