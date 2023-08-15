@@ -39,7 +39,7 @@ The three values in the vector are given for the ``a``, ``b``, and ``c`` axes, r
 
 See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search.
 """
-function get_symmetry(cell::Cell, symprec=1e-5)
+function get_symmetry(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
     n = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
