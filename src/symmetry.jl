@@ -127,14 +127,14 @@ function get_symmetry_from_database(hall_number)
     # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
     rotations = Array{Cint,3}(undef, 3, 3, 192)
     translations = Array{Cdouble,2}(undef, 3, 192)
-    nsym = @ccall libsymspg.spg_get_symmetry_from_database(
+    num_sym = @ccall libsymspg.spg_get_symmetry_from_database(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, hall_number::Cint
     )::Cint
     check_error()
     rotations, translations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:nsym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
     ),  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
+    map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
     return rotations, translations
 end
 
@@ -171,8 +171,8 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
     if ptr == C_NULL
         check_error()
     else
-        raw = unsafe_load(ptr)
-        return convert(Dataset, raw)
+        dataset = unsafe_load(ptr)
+        return convert(Dataset, dataset)
     end
 end
 
@@ -212,8 +212,8 @@ function get_dataset_with_hall_number(
     if ptr == C_NULL
         check_error()
     else
-        raw = unsafe_load(ptr)
-        return convert(Dataset, raw)
+        dataset = unsafe_load(ptr)
+        return convert(Dataset, dataset)
     end
 end
 
@@ -226,7 +226,7 @@ An error is thrown when it fails.
 """
 function get_multiplicity(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
-    nsym = @ccall libsymspg.spg_get_multiplicity(
+    num_sym = @ccall libsymspg.spg_get_multiplicity(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
@@ -234,7 +234,7 @@ function get_multiplicity(cell::AbstractCell, symprec=1e-5)
         symprec::Cdouble,
     )::Cint
     check_error()
-    return nsym
+    return num_sym
 end
 
 """
