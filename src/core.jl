@@ -140,7 +140,7 @@ atomtypes(cell::SpglibCell) = unique(cell.atoms)
 """
     Lattice(cell::SpglibCell)
 
-Get the lattice of a `SpglibCell`.
+Get the lattice from a `cell`.
 """
 Lattice(cell::SpglibCell) = cell.lattice
 
