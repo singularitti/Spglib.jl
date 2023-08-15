@@ -241,6 +241,41 @@ end
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
 
+# Arguments
+- `spacegroup_number`: international space group number.
+- `hall_number`: Hall number. This number is used in
+  [`get_symmetry_from_database`](@ref) and [`get_spacegroup_type`](@ref).
+- `international_symbol`: international short symbol.
+- `hall_symbol`: Hall symbol.
+- `choice`: centring, origin, basis vector setting.
+- `transformation_matrix`: See the detail at
+  [Transformation matrix and origin shift](@ref).
+- `origin shift`: See the detail at
+  [Transformation matrix and origin shift](@ref).
+- `n_operations`: number of symmetry operations.
+- `rotations` and `translations`: rotation matrices and
+  translation vectors. See [`get_symmetry`](@ref) for more details.
+- `n_atoms`: number of atoms in the input unit cell.
+- `wyckoffs`: Wyckoff letters.
+- `site_symmetry_symbols`: site-symmetry symbols (experimental).
+- `equivalent_atoms`: mapping table to equivalent atoms.
+- `crystallographic_orbits` : mapping table to equivalent atoms (see
+  [Wyckoff positions and symmetrically equivalent atoms](@ref) for the difference
+  between `equivalent_atoms` and `crystallographic_orbits`).
+- `primitive_lattice` : basis vectors of a primitive cell.
+- `mapping_to_primitive`: mapping table to atoms in the primitive cell.
+- `n_std_atoms`: number of atoms in the standardized unit cell.
+- `std_lattice`, `std_positions`, `std_types`: standardized
+  crystal structure corresponding to the Hall symbol found. These are
+  equivalently given in the array formats of `lattice`,
+  `positions`, and `atoms` presented at [`SpglibCell`](@ref), respectively.
+- `std_rotation_matrix`: see the detail at
+  [Standardized crystal structure after idealization](@ref).
+- `std_mapping_to_primitive`: Mapping table from atoms in the
+  standardized crystal structure to the atoms in the primitive cell.
+- `pointgroup_symbol`: symbol of the crystallographic point group in
+  the Hermann–Mauguin notation.
+
 See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
 """
 @struct_hash_equal_isequal struct Dataset
