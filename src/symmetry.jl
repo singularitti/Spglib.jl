@@ -37,6 +37,16 @@ vector ``\\text{w}`` are used as follows:
 
 The three values in the vector are given for the ``a``, ``b``, and ``c`` axes, respectively.
 
+As an exceptional case, if a supercell (or non-primitive cell) has the
+basis vectors whose lattice breaks crystallographic point group, the
+crystallographic symmetry operations are searched within this broken
+symmetry, i.e., at most the crystallographic point group found in this
+case is the point group of the lattice. For example, this happens for
+the ``2\\times 1\\times 1`` supercell of a conventional cubic unit
+cell. This may not be understandable in crystallographic sense, but is
+practically useful treatment for research in computational materials
+science.
+
 See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search.
 """
 function get_symmetry(cell::AbstractCell, symprec=1e-5)
