@@ -1,3 +1,14 @@
+export get_symmetry,
+    get_symmetry_from_database,
+    get_dataset,
+    get_dataset_with_hall_number,
+    get_multiplicity,
+    get_international,
+    get_schoenflies,
+    get_spacegroup_type,
+    get_spacegroup_type_from_symmetry,
+    get_hall_number_from_symmetry
+
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 """
     get_symmetry(cell::Cell, symprec=1e-5)
@@ -77,65 +88,6 @@ function get_symmetry_from_database(hall_number)
     return rotations, translations
 end
 
-function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
-    nsym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
-    lattice, _, _, _ = _expand_cell(cell)
-    spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
-        rotations::Ptr{Cint},
-        translations::Ptr{Cdouble},
-        nsym::Cint,
-        lattice::Ptr{Cdouble},
-        symprec::Cdouble,
-    )::SpglibSpacegroupType
-    return convert(SpacegroupType, spgtype)
-end
-
-"""
-    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
-
-Obtain `hall_number` from the set of symmetry operations.
-
-This is expected to work well for the set of symmetry operations whose
-distortion is small. The aim of making this feature is to find space-group-type
-for the set of symmetry operations given by the other source than spglib. Note
-that the definition of `symprec` is different from usual one, but is given in the
-fractional coordinates and so it should be small like `1e-5`.
-"""
-function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
-    nsym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
-    hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
-        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
-    )::Cint
-    check_error()
-    return hall_number
-end
-
-@deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
-
-"""
-    get_multiplicity(cell::Cell, symprec=1e-5)
-
-Return the exact number of symmetry operations. An error is thrown when it fails.
-"""
-function get_multiplicity(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
-    nsym = @ccall libsymspg.spg_get_multiplicity(
-        lattice::Ptr{Cdouble},
-        positions::Ptr{Cdouble},
-        atoms::Ptr{Cint},
-        natoms(cell)::Cint,
-        symprec::Cdouble,
-    )::Cint
-    check_error()
-    return nsym
-end
-
 """
     get_dataset(cell::Cell, symprec=1e-5)
 
@@ -184,15 +136,21 @@ function get_dataset_with_hall_number(
 end
 
 """
-    get_spacegroup_type(hall_number::Integer)
+    get_multiplicity(cell::Cell, symprec=1e-5)
 
-Translate Hall number to space group type information.
+Return the exact number of symmetry operations. An error is thrown when it fails.
 """
-function get_spacegroup_type(hall_number::Integer)
-    spgtype = @ccall libsymspg.spg_get_spacegroup_type(
-        hall_number::Cint
-    )::SpglibSpacegroupType
-    return convert(SpacegroupType, spgtype)
+function get_multiplicity(cell::AbstractCell, symprec=1e-5)
+    lattice, positions, atoms = _expand_cell(cell)
+    nsym = @ccall libsymspg.spg_get_multiplicity(
+        lattice::Ptr{Cdouble},
+        positions::Ptr{Cdouble},
+        atoms::Ptr{Cint},
+        natoms(cell)::Cint,
+        symprec::Cdouble,
+    )::Cint
+    check_error()
+    return nsym
 end
 
 """
@@ -234,3 +192,56 @@ function get_schoenflies(cell::AbstractCell, symprec=1e-5)
     check_error()
     return tostring(symbol)
 end
+
+"""
+    get_spacegroup_type(hall_number::Integer)
+
+Translate Hall number to space group type information.
+"""
+function get_spacegroup_type(hall_number::Integer)
+    spgtype = @ccall libsymspg.spg_get_spacegroup_type(
+        hall_number::Cint
+    )::SpglibSpacegroupType
+    return convert(SpacegroupType, spgtype)
+end
+
+function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
+    lattice, _, _, _ = _expand_cell(cell)
+    spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
+        rotations::Ptr{Cint},
+        translations::Ptr{Cdouble},
+        nsym::Cint,
+        lattice::Ptr{Cdouble},
+        symprec::Cdouble,
+    )::SpglibSpacegroupType
+    return convert(SpacegroupType, spgtype)
+end
+
+"""
+    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
+
+Obtain `hall_number` from the set of symmetry operations.
+
+This is expected to work well for the set of symmetry operations whose
+distortion is small. The aim of making this feature is to find space-group-type
+for the set of symmetry operations given by the other source than spglib. Note
+that the definition of `symprec` is different from usual one, but is given in the
+fractional coordinates and so it should be small like `1e-5`.
+"""
+function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    rotations, translations = get_symmetry(cell, symprec)
+    nsym = length(translations)
+    rotations, translations = cat(transpose.(rotations)...; dims=3),
+    reduce(hcat, translations)
+    hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
+    )::Cint
+    check_error()
+    return hall_number
+end
+
+@deprecate get_hall_number_from_symmetry get_spacegroup_type_from_symmetry
