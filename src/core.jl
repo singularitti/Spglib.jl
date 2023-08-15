@@ -123,8 +123,18 @@ SpglibCell(cell::CrystallographyCell, magmoms) =
     SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 const Cell = SpglibCell
 
+"""
+    natoms(cell::SpglibCell)
+
+Return the number of atoms in the specified `cell`.
+"""
 natoms(cell::SpglibCell) = length(cell.atoms)
 
+"""
+    atomtypes(cell::SpglibCell)
+
+Return the unique atom types in the specified `cell`.
+"""
 atomtypes(cell::SpglibCell) = unique(cell.atoms)
 
 """

@@ -48,6 +48,8 @@ You can find their official documentation [on this page](https://spglib.github.i
 
 ```@docs
 basis_vectors
+natoms
+atomtypes
 get_symmetry
 get_symmetry_from_database
 get_dataset
