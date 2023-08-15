@@ -77,8 +77,8 @@ end
         [0.5, 0.84688439, 0.3796867],
         [0.5, 0.65311561, 0.8796867],
     ]
-    numbers = fill(35, length(positions))
-    cell = Cell(lattice, positions, numbers)
+    atoms = fill(35, length(positions))
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-5)
     # Compared with documented results
     @test dataset.spacegroup_number == 64
@@ -236,8 +236,8 @@ end
         [0.2, 0.8, 0.5],
         [0.8, 0.2, 0.5],
     ]
-    types = [14, 14, 8, 8, 8, 8]
-    cell = Cell(lattice, positions, types)
+    atoms = [14, 14, 8, 8, 8, 8]
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-5)
     @test dataset.spacegroup_number == 136
     @test dataset.hall_number == 419
@@ -368,8 +368,8 @@ end
         [0.2, 0.8, 0.5],
         [0.8, 0.2, 0.5],
     ]
-    types = [14, 14, 8, 8, 8, 8]
-    cell = Cell(lattice, positions, types)
+    atoms = [14, 14, 8, 8, 8, 8]
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-5)
     # These results are compared with Python's spglib results.
     @test dataset.spacegroup_number == 1
@@ -606,8 +606,8 @@ end
         [0.75, 0.25, 0.75],
         [0.75, 0.75, 0.25],
     ]
-    types = [14, 14, 14, 14, 14, 14, 14, 14]
-    cell = Cell(lattice, positions, types)
+    atoms = [14, 14, 14, 14, 14, 14, 14, 14]
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-5)
     # Compared with Python results
     @test dataset.spacegroup_number == 227
@@ -1265,13 +1265,13 @@ end
 end
 
 # From https://github.com/spglib/spglib/blob/ddcc153/example/python_api/example_full.py#L111-L117
-@testset "Test MgB2 structure" begin
+@testset "Test MgB₂ structure" begin
     a = 3.07
     c = 3.52
     lattice = [[a, 0, 0], [-a / 2, a / 2 * sqrt(3), 0], [0, 0, c]]
     positions = [[0, 0, 0], [1 / 3, 2 / 3, 1 / 2], [2 / 3, 1 / 3, 1 / 2]]
-    types = [12, 5, 5]
-    cell = Cell(lattice, positions, types)
+    atoms = [12, 5, 5]
+    cell = Cell(lattice, positions, atoms)
     dataset = get_dataset(cell, 1e-5)
     @test dataset.spacegroup_number == 191  # Compared with C results
     @test dataset.hall_number == 485

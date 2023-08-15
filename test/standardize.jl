@@ -13,8 +13,8 @@ using Spglib: SpglibError
         [0.5, 0.84688439, 0.3796867],
         [0.5, 0.65311561, 0.8796867],
     ]
-    types = fill(8, length(positions))
-    cell = Cell(lattice, positions, types)
+    atoms = fill(8, length(positions))
+    cell = Cell(lattice, positions, atoms)
     primitive_cell = find_primitive(cell)
     # Write transformation matrix directly
     @test primitive_cell.lattice ==
@@ -52,8 +52,8 @@ end
         [0.5, 0.84688439, 0.3796867],
         [0.5, 0.65311561, 0.8796867],
     ]
-    types = fill(8, length(positions))
-    cell = Cell(lattice, positions, types)
+    atoms = fill(8, length(positions))
+    cell = Cell(lattice, positions, atoms)
     primitive_cell = find_primitive(cell)
     # Compare with documented results
     @test cell.lattice * [
@@ -99,8 +99,8 @@ end
             0.0 0.5
             0.0 0.5
         ]
-        types = [1, 1]
-        cell = Cell(lattice, positions, types)
+        atoms = [1, 1]
+        cell = Cell(lattice, positions, atoms)
         new_cell = find_primitive(cell, 1e-5)
         @test new_cell.lattice ≈ [
             -2.0 2.0 2.0
@@ -117,8 +117,8 @@ end
             2.0 2.0 -2.0
         ]
         positions = [0.0 0.0 0.0]'
-        types = [1]
-        cell = Cell(lattice, positions, types)
+        atoms = [1]
+        cell = Cell(lattice, positions, atoms)
         new_cell = refine_cell(cell, 1e-5)
         @test new_cell.lattice ≈ [
             4.0 0.0 0.0
@@ -142,8 +142,8 @@ end
         0.0 6.0 6.0
     ]
     positions = [[0.0, 0.0, 0.0], [0.75, 0.75, 0.75], [0.5, 0.5, 0.5]]
-    types = ["Na", "Na", "Cl"]
-    cell = Cell(lattice, positions, types)
+    atoms = ["Na", "Na", "Cl"]
+    cell = Cell(lattice, positions, atoms)
     @test_throws SpglibError find_primitive(cell)
     @test_throws SpglibError standardize_cell(cell, to_primitive=true)
 end
