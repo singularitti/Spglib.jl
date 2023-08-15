@@ -2,26 +2,35 @@ export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh
 
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
 """
-    get_ir_reciprocal_mesh(cell::Cell, mesh, is_shift=falses(3); is_time_reversal=true, symprec=1e-5)
+    get_ir_reciprocal_mesh(cell::AbstractCell, mesh, symprec=1e-5; is_shift=falses(3), is_time_reversal=true)
 
 Return k-points mesh and k-point map to the irreducible k-points.
 
 Irreducible reciprocal grid points are searched from uniform
 mesh grid points specified by `mesh` and `is_shift`.
-`mesh` stores three integers. Reciprocal primitive vectors
-are divided by the number stored in `mesh` with (0,0,0) point
-centering. The centering can be shifted only half of one mesh
-by setting `1` or `true` for each `is_shift` element. If `0` or `false` is set for
-`is_shift`, it means there is no shift. This limitation of
+`mesh` stores three integers.
+
+Reciprocal primitive vectors are divided by the number stored in `mesh` with ``(0, 0, 0)``-centering.
+The center of grid mesh is shifted half of a grid spacing along corresponding reciprocal axis
+by setting `1` or `true` to each `is_shift` element. If `0` or `false` is set to each
+`is_shift` element, there is no shift. This limitation of
 shifting enables the irreducible k-point search significantly
 faster when the mesh is very dense.
 
-The reducible uniform grid points are returned in reduced
+The reducible uniform grid points are returned in fractional
 coordinates as `grid_address`. A map between reducible and
-irreducible points are returned as `grid_mapping_table` as in the indices of
-`grid_address`. The number of the irreducible k-points are
-returned as the return value. The time reversal symmetry is
-imposed by setting `is_time_reversal`.
+irreducible points are returned as `ir_mapping_table` as in the indices of
+`grid_address`. The number of the irreducible k-points are also
+returned. The time reversal symmetry is imposed by setting `is_time_reversal=true`.
+
+# Arguments
+- `cell`: the input cell.
+- `mesh`: the mesh numbers along each reciprocal axis. It is given by three integers.
+- `symprec`: the tolerance for symmetry search.
+- `is_shift`: a 3-Boolean vector. When `is_shift` is set for each reciprocal primitive axis,
+  the mesh is shifted along the axis in half of adjacent mesh points irrespective of the
+  mesh numbers.
+- `is_time_reversal`: whether to impose the time reversal symmetry.
 
 !!! compat "Version 0.2"
     The returned mapping table is indexed starting at `1`, not `0` as in Python or C.
