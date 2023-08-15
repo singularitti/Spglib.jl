@@ -162,6 +162,13 @@ function _expand_cell(cell::SpglibCell)
     end
     return lattice, positions, atoms, magmoms
 end
+function _expand_cell(cell::CrystallographyCell)
+    lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
+    positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    atoms = collect(Cint, findfirst(isequal(u), unique(atoms)) for u in atoms)
+    return lattice, positions, atoms
+end
 
 # This is an internal type, do not export!
 struct SpglibSpacegroupType
