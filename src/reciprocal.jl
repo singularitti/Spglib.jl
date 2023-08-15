@@ -27,11 +27,11 @@ imposed by setting `is_time_reversal`.
     The returned mapping table is indexed starting at `1`, not `0` as in Python or C.
 """
 function get_ir_reciprocal_mesh(
-    cell::AbstractCell, mesh, is_shift=falses(3); is_time_reversal=true, symprec=1e-5
+    cell::AbstractCell, mesh, symprec=1e-5; is_shift=falses(3), is_time_reversal=true
 )
     # Reference: https://github.com/unkcpz/LibSymspg.jl/blob/e912dd3/src/ir-mesh-api.jl#L1-L32
     if !(length(mesh) == length(is_shift) == 3)
-        throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
+        throw(DimensionMismatch("`mesh` & `is_shift` must be both length-three vectors!"))
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
@@ -39,10 +39,10 @@ function get_ir_reciprocal_mesh(
     mesh = Base.cconvert(Vector{Cint}, mesh)
     is_shift = Base.cconvert(Vector{Cint}, is_shift)
     # Prepare for output
-    nk = prod(mesh)
-    grid_address = Matrix{Cint}(undef, 3, nk)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
-    ir_mapping_table = Vector{Cint}(undef, nk)
-    nir = @ccall libsymspg.spg_get_ir_reciprocal_mesh(
+    num_k = prod(mesh)
+    grid_address = Matrix{Cint}(undef, 3, num_k)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
+    ir_mapping_table = Vector{Cint}(undef, num_k)
+    num_ir = @ccall libsymspg.spg_get_ir_reciprocal_mesh(
         grid_address::Ptr{Cint},
         ir_mapping_table::Ptr{Cint},
         mesh::Ptr{Cint},
@@ -56,7 +56,7 @@ function get_ir_reciprocal_mesh(
     )::Cint
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return nir, ir_mapping_table, grid_address
+    return num_ir, ir_mapping_table, grid_address
 end
 
 function get_stabilized_reciprocal_mesh(
