@@ -333,14 +333,16 @@ function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
 end
 
 """
-    get_hall_number_from_symmetry(rotation::AbstractArray{T,3}, translation::AbstractMatrix, num_operations::Integer, symprec=1e-5) where {T}
+    get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
 
 Obtain `hall_number` from the set of symmetry operations.
 
 This is expected to work well for the set of symmetry operations whose
-distortion is small. The aim of making this feature is to find space-group-type
-for the set of symmetry operations given by the other source than spglib. Note
-that the definition of `symprec` is different from usual one, but is given in the
+distortion is small. The aim of making this feature is to find
+space-group-type for the set of symmetry operations given by the other
+source than Spglib.
+
+Note that the definition of `symprec` is different from usual one, but is given in the
 fractional coordinates and so it should be small like `1e-5`.
 
 !!! warning
@@ -348,11 +350,11 @@ fractional coordinates and so it should be small like `1e-5`.
 """
 function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
-    nsym = length(translations)
+    num_sym = length(translations)
     rotations, translations = cat(transpose.(rotations)...; dims=3),
     reduce(hcat, translations)
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
-        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, nsym::Cint, symprec::Cdouble
+        rotations::Ptr{Cint}, translations::Ptr{Cdouble}, num_sym::Cint, symprec::Cdouble
     )::Cint
     check_error()
     return hall_number
