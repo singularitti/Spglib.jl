@@ -10,17 +10,81 @@ export Lattice,
 const basis_vectors = basisvectors  # For backward compatibility
 
 """
-    Cell(lattice, positions, types, magmoms=zeros(length(types)))
+    SpglibCell(lattice, positions, atoms, magmoms=[])
 
-The basic input data type of `Spglib`.
+Represent a unit cell with specified lattice, positions, atoms, and magnetic moments.
 
-Lattice parameters `lattice` are given by a ``3×3`` matrix with floating point values,
-where ``𝐚``, ``𝐛``, and ``𝐜`` are given as columns.
-Fractional atomic positions `positions` are given
-by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
-Numbers to distinguish atomic species `types` are given by a list of ``N`` integers.
-The collinear polarizations `magmoms` only work with `get_symmetry` and are given
-as a list of ``N`` floating point values, or a vector of vectors.
+# Arguments
+- `lattice`: lattice of the unit cell. Lattice parameters are given by a ``3×3``
+  matrix with floating point values, where ``𝐚``, ``𝐛``, and ``𝐜`` are stored as columns.
+  You could also give a vector of 3-vectors, where each vector is a lattice vector.
+  See [Basis vectors](@ref) for our conventions and [`Lattice`](@ref) for more examples.
+- `positions`: positions of the atoms in the unit cell.
+  Fractional atomic positions are given by a vector of ``N`` 3-vectors with floating point
+  values, where ``N`` is the number of atoms.
+- `atoms`: ``N`` atoms present in the unit cell.
+- `magmoms=[]`: magnetic moments on atoms in the unit cell (optional).
+  It can be either a vector of ``N`` floating point values for collinear cases or
+  a vector of 3-vectors in cartesian coordinates for non-collinear cases.
+
+See also [`Lattice`](@ref).
+
+# Examples
+```jldoctest
+julia> lattice = Lattice([
+    [5.0759761474456697, 5.0759761474456697, 0],
+    [-2.8280307701821314, 2.8280307701821314, 0],
+    [0, 0, 8.57154746],
+]);
+
+julia> positions = [
+    [0.0, 0.84688439, 0.1203133],
+    [0.0, 0.65311561, 0.6203133],
+    [0.0, 0.34688439, 0.3796867],
+    [0.0, 0.15311561, 0.8796867],
+    [0.5, 0.34688439, 0.1203133],
+    [0.5, 0.15311561, 0.6203133],
+    [0.5, 0.84688439, 0.3796867],
+    [0.5, 0.65311561, 0.8796867],
+];
+
+julia> atoms = fill(35, length(positions));
+
+julia> cell = SpglibCell(lattice, positions, atoms);
+
+julia> lattice = Lattice([
+           4 0 0
+           0 4 0
+           0 0 3
+       ]);
+
+julia> positions = [
+           [0.0, 0.0, 0.0],
+           [0.5, 0.5, 0.5],
+           [0.3, 0.3, 0.0],
+           [0.7, 0.7, 0.0],
+           [0.2, 0.8, 0.5],
+           [0.8, 0.2, 0.5],
+       ];
+
+julia> atoms = [14, 14, 8, 8, 8, 8];
+
+julia> cell = SpglibCell(lattice, positions, atoms);
+
+julia> lattice = [
+           4.0 0.0 0.0
+           0.0 4.0 0.0
+           0.0 0.0 4.0
+       ];
+
+julia> positions = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]];
+
+julia> atoms = [1, 1];
+
+julia> magmoms = [1.0, 1.0];
+
+julia> cell = SpglibCell(lattice, positions, atoms, magmoms);
+```
 """
 @struct_hash_equal_isequal struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
