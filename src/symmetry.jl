@@ -125,6 +125,7 @@ julia> get_symmetry_from_database(304);
 """
 function get_symmetry_from_database(hall_number)
     # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
+    @assert 1 <= hall_number <= 530
     rotations = Array{Cint,3}(undef, 3, 3, 192)
     translations = Array{Cdouble,2}(undef, 3, 192)
     num_sym = @ccall libsymspg.spg_get_symmetry_from_database(
@@ -200,6 +201,7 @@ crystallographic setting is not obtained.
 function get_dataset_with_hall_number(
     cell::AbstractCell, hall_number::Integer, symprec=1e-5
 )
+    @assert 1 <= hall_number <= 530
     lattice, positions, atoms = _expand_cell(cell)
     ptr = @ccall libsymspg.spg_get_dataset_with_hall_number(
         lattice::Ptr{Cdouble},
@@ -282,7 +284,8 @@ end
 
 Translate Hall number to space group type information.
 """
-function get_spacegroup_type(hall_number::Integer)
+function get_spacegroup_type(hall_number)
+    @assert 1 <= hall_number <= 530
     spgtype = @ccall libsymspg.spg_get_spacegroup_type(
         hall_number::Cint
     )::SpglibSpacegroupType
