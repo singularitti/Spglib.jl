@@ -183,6 +183,8 @@ end
     SpacegroupType(number, international_short, international_full, international, schoenflies, hall_number, hall_symbol, choice, pointgroup_international, pointgroup_schoenflies, arithmetic_crystal_class_number, arithmetic_crystal_class_symbol)
 
 Represent `SpglibSpacegroupType`, see its [official documentation](https://spglib.github.io/spglib/api.html#spg-get-spacegroup-type).
+
+See also [`get_spacegroup_type`](@ref), [`get_spacegroup_type_from_symmetry`](@ref).
 """
 struct SpacegroupType
     number::Int32
@@ -231,6 +233,8 @@ end
     Dataset(spacegroup_number, hall_number, international_symbol, hall_symbol, choice, transformation_matrix, origin_shift, n_operations, rotations, translations, n_atoms, wyckoffs, site_symmetry_symbols, equivalent_atoms, crystallographic_orbits, primitive_lattice, mapping_to_primitive, n_std_atoms, std_lattice, std_types, std_positions, std_rotation_matrix, std_mapping_to_primitive, pointgroup_symbol)
 
 Represent `SpglibDataset`, see its [official documentation](https://spglib.github.io/spglib/dataset.html#spglib-dataset).
+
+See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
 """
 @struct_hash_equal_isequal struct Dataset
     spacegroup_number::Int32
