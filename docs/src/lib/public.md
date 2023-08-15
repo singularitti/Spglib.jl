@@ -35,7 +35,8 @@ relative to basis vectors. So when constructing a `Cell`:
 - The `types` variable corresponds to different atomic types.
 
 ```@docs
-Cell
+Lattice
+SpglibCell
 Dataset
 SpacegroupType
 ```
@@ -48,19 +49,21 @@ You can find their official documentation [on this page](https://spglib.github.i
 ```@docs
 basis_vectors
 get_symmetry
-get_hall_number_from_symmetry
+get_symmetry_from_database
 get_dataset
 get_dataset_with_hall_number
-get_spacegroup_type
-get_symmetry_from_database
+get_multiplicity
 get_international
 get_schoenflies
+get_spacegroup_type
+get_spacegroup_type_from_symmetry
+get_hall_number_from_symmetry
 standardize_cell
 find_primitive
 refine_cell
 niggli_reduce
 delaunay_reduce
-get_multiplicity
 get_ir_reciprocal_mesh
+get_stabilized_reciprocal_mesh
 get_version
 ```
