@@ -11,7 +11,7 @@ export get_symmetry,
 
 # See https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L115-L165
 """
-    get_symmetry(cell::Cell, symprec=1e-5)
+    get_symmetry(cell::AbstractCell, symprec=1e-5)
 
 Return the symmetry operations (rotations, translations) of a `cell`.
 
@@ -48,6 +48,34 @@ practically useful treatment for research in computational materials
 science.
 
 See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search.
+
+# Examples
+```jldoctest
+julia> lattice = Lattice([
+    [5.0759761474456697, 5.0759761474456697, 0],
+    [-2.8280307701821314, 2.8280307701821314, 0],
+    [0, 0, 8.57154746],
+]);
+
+julia> positions = [
+    [0.0, 0.84688439, 0.1203133],
+    [0.0, 0.65311561, 0.6203133],
+    [0.0, 0.34688439, 0.3796867],
+    [0.0, 0.15311561, 0.8796867],
+    [0.5, 0.34688439, 0.1203133],
+    [0.5, 0.15311561, 0.6203133],
+    [0.5, 0.84688439, 0.3796867],
+    [0.5, 0.65311561, 0.8796867],
+];
+
+julia> atoms = fill(35, length(positions));
+
+julia> cell = SpglibCell(lattice, positions, atoms);
+
+julia> rotations, translations = get_symmetry(cell);
+
+julia> size(rotations) == size(translations) == (16,)
+```
 """
 function get_symmetry(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
@@ -82,6 +110,18 @@ Return the symmetry operations given a `hall_number`.
 This function allows to directly access to the space group operations in the
 `spglib` database. To specify the space group type with a specific choice,
 `hall_number` is used.
+
+The definition of `hall_number` is found at
+[Space group type](https://spglib.readthedocs.io/en/latest/dataset.html#dataset-spg-get-dataset-spacegroup-type).
+
+The serial number from ``1`` to ``530`` which are found at
+[list of space groups (Seto's web site)](https://yseto.net/?page_id=29%3E). Be
+sure that this is not a standard crystallographic definition.
+
+# Examples
+```jldoctest
+julia> get_symmetry_from_database(304);
+```
 """
 function get_symmetry_from_database(hall_number)
     # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
@@ -99,9 +139,25 @@ function get_symmetry_from_database(hall_number)
 end
 
 """
-    get_dataset(cell::Cell, symprec=1e-5)
+    get_dataset(cell::AbstractCell, symprec=1e-5)
 
 Search symmetry operations of an input unit cell structure.
+
+For an input unit cell structure, symmetry operations of the crystal
+are searched. Then they are compared with the crystallographic
+database and the space group type is determined.  The result is
+returned as the `Dataset` structure as a dataset.
+
+The detail of the dataset is given at [`Dataset`](@ref).
+
+Dataset corresponding to the space group type in the standard setting
+is obtained by `get_dataset`. Here the standard setting means
+the first top one among the Hall symbols listed for each space group
+type. For example, H setting (hexagonal lattice) is chosen for
+rhombohedral crystals. [`get_dataset_with_hall_number`](@ref) explained
+below is used to choose different settings such as R setting of
+rhombohedral crystals. In this function, the other
+crystallographic setting is not obtained.
 """
 function get_dataset(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
@@ -121,9 +177,25 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
 end
 
 """
-    get_dataset_with_hall_number(cell::Cell, hall_number::Integer, symprec=1e-5)
+    get_dataset_with_hall_number(cell::AbstractCell, hall_number::Integer, symprec=1e-5)
 
 Search symmetry operations of an input unit cell structure, using a given Hall number.
+
+For an input unit cell structure, symmetry operations of the crystal
+are searched. Then they are compared with the crystallographic
+database and the space group type is determined.  The result is
+returned as the `Dataset` structure as a dataset.
+
+The detail of the dataset is given at [`Dataset`](@ref).
+
+Dataset corresponding to the space group type in the standard setting
+is obtained by `get_dataset`. Here the standard setting means
+the first top one among the Hall symbols listed for each space group
+type. For example, H setting (hexagonal lattice) is chosen for
+rhombohedral crystals. [`get_dataset_with_hall_number`](@ref) explained
+below is used to choose different settings such as R setting of
+rhombohedral crystals. In this function, the other
+crystallographic setting is not obtained.
 """
 function get_dataset_with_hall_number(
     cell::AbstractCell, hall_number::Integer, symprec=1e-5
@@ -146,9 +218,11 @@ function get_dataset_with_hall_number(
 end
 
 """
-    get_multiplicity(cell::Cell, symprec=1e-5)
+    get_multiplicity(cell::AbstractCell, symprec=1e-5)
 
-Return the exact number of symmetry operations. An error is thrown when it fails.
+Return the exact number of symmetry operations.
+
+An error is thrown when it fails.
 """
 function get_multiplicity(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms = _expand_cell(cell)
@@ -164,7 +238,7 @@ function get_multiplicity(cell::AbstractCell, symprec=1e-5)
 end
 
 """
-    get_international(cell::Cell, symprec=1e-5)
+    get_international(cell::AbstractCell, symprec=1e-5)
 
 Return the space group type in Hermann–Mauguin (international) notation.
 """
@@ -184,7 +258,7 @@ function get_international(cell::AbstractCell, symprec=1e-5)
 end
 
 """
-    get_schoenflies(cell::Cell, symprec=1e-5)
+    get_schoenflies(cell::AbstractCell, symprec=1e-5)
 
 Return the space group type in Schoenflies notation.
 """
@@ -204,7 +278,7 @@ function get_schoenflies(cell::AbstractCell, symprec=1e-5)
 end
 
 """
-    get_spacegroup_type(hall_number::Integer)
+    get_spacegroup_type(hall_number)
 
 Translate Hall number to space group type information.
 """
@@ -241,6 +315,9 @@ distortion is small. The aim of making this feature is to find space-group-type
 for the set of symmetry operations given by the other source than spglib. Note
 that the definition of `symprec` is different from usual one, but is given in the
 fractional coordinates and so it should be small like `1e-5`.
+
+!!! warning
+    This function will be replaced by [`get_spacegroup_type_from_symmetry`](@ref).
 """
 function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
