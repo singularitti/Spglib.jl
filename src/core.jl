@@ -1,5 +1,5 @@
 using CrystallographyCore: AbstractCell, Cell as CrystallographyCell, basisvectors
-using StaticArrays: MMatrix, MVector, SMatrix, SVector
+using StaticArrays: MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal_isequal
 
 import CrystallographyCore: Lattice, natoms, atomtypes
