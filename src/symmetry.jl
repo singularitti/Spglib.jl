@@ -292,6 +292,30 @@ function get_spacegroup_type(hall_number)
     return convert(SpacegroupType, spgtype)
 end
 
+"""
+    get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
+
+Return space-group type information from symmetry operations.
+
+This is the replacement of [`get_hall_number_from_symmetry`](@ref).
+
+This is expected to work well for the set of symmetry operations whose
+distortion is small. The aim of making this feature is to find
+space-group-type for the set of symmetry operations given by the other
+source than Spglib.
+
+The `SpacegroupType` structure is explained at [`SpacegroupType`](@ref).
+The parameter `lattice` is used as the distance measure for `symprec`. If it
+is unknown, the following may be a reasonable choice:
+
+```jldoctest
+julia> lattice = Lattice([
+    1 0 0
+    0 1 0
+    0 0 1
+]);
+```
+"""
 function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     nsym = length(translations)
