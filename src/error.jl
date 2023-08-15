@@ -25,7 +25,7 @@ end
 
 Return an instance of the enumerated type `SpglibReturnCode`.
 """
-get_error_code() = unsafe_string(@ccall libsymspg.spg_get_error_code()::SpglibReturnCode)
+get_error_code() = @ccall libsymspg.spg_get_error_code()::SpglibReturnCode
 
 """
     get_error_message(code::SpglibReturnCode)
