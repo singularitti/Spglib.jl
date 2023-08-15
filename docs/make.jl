@@ -1,10 +1,13 @@
+using CrystallographyCore
 using Spglib
 using Documenter
 
+# See https://stackoverflow.com/questions/70137119/how-to-include-the-docstring-for-a-function-from-another-package-in-my-julia-doc
+DocMeta.setdocmeta!(CrystallographyCore, :DocTestSetup, :(using CrystallographyCore); recursive=true)
 DocMeta.setdocmeta!(Spglib, :DocTestSetup, :(using Spglib); recursive=true)
 
 makedocs(;
-    modules=[Spglib],
+    modules=[CrystallographyCore, Spglib],
     authors="singularitti <singularitti@outlook.com> and contributors",
     repo="https://github.com/singularitti/Spglib.jl/blob/{commit}{path}#{line}",
     sitename="Spglib.jl",
