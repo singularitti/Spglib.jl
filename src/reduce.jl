@@ -1,3 +1,5 @@
+export niggli_reduce, delaunay_reduce
+
 """
     niggli_reduce(lattice::AbstractMatrix, symprec=1e-5)
     niggli_reduce(cell::Cell, symprec=1e-5)
@@ -30,11 +32,11 @@ function niggli_reduce(lattice::Lattice, symprec=1e-5)
 end
 function niggli_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    clattice = niggli_reduce(lattice, symprec)
+    new_lattice = niggli_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
-    recip = inv(clattice) * cell.lattice
-    new_frac_pos = [recip * pos for pos in cell.positions]
-    return Cell(clattice, new_frac_pos, cell.atoms)
+    recip = inv(new_lattice) * lattice
+    new_positions = [recip * position for position in cell.positions]
+    return Cell(new_lattice, new_positions, cell.atoms)
 end
 
 """
@@ -71,9 +73,9 @@ function delaunay_reduce(lattice::Lattice, symprec=1e-5)
 end
 function delaunay_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    clattice = delaunay_reduce(lattice, symprec)
+    new_lattice = delaunay_reduce(lattice, symprec)
     # Keeping cartesian coordinates, see #106
-    recip = inv(clattice) * cell.lattice
-    new_frac_pos = [recip * pos for pos in cell.positions]
-    return Cell(clattice, new_frac_pos, cell.atoms)
+    recip = inv(new_lattice) * lattice
+    new_positions = [recip * position for position in cell.positions]
+    return Cell(new_lattice, new_positions, cell.atoms)
 end

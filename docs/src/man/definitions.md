@@ -223,7 +223,7 @@ because
 
 ## Spglib conventions of standardized unit cell
 
-### [Transformation to the primitive cell](@id primitive)
+### Transformation to the primitive cell
 
 In the standardized unit cells, there are five different centring
 types available, base centerings of A and C, rhombohedral (R), body-centred (I),
