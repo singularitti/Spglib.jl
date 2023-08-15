@@ -11,20 +11,20 @@ its symmetry found by the symmetry search. The choice of the setting for each
 space group type is as explained for [`get_dataset`](@ref).
 """
 function standardize_cell(
-    cell::AbstractCell; to_primitive=false, no_idealize=false, symprec=1e-5
+    cell::AbstractCell, symprec=1e-5; to_primitive=false, no_idealize=false
 )
     lattice, _positions, _atoms = _expand_cell(cell)
-    n = natoms(cell)
+    num_atom = natoms(cell)
     allocations = 4  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L440
-    positions = Matrix{Cdouble}(undef, 3, n * allocations)
-    atoms = Vector{Cint}(undef, n * allocations)
-    positions[:, 1:n] .= _positions
-    atoms[1:n] .= _atoms
-    n_std = @ccall libsymspg.spg_standardize_cell(
+    positions = Matrix{Cdouble}(undef, 3, num_atom * allocations)
+    atoms = Vector{Cint}(undef, num_atom * allocations)
+    positions[:, 1:num_atom] .= _positions
+    atoms[1:num_atom] .= _atoms
+    num_atom_std = @ccall libsymspg.spg_standardize_cell(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        n::Cint,
+        num_atom::Cint,
         to_primitive::Cint,
         no_idealize::Cint,
         symprec::Cdouble,
@@ -32,7 +32,9 @@ function standardize_cell(
     check_error()
     # We have to `transpose` back because of `_expand_cell`!
     return Cell(
-        Lattice(transpose(lattice)), collect(eachcol(positions[:, 1:n_std])), atoms[1:n_std]
+        Lattice(transpose(lattice)),
+        collect(eachcol(positions[:, 1:num_atom_std])),
+        atoms[1:num_atom_std],
     )
 end
 
@@ -45,7 +47,7 @@ This function is now a shortcut of `standardize_cell` with `to_primitive = true`
 and `no_idealize = false`.
 """
 find_primitive(cell::AbstractCell, symprec=1e-5) =
-    standardize_cell(cell; to_primitive=true, no_idealize=false, symprec=symprec)
+    standardize_cell(cell, symprec; to_primitive=true, no_idealize=false)
 
 """
     refine_cell(cell::Cell, symprec=1e-5)
@@ -59,4 +61,4 @@ This function is now a shortcut of `standardize_cell` with `to_primitive = false
 and `no_idealize = false`.
 """
 refine_cell(cell::AbstractCell, symprec=1e-5) =
-    standardize_cell(cell; to_primitive=false, no_idealize=false, symprec=symprec)
+    standardize_cell(cell, symprec; to_primitive=false, no_idealize=false)
