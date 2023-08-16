@@ -1,4 +1,4 @@
-export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh
+export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh, eachpoint
 
 struct MeshResult
     mesh::SVector{3,UInt64}
@@ -111,4 +111,17 @@ function get_stabilized_reciprocal_mesh(
         ir_mapping_table,
         map(SVector{3,Int64}, eachcol(grid_address)),
     )
+end
+
+function eachpoint(result::MeshResult, ir_only=true)
+    mesh, shift, grid_address = result.mesh, result.is_shift ./ 2, result.grid_address  # true / 2 = 0.5, false / 2 = 0
+    if ir_only
+        return Iterators.map(unique(result.ir_mapping_table)) do i
+            (grid_address[i] .+ shift) ./ mesh
+        end
+    else
+        return Iterators.map(grid_address) do point
+            (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        end
+    end
 end
