@@ -289,6 +289,7 @@ function get_spacegroup_type(hall_number)
     spgtype = @ccall libsymspg.spg_get_spacegroup_type(
         hall_number::Cint
     )::SpglibSpacegroupType
+    check_error()
     return convert(SpacegroupType, spgtype)
 end
 
