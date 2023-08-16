@@ -169,7 +169,7 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
         natoms(cell)::Cint,
         symprec::Cdouble,
     )::Ptr{SpglibDataset}
-    if ptr == C_NULL
+    if ptr == C_NULL  # See https://github.com/spglib/spglib/blob/v2.1.0-rc2/python/spglib/spglib.py#L498-L504
         check_error()
     else
         dataset = unsafe_load(ptr)
@@ -282,7 +282,7 @@ end
 """
     get_spacegroup_type(hall_number)
 
-Translate Hall number to space group type information.
+Translate Hall number to space group information.
 """
 function get_spacegroup_type(hall_number)
     @assert 1 <= hall_number <= 530
