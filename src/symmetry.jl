@@ -83,7 +83,7 @@ function get_symmetry(cell::AbstractCell, symprec=1e-5)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 48num_atom  # Num of symmetry operations = order of the point group of the space group × num of lattice points
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
-    translations = Array{Cdouble,2}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
+    translations = Matrix{Cdouble}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
     num_sym = @ccall libsymspg.spg_get_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -127,7 +127,7 @@ function get_symmetry_from_database(hall_number)
     # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
     @assert 1 <= hall_number <= 530
     rotations = Array{Cint,3}(undef, 3, 3, 192)
-    translations = Array{Cdouble,2}(undef, 3, 192)
+    translations = Matrix{Cdouble}(undef, 3, 192)
     num_sym = @ccall libsymspg.spg_get_symmetry_from_database(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, hall_number::Cint
     )::Cint
