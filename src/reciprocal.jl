@@ -72,7 +72,13 @@ function get_ir_reciprocal_mesh(
     )::Cint
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return num_ir, ir_mapping_table, grid_address
+    return MeshResult(
+        mesh,
+        is_shift,
+        num_ir,
+        ir_mapping_table,
+        map(SVector{3,Int64}, eachcol(grid_address)),
+    )
 end
 
 function get_stabilized_reciprocal_mesh(
@@ -100,5 +106,7 @@ function get_stabilized_reciprocal_mesh(
     )::Cint
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return num_ir, ir_mapping_table, grid_address
+    return MeshResult(
+        mesh, is_shift, ir_mapping_table, map(SVector{3,Int64}, eachcol(grid_address))
+    )
 end
