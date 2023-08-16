@@ -359,6 +359,9 @@ fractional coordinates and so it should be small like `1e-5`.
     This function will be replaced by [`get_spacegroup_type_from_symmetry`](@ref).
 """
 function get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
+    if length(rotations) != length(translations)
+        throw(DimensionMismatch("the numbers of rotations and translations are different!"))
+    end
     num_sym = length(translations)
     rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
     translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
