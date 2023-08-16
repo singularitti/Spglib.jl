@@ -11,11 +11,7 @@ end
 """
     get_ir_reciprocal_mesh(cell::AbstractCell, mesh, symprec=1e-5; is_shift=falses(3), is_time_reversal=true)
 
-Return k-points mesh and k-point map to the irreducible k-points.
-
-Irreducible reciprocal grid points are searched from uniform
-mesh grid points specified by `mesh` and `is_shift`.
-`mesh` stores three integers.
+Search irreducible reciprocal grid points from uniform mesh grid points specified by `mesh` and `is_shift`.
 
 Reciprocal primitive vectors are divided by the number stored in `mesh` with ``(0, 0, 0)``-centering.
 The center of grid mesh is shifted half of a grid spacing along corresponding reciprocal axis
