@@ -39,16 +39,16 @@ assert dataset[&#39;number&#39;] == 186</code></pre><p>Note that in Python, the 
            [2.0 / 3, 1.0 / 3, 0.1181],
        ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
  lattice:
-  3.111  -1.5555  0.0
-  0.0  2.6942050311733885  0.0
-  0.0  0.0  4.988
+   3.111  -1.5555  0.0
+   0.0  2.6942050311733885  0.0
+   0.0  0.0  4.988
  4 atomic positions:
-  0.3333333333333333  0.6666666666666666  0.0
-  0.6666666666666666  0.3333333333333333  0.5
-  0.3333333333333333  0.6666666666666666  0.6181
-  0.6666666666666666  0.3333333333333333  0.1181
+   0.3333333333333333  0.6666666666666666  0.0
+   0.6666666666666666  0.3333333333333333  0.5
+   0.3333333333333333  0.6666666666666666  0.6181
+   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
-  1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
+   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
   spacegroup_number: 186
   hall_number: 480
   international_symbol: P6_3mc
@@ -104,16 +104,16 @@ dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
 &gt;&gt;&gt; dataset[&#39;international&#39;]
 &#39;P2_1&#39;</code></pre><p>Or this:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
  lattice:
-  3.111  0.0  0.0
-  -1.5555  2.6942050311733885  0.0
-  0.0  0.0  4.988
+   3.111  0.0  0.0
+   -1.5555  2.6942050311733885  0.0
+   0.0  0.0  4.988
  4 atomic positions:
-  0.3333333333333333  0.6666666666666666  0.0
-  0.6666666666666666  0.3333333333333333  0.5
-  0.3333333333333333  0.6666666666666666  0.6181
-  0.6666666666666666  0.3333333333333333  0.1181
+   0.3333333333333333  0.6666666666666666  0.0
+   0.6666666666666666  0.3333333333333333  0.5
+   0.3333333333333333  0.6666666666666666  0.6181
+   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
-  1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
+   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
   spacegroup_number: 4
   hall_number: 6
   international_symbol: P2_1
@@ -170,16 +170,16 @@ array([[ 3.111     ,  0.        ,  0.        ],
            [2.0 / 3, 1.0 / 3, 0.1181],
        ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
  lattice:
-  3.111  -1.5555  0.0
-  0.0  2.6942050311733885  0.0
-  0.0  0.0  4.988
+   3.111  -1.5555  0.0
+   0.0  2.6942050311733885  0.0
+   0.0  0.0  4.988
  4 atomic positions:
-  0.3333333333333333  0.6666666666666666  0.0
-  0.6666666666666666  0.3333333333333333  0.5
-  0.3333333333333333  0.6666666666666666  0.6181
-  0.6666666666666666  0.3333333333333333  0.1181
+   0.3333333333333333  0.6666666666666666  0.0
+   0.6666666666666666  0.3333333333333333  0.5
+   0.3333333333333333  0.6666666666666666  0.6181
+   0.6666666666666666  0.3333333333333333  0.1181
  4 atoms:
-  1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
+   1  1  2  2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dataset = get_dataset(cell, 1e-5)</code><code class="nohighlight hljs ansi" style="display:block;">Dataset
   spacegroup_number: 186
   hall_number: 480
   international_symbol: P6_3mc
@@ -213,4 +213,4 @@ array([[ 3.111     ,  0.        ,  0.        ],
            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
  3.111  -1.5555   0.0
  0.0     2.69421  0.0
- 0.0     0.0      4.988</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Wednesday 16 August 2023 07:35">Wednesday 16 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 0.0     0.0      4.988</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Wednesday 16 August 2023 09:47">Wednesday 16 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
