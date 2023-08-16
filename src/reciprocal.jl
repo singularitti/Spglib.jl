@@ -87,20 +87,20 @@ function get_stabilized_reciprocal_mesh(
         throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
-    @assert size(qpoints, 2) == 3
+    rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
     num_k = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, num_k)
     ir_mapping_table = Vector{Cint}(undef, num_k)
-    qpoints = map(Base.Fix1(convert, Vector{Cint}), qpoints)
+    qpoints = Base.cconvert(Matrix{Cdouble}, reduce(hcat, qpoints))
     @ccall libsymspg.spg_get_stabilized_reciprocal_mesh(
         grid_address::Ptr{Cint},
         ir_mapping_table::Ptr{Cint},
         mesh::Ptr{Cint},
         is_shift::Ptr{Cint},
         is_time_reversal::Cint,
-        length(rotations)::Cint,
+        size(rotations, 3)::Cint,  # `num_rot` in the C-API
         rotations::Ptr{Cint},
-        length(qpoints)::Cint,
+        size(qpoints, 2)::Cint,  # `num_q` in the C-API
         qpoints::Ptr{Cdouble},
     )::Cint
     check_error()
