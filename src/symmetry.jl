@@ -293,7 +293,7 @@ function get_spacegroup_type(hall_number)
 end
 
 """
-    get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    get_spacegroup_type_from_symmetry(rotations, translations, lattice::Lattice, symprec=1e-5)
 
 Return space-group type information from symmetry operations.
 
@@ -316,12 +316,16 @@ julia> lattice = Lattice([
 ]);
 ```
 """
-function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
+function get_spacegroup_type_from_symmetry(
+    rotations, translations, lattice::Lattice, symprec=1e-5
+)
+    if length(rotations) != length(translations)
+        throw(DimensionMismatch("the numbers of rotations and translations are different!"))
+    end
     num_sym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
-    lattice, _, _ = _expand_cell(cell)
+    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -329,6 +333,7 @@ function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
         lattice::Ptr{Cdouble},
         symprec::Cdouble,
     )::SpglibSpacegroupType
+    check_error()
     return convert(SpacegroupType, spgtype)
 end
 
