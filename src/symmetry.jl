@@ -83,7 +83,7 @@ function get_symmetry(cell::AbstractCell, symprec=1e-5)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 48num_atom  # Num of symmetry operations = order of the point group of the space group × num of lattice points
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
-    translations = Array{Cdouble,2}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
+    translations = Matrix{Cdouble}(undef, 3, max_size)  # C is row-major order, but Julia is column-major order
     num_sym = @ccall libsymspg.spg_get_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -127,7 +127,7 @@ function get_symmetry_from_database(hall_number)
     # The maximum number of symmetry operations is 192, see https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L382
     @assert 1 <= hall_number <= 530
     rotations = Array{Cint,3}(undef, 3, 3, 192)
-    translations = Array{Cdouble,2}(undef, 3, 192)
+    translations = Matrix{Cdouble}(undef, 3, 192)
     num_sym = @ccall libsymspg.spg_get_symmetry_from_database(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, hall_number::Cint
     )::Cint
@@ -169,7 +169,7 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
         natoms(cell)::Cint,
         symprec::Cdouble,
     )::Ptr{SpglibDataset}
-    if ptr == C_NULL
+    if ptr == C_NULL  # See https://github.com/spglib/spglib/blob/v2.1.0-rc2/python/spglib/spglib.py#L498-L504
         check_error()
     else
         dataset = unsafe_load(ptr)
@@ -282,18 +282,19 @@ end
 """
     get_spacegroup_type(hall_number)
 
-Translate Hall number to space group type information.
+Translate Hall number to space group information.
 """
 function get_spacegroup_type(hall_number)
     @assert 1 <= hall_number <= 530
     spgtype = @ccall libsymspg.spg_get_spacegroup_type(
         hall_number::Cint
     )::SpglibSpacegroupType
+    check_error()
     return convert(SpacegroupType, spgtype)
 end
 
 """
-    get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    get_spacegroup_type_from_symmetry(rotations, translations, lattice::Lattice, symprec=1e-5)
 
 Return space-group type information from symmetry operations.
 
@@ -316,12 +317,16 @@ julia> lattice = Lattice([
 ]);
 ```
 """
-function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
+function get_spacegroup_type_from_symmetry(
+    rotations, translations, lattice::Lattice, symprec=1e-5
+)
+    if length(rotations) != length(translations)
+        throw(DimensionMismatch("the numbers of rotations and translations are different!"))
+    end
     num_sym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
-    lattice, _, _ = _expand_cell(cell)
+    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -329,13 +334,18 @@ function get_spacegroup_type_from_symmetry(cell::AbstractCell, symprec=1e-5)
         lattice::Ptr{Cdouble},
         symprec::Cdouble,
     )::SpglibSpacegroupType
+    check_error()
     return convert(SpacegroupType, spgtype)
 end
 
 """
-    get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
 
-Obtain `hall_number` from the set of symmetry operations.
+Return one Hall number corresponding to a space group of the given set of symmetry operations.
+
+When multiple Hall numbers exist for the space group, the smallest one
+(the first description of the space-group type in International Tables for Crystallography)
+is chosen.
 
 This is expected to work well for the set of symmetry operations whose
 distortion is small. The aim of making this feature is to find
@@ -348,15 +358,14 @@ fractional coordinates and so it should be small like `1e-5`.
 !!! warning
     This function will be replaced by [`get_spacegroup_type_from_symmetry`](@ref).
 """
-function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
+function get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
     num_sym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
+    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, num_sym::Cint, symprec::Cdouble
     )::Cint
-    check_error()
+    check_error()  # The Python code does not check errors here? https://github.com/spglib/spglib/blob/v2.1.0-rc2/python/spglib/spglib.py#L1588-L1605
     return hall_number
 end
 
