@@ -1,9 +1,9 @@
 export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh, eachpoint
 
 struct MeshResult
-    mesh::SVector{3,UInt64}
+    mesh::SVector{3,Int64}
     is_shift::SVector{3,Bool}
-    ir_mapping_table::Vector{UInt64}
+    ir_mapping_table::Vector{Int64}
     grid_address::Vector{SVector{3,Int64}}
 end
 
