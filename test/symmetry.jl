@@ -217,7 +217,8 @@ end
         19,
         "mmmC",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "D2h^18"
@@ -351,7 +352,8 @@ end
         36,
         "4/mmmP",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "D4h^14"
@@ -445,7 +447,8 @@ end
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
     ) == SpacegroupType(1, "P1", "P 1", "P 1", "C1^1", 1, "P 1", "", "1", "C1", 1, "1P")  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "C1^1"
@@ -594,7 +597,8 @@ end
         49,
         "-3m1P",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "D3d^3"
@@ -1081,7 +1085,8 @@ end
         72,
         "m-3mF",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "Oh^7"
@@ -1269,7 +1274,8 @@ end
         72,
         "m-3mF",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "Oh^7"
@@ -1400,7 +1406,8 @@ end
         58,
         "6/mmm",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "D6h^1"
@@ -1530,7 +1537,8 @@ end
         55,
         "6mmP",
     )  # Compared with Python results
-    @test get_hall_number_from_symmetry(cell, 1e-5) == dataset.hall_number
+    @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
+        dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "C6v^4"
