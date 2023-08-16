@@ -338,9 +338,13 @@ function get_spacegroup_type_from_symmetry(
 end
 
 """
-    get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
+    get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
 
-Obtain `hall_number` from the set of symmetry operations.
+Return one Hall number corresponding to a space group of the given set of symmetry operations.
+
+When multiple Hall numbers exist for the space group, the smallest one
+(the first description of the space-group type in International Tables for Crystallography)
+is chosen.
 
 This is expected to work well for the set of symmetry operations whose
 distortion is small. The aim of making this feature is to find
@@ -353,15 +357,14 @@ fractional coordinates and so it should be small like `1e-5`.
 !!! warning
     This function will be replaced by [`get_spacegroup_type_from_symmetry`](@ref).
 """
-function get_hall_number_from_symmetry(cell::AbstractCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
+function get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
     num_sym = length(translations)
-    rotations, translations = cat(transpose.(rotations)...; dims=3),
-    reduce(hcat, translations)
+    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, num_sym::Cint, symprec::Cdouble
     )::Cint
-    check_error()
+    check_error()  # The Python code does not check errors here? https://github.com/spglib/spglib/blob/v2.1.0-rc2/python/spglib/spglib.py#L1588-L1605
     return hall_number
 end
 
