@@ -1,16 +1,3 @@
-function list_points(ir_mapping_table, grid, mesh, is_shift, ir_only)
-    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
-    if ir_only
-        return map(unique(ir_mapping_table)) do i
-            (grid[:, i] .+ shift) ./ mesh
-        end
-    else
-        return map(eachslice(grid; dims=2)) do point
-            (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
-        end
-    end
-end
-
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L89-L99
 @testset "Test reciprocal mesh using the example from `LibSymspg.jl`" begin
     lattice = [
@@ -23,10 +10,10 @@ end
     mesh = [4, 4, 4]
     is_shift = falses(3)
     cell = Cell(lattice, positions, atoms)
-    num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+    result = get_ir_reciprocal_mesh(
         cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
     )
-    @test num_ir == length(unique(ir_mapping_table)) == 8
+    @test length(unique(result.ir_mapping_table)) == 8
 end
 
 # See https://spglib.github.io/spglib/python-spglib.html
@@ -38,7 +25,7 @@ end
     mesh = [8, 8, 8]
     @testset "No shifts" begin
         is_shift = [0, 0, 0]
-        num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+        result = get_ir_reciprocal_mesh(
             cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
         )
         python_mapping = [
@@ -555,8 +542,8 @@ end
             15,
             1,
         ]
-        @test ir_mapping_table == python_mapping .+ 1
-        @test num_ir == length(unique(ir_mapping_table)) == 29
+        @test result.ir_mapping_table == python_mapping .+ 1
+        @test length(unique(result.ir_mapping_table)) == 29
         # Irreducible k-points
         python_results = [
             [0.0, 0.0, 0.0],
@@ -589,14 +576,12 @@ end
             [-0.375, 0.5, 0.125],
             [-0.25, 0.5, 0.25],
         ]
-        @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) ==
-            python_results
-        @test length(list_points(ir_mapping_table, grid_address, mesh, is_shift, false)) ==
-            512
+        @test collect(eachpoint(result, true)) == python_results
+        @test length(collect(eachpoint(result, false))) == 512
     end
     @testset "With shifts" begin
         is_shift = [1, 1, 1]
-        num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+        result = get_ir_reciprocal_mesh(
             cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
         )
         python_mapping = [
@@ -1113,8 +1098,8 @@ end
             1,
             0,
         ]
-        @test ir_mapping_table == python_mapping .+ 1
-        @test num_ir == length(unique(ir_mapping_table)) == 60
+        @test result.ir_mapping_table == python_mapping .+ 1
+        @test length(unique(result.ir_mapping_table)) == 60
         # Irreducible k-points
         python_results = [
             [0.0625, 0.0625, 0.0625],
@@ -1178,10 +1163,8 @@ end
             [0.4375, 0.4375, 0.4375],
             [0.5625, 0.4375, 0.4375],
         ]
-        @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) ==
-            python_results
-        @test length(list_points(ir_mapping_table, grid_address, mesh, is_shift, false)) ==
-            512
+        @test collect(eachpoint(result, true)) == python_results
+        @test length(collect(eachpoint(result, false))) == 512
     end
 end
 
@@ -1201,11 +1184,9 @@ end
     @testset "No shift" begin
         is_shift = [0, 0, 0]
         mesh = [6, 6, 6]
-        num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-            cell, mesh, 1e-5; is_time_reversal=true
-        )
-        @test num_ir == length(unique(ir_mapping_table)) == 40
-        @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) ≈ [
+        result = get_ir_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+        @test length(unique(result.ir_mapping_table)) == 40
+        @test collect(eachpoint(result, true)) ≈ [
             [0.0, 0.0, 0.0],
             [0.16666667, 0.0, 0.0],
             [0.33333333, 0.0, 0.0],
@@ -1247,7 +1228,7 @@ end
             [0.5, 0.33333333, 0.5],
             [0.5, 0.5, 0.5],
         ]
-        @test list_points(ir_mapping_table, grid_address, mesh, is_shift, false) ≈ [
+        @test collect(eachpoint(result, false)) ≈ [
             [0.0, 0.0, 0.0],
             [0.16666667, 0.0, 0.0],
             [0.33333333, 0.0, 0.0],
@@ -1470,11 +1451,11 @@ end
         is_shift = trues(3)
         @testset "6×6×6" begin
             mesh = [6, 6, 6]
-            num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            result = get_ir_reciprocal_mesh(
                 cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
             )
-            @test num_ir == length(unique(ir_mapping_table)) == 18
-            @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) ≈ [
+            @test length(unique(result.ir_mapping_table)) == 18
+            @test collect(eachpoint(result, true)) ≈ [
                 [0.08333333, 0.08333333, 0.08333333],
                 [0.25, 0.08333333, 0.08333333],
                 [0.41666667, 0.08333333, 0.08333333],
@@ -1497,11 +1478,11 @@ end
         end
         @testset "4×4×4" begin
             mesh = [4, 4, 4]
-            num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            result = get_ir_reciprocal_mesh(
                 cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
             )
-            @test num_ir == length(unique(ir_mapping_table)) == 6
-            @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) == [
+            @test length(unique(result.ir_mapping_table)) == 6
+            @test collect(eachpoint(result, true)) == [
                 [0.125, 0.125, 0.125],
                 [0.375, 0.125, 0.125],
                 [0.375, 0.375, 0.125],
@@ -1509,7 +1490,7 @@ end
                 [0.375, 0.125, 0.375],
                 [0.375, 0.375, 0.375],
             ]
-            @test list_points(ir_mapping_table, grid_address, mesh, is_shift, false) == [
+            @test collect(eachpoint(result, false)) == [
                 [0.125, 0.125, 0.125],
                 [0.375, 0.125, 0.125],
                 [0.625, 0.125, 0.125],
@@ -1578,11 +1559,11 @@ end
         end
         @testset "5×5×5" begin
             mesh = [5, 5, 5]
-            num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            result = get_ir_reciprocal_mesh(
                 cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
             )
-            @test num_ir == length(unique(ir_mapping_table)) == 18
-            @test list_points(ir_mapping_table, grid_address, mesh, is_shift, true) == [
+            @test length(unique(result.ir_mapping_table)) == 18
+            @test collect(eachpoint(result, true)) == [
                 [0.1, 0.1, 0.1],
                 [0.3, 0.1, 0.1],
                 [0.5, 0.1, 0.1],
@@ -1602,7 +1583,7 @@ end
                 [0.5, 0.3, 0.5],
                 [0.5, 0.5, 0.5],
             ]
-            @test list_points(ir_mapping_table, grid_address, mesh, is_shift, false) == [
+            @test collect(eachpoint(result, false)) == [
                 [0.1, 0.1, 0.1],
                 [0.3, 0.1, 0.1],
                 [0.5, 0.1, 0.1],
@@ -1732,10 +1713,10 @@ end
         end
         @testset "8×8×8" begin  # See https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L268-L273
             mesh = [8, 8, 8]
-            num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+            result = get_ir_reciprocal_mesh(
                 cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
             )
-            @test num_ir == length(unique(ir_mapping_table)) == 40  # Number of irreducible k-points
+            @test length(unique(result.ir_mapping_table)) == 40  # Number of irreducible k-points
         end
     end
 end
@@ -1759,11 +1740,9 @@ end
     atoms = [14, 14, 14, 14, 14, 14, 14, 14]
     cell = Cell(lattice, positions, atoms)
     mesh = [6, 6, 6]
-    num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-        cell, mesh, 1e-5; is_time_reversal=true
-    )
-    @test num_ir == length(unique(ir_mapping_table)) == 112
-    @test list_points(ir_mapping_table, grid_address, mesh, [0, 0, 0], true) ≈ [
+    result = get_ir_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    @test length(unique(result.ir_mapping_table)) == 112
+    @test collect(eachpoint(result, true)) ≈ [
         [0.0, 0.0, 0.0],
         [0.16666667, 0.0, 0.0],
         [0.33333333, 0.0, 0.0],
@@ -1886,10 +1865,8 @@ end
     atoms = [14, 14]
     cell = Cell(lattice, positions, atoms)
     mesh = [11, 11, 11]
-    num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-        cell, mesh, 1e-5; is_time_reversal=true
-    )
-    @test length(unique(ir_mapping_table)) == 56  # Number of irreducible k-points
+    result = get_ir_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    @test length(unique(result.ir_mapping_table)) == 56  # Number of irreducible k-points
 end
 
 @testset "Test MgB₂ structure" begin
@@ -1898,11 +1875,9 @@ end
     atoms = [12, 5, 5]
     cell = Cell(lattice, positions, atoms)
     mesh = [7, 7, 7]
-    num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
-        cell, mesh, 1e-5; is_time_reversal=true
-    )
-    @test num_ir == length(unique(ir_mapping_table)) == 32
-    @test list_points(ir_mapping_table, grid_address, mesh, [0, 0, 0], true) ≈ [
+    result = get_ir_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    @test length(unique(result.ir_mapping_table)) == 32
+    @test collect(eachpoint(result, true)) ≈ [
         [0.0, 0.0, 0.0],
         [0.14285714, 0.0, 0.0],
         [0.28571429, 0.0, 0.0],
@@ -1936,14 +1911,14 @@ end
         [0.42857143, 0.14285714, 0.42857143],
         [0.28571429, 0.28571429, 0.42857143],
     ]
-    @test length(list_points(ir_mapping_table, grid_address, mesh, [0, 0, 0], false)) == 343
+    @test length(collect(eachpoint(result, false))) == 343
     # From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L275-L280
     @testset "Example from Python" begin
         mesh = [9, 9, 8]
         is_shift = [false, false, true]
-        num_ir, ir_mapping_table, grid_address = get_ir_reciprocal_mesh(
+        result = get_ir_reciprocal_mesh(
             cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift
         )
-        @test num_ir == length(unique(ir_mapping_table)) == 48  # Number of irreducible k-points
+        @test length(unique(result.ir_mapping_table)) == 48  # Number of irreducible k-points
     end
 end
