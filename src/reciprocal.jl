@@ -1,8 +1,8 @@
 export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh
 
 struct MeshResult
-    mesh::NTuple{3,UInt64}
-    is_shift::NTuple{3,Bool}
+    mesh::SVector{3,UInt64}
+    is_shift::SVector{3,Bool}
     ir_mapping_table::Vector{UInt64}
     grid_address::Vector{SVector{3,Int64}}
 end
@@ -73,9 +73,8 @@ function get_ir_reciprocal_mesh(
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return MeshResult(
-        mesh,
-        is_shift,
-        num_ir,
+        SVector{3}(mesh),
+        SVector{3}(is_shift),
         ir_mapping_table,
         map(SVector{3,Int64}, eachcol(grid_address)),
     )
@@ -107,6 +106,9 @@ function get_stabilized_reciprocal_mesh(
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
     return MeshResult(
-        mesh, is_shift, ir_mapping_table, map(SVector{3,Int64}, eachcol(grid_address))
+        SVector{3}(mesh),
+        SVector{3}(is_shift),
+        ir_mapping_table,
+        map(SVector{3,Int64}, eachcol(grid_address)),
     )
 end
