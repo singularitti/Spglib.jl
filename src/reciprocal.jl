@@ -80,6 +80,23 @@ function get_ir_reciprocal_mesh(
     )
 end
 
+"""
+    get_stabilized_reciprocal_mesh(rotations, mesh, qpoints=[[0, 0, 0]]; is_shift=falses(3), is_time_reversal=true)
+
+Search irreducible k-points from unique k-point mesh grids
+from direct (real space) basis vectors and a set of rotation parts of
+symmetry operations in direct space with one or multiple
+stabilizers.
+
+The stabilizers are written in fractional coordinates.
+Symmetrically equivalent k-points
+(stars) in fractional coordinates are stored in `map` as indices of
+`grid_address`. The number of reduced k-points with the stabilizers
+are returned as the return value.
+
+This function can be used to obtain all mesh grid points by setting
+`rotations = [[1 0 0; 0 1 0; 0 0 1]]`, and `qpoints = [[0, 0, 0]]`.
+"""
 function get_stabilized_reciprocal_mesh(
     rotations, mesh, qpoints=[[0, 0, 0]]; is_shift=falses(3), is_time_reversal=true
 )
