@@ -1168,6 +1168,7 @@ end
     end
 end
 
+# Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L85-L96
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
@@ -1175,9 +1176,12 @@ end
         0 0 3
     ]
     positions = [
-        0.0 0.5 0.3 0.7 0.2 0.8
-        0.0 0.5 0.3 0.7 0.8 0.2
-        0.0 0.5 0.0 0.0 0.5 0.5
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.3, 0.3, 0.0],
+        [0.7, 0.7, 0.0],
+        [0.2, 0.8, 0.5],
+        [0.8, 0.2, 0.5],
     ]
     atoms = [14, 14, 8, 8, 8, 8]
     cell = Cell(lattice, positions, atoms)
@@ -1446,7 +1450,7 @@ end
             [0.33333333, 0.33333333, 0.5],
             [0.5, 0.33333333, 0.5],
             [0.5, 0.5, 0.5],
-        ]
+        ]  # Compared with Python results
         @test collect(eachpoint(result, false)) ≈ [
             [0.0, 0.0, 0.0],
             [0.16666667, 0.0, 0.0],
@@ -1664,7 +1668,7 @@ end
             [0.5, -0.16666667, -0.16666667],
             [-0.33333333, -0.16666667, -0.16666667],
             [-0.16666667, -0.16666667, -0.16666667],
-        ]
+        ]  # Compared with Python results
     end
     @testset "With shift" begin
         is_shift = trues(3)
@@ -1693,7 +1697,7 @@ end
                 [0.25, 0.25, 0.41666667],
                 [0.41666667, 0.25, 0.41666667],
                 [0.41666667, 0.41666667, 0.41666667],
-            ]
+            ]  # Compared with Python results
         end
         @testset "4×4×4" begin
             mesh = [4, 4, 4]
@@ -1708,7 +1712,7 @@ end
                 [0.125, 0.125, 0.375],
                 [0.375, 0.125, 0.375],
                 [0.375, 0.375, 0.375],
-            ]
+            ]  # Compared with Python results
             @test collect(eachpoint(result, false)) == [
                 [0.125, 0.125, 0.125],
                 [0.375, 0.125, 0.125],
@@ -1774,7 +1778,7 @@ end
                 [0.375, -0.125, -0.125],
                 [0.625, -0.125, -0.125],
                 [-0.125, -0.125, -0.125],
-            ]
+            ]  # Compared with Python results
         end
         @testset "5×5×5" begin
             mesh = [5, 5, 5]
@@ -1801,7 +1805,7 @@ end
                 [0.3, 0.3, 0.5],
                 [0.5, 0.3, 0.5],
                 [0.5, 0.5, 0.5],
-            ]
+            ]  # Compared with Python results
             @test collect(eachpoint(result, false)) == [
                 [0.1, 0.1, 0.1],
                 [0.3, 0.1, 0.1],
@@ -1928,7 +1932,7 @@ end
                 [0.5, -0.1, -0.1],
                 [-0.3, -0.1, -0.1],
                 [-0.1, -0.1, -0.1],
-            ]
+            ]  # Compared with Python results
         end
         @testset "8×8×8" begin  # See https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L268-L273
             mesh = [8, 8, 8]
