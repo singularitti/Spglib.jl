@@ -1,5 +1,12 @@
 export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh
 
+struct MeshResult
+    mesh::NTuple{3,UInt64}
+    is_shift::NTuple{3,Bool}
+    ir_mapping_table::Vector{UInt64}
+    grid_address::Vector{SVector{3,Int64}}
+end
+
 # Doc from https://github.com/spglib/spglib/blob/d1cb3bd/src/spglib.h#L424-L439
 """
     get_ir_reciprocal_mesh(cell::AbstractCell, mesh, symprec=1e-5; is_shift=falses(3), is_time_reversal=true)
