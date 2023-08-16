@@ -58,7 +58,7 @@ function get_ir_reciprocal_mesh(
     num_k = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, num_k)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
     ir_mapping_table = Vector{Cint}(undef, num_k)
-    num_ir = @ccall libsymspg.spg_get_ir_reciprocal_mesh(
+    @ccall libsymspg.spg_get_ir_reciprocal_mesh(
         grid_address::Ptr{Cint},
         ir_mapping_table::Ptr{Cint},
         mesh::Ptr{Cint},
@@ -92,7 +92,7 @@ function get_stabilized_reciprocal_mesh(
     grid_address = Matrix{Cint}(undef, 3, num_k)
     ir_mapping_table = Vector{Cint}(undef, num_k)
     qpoints = map(Base.Fix1(convert, Vector{Cint}), qpoints)
-    num_ir = @ccall libsymspg.spg_get_stabilized_reciprocal_mesh(
+    @ccall libsymspg.spg_get_stabilized_reciprocal_mesh(
         grid_address::Ptr{Cint},
         ir_mapping_table::Ptr{Cint},
         mesh::Ptr{Cint},
