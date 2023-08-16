@@ -49,7 +49,7 @@ end
         rcell = niggli_reduce(cell)
         c1 = Ref(cell.lattice) .* cell.positions
         c2 = Ref(rcell.lattice) .* rcell.positions
-        # Cartesian coordinates should remain the same
+        # Cartesian coordinates should remain the same before and after basis vectors changes
         @test c1 == c2
     end
     # From https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/test/runtests.jl#L87-89
@@ -63,7 +63,7 @@ end
         rcell = delaunay_reduce(cell)
         c1 = Ref(cell.lattice) .* cell.positions
         c2 = Ref(rcell.lattice) .* rcell.positions
-        # Cartesian coordinates should remain the same
+        # Cartesian coordinates should remain the same before and after basis vectors changes
         @test c1 == c2
     end
 end
