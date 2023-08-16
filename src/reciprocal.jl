@@ -81,7 +81,7 @@ function get_ir_reciprocal_mesh(
 end
 
 function get_stabilized_reciprocal_mesh(
-    rotations, mesh, qpoints=[[0, 0, 0]], is_shift=falses(3); is_time_reversal=true
+    rotations, mesh, qpoints=[[0, 0, 0]]; is_shift=falses(3), is_time_reversal=true
 )
     if !(length(mesh) == length(is_shift) == 3)
         throw(DimensionMismatch("`grid` & `is_shift` must be both length-three vectors!"))
