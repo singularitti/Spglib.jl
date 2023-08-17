@@ -70,7 +70,7 @@ Depth = 3
 ## Library outline
 
 ```@contents
-Pages = ["lib/public.md", "lib/internals/error.md"]
+Pages = ["lib/public.md", "lib/internals/error.md", "lib/internals/reciprocal.md"]
 ```
 
 ### [Index](@id main-index)
