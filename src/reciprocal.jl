@@ -136,6 +136,18 @@ function get_stabilized_reciprocal_mesh(
     )
 end
 
+"""
+    eachpoint(result::BrillouinZoneMesh, ir_only=true)
+
+Iterate over the points in the Brillouin zone mesh, with the option to include only
+irreducible k-points or all k-points.
+
+See also [`BrillouinZoneMesh`](@ref).
+
+!!! note
+    This function only returns an iterator, not a vector of points. To get a vector, use
+    `collect(eachpoint(result, ir_only))`.
+"""
 function eachpoint(result::BrillouinZoneMesh, ir_only=true)
     mesh, shift, grid_address = result.mesh, result.is_shift ./ 2, result.grid_address  # true / 2 = 0.5, false / 2 = 0
     if ir_only  # Return only irreducible k-points
