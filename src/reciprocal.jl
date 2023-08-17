@@ -111,6 +111,8 @@ function get_stabilized_reciprocal_mesh(
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    mesh = Base.cconvert(Vector{Cint}, mesh)  # Very important to convert!
+    is_shift = Base.cconvert(Vector{Cint}, is_shift)  # Very important to convert!
     num_k = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, num_k)
     ir_mapping_table = Vector{Cint}(undef, num_k)
