@@ -324,8 +324,8 @@ function get_spacegroup_type_from_symmetry(
         throw(DimensionMismatch("the numbers of rotations and translations are different!"))
     end
     num_sym = length(translations)
-    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
-    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
+    rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = Base.cconvert(Matrix{Cdouble}, reduce(hcat, translations))
     lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
@@ -363,8 +363,8 @@ function get_hall_number_from_symmetry(rotations, translations, symprec=1e-5)
         throw(DimensionMismatch("the numbers of rotations and translations are different!"))
     end
     num_sym = length(translations)
-    rotations = convert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
-    translations = convert(Matrix{Cdouble}, reduce(hcat, translations))
+    rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = Base.cconvert(Matrix{Cdouble}, reduce(hcat, translations))
     hall_number = @ccall libsymspg.spg_get_hall_number_from_symmetry(
         rotations::Ptr{Cint}, translations::Ptr{Cdouble}, num_sym::Cint, symprec::Cdouble
     )::Cint
