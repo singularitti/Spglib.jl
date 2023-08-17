@@ -61,8 +61,8 @@ function get_ir_reciprocal_mesh(
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
     lattice, positions, atoms = _expand_cell(cell)
-    mesh = Base.cconvert(Vector{Cint}, mesh)
-    is_shift = Base.cconvert(Vector{Cint}, is_shift)
+    mesh = Base.cconvert(Vector{Cint}, mesh)  # Very important to convert!
+    is_shift = Base.cconvert(Vector{Cint}, is_shift)  # Very important to convert!
     # Prepare for output
     num_k = prod(mesh)
     grid_address = Matrix{Cint}(undef, 3, num_k)  # Julia stores multi-dimensional data in column-major, not row-major (C-style) in memory.
