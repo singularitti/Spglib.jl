@@ -1,6 +1,6 @@
 export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh, eachpoint
 
-struct MeshResult
+struct BrillouinZoneMesh
     mesh::SVector{3,Int64}
     is_shift::SVector{3,Bool}
     ir_mapping_table::Vector{Int64}
@@ -68,7 +68,7 @@ function get_ir_reciprocal_mesh(
     )::Cint
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return MeshResult(
+    return BrillouinZoneMesh(
         SVector{3}(mesh),
         SVector{3}(is_shift),
         ir_mapping_table,
@@ -118,7 +118,7 @@ function get_stabilized_reciprocal_mesh(
     )::Cint
     check_error()
     ir_mapping_table .+= 1  # See https://github.com/singularitti/Spglib.jl/issues/56
-    return MeshResult(
+    return BrillouinZoneMesh(
         SVector{3}(mesh),
         SVector{3}(is_shift),
         ir_mapping_table,
@@ -126,7 +126,7 @@ function get_stabilized_reciprocal_mesh(
     )
 end
 
-function eachpoint(result::MeshResult, ir_only=true)
+function eachpoint(result::BrillouinZoneMesh, ir_only=true)
     mesh, shift, grid_address = result.mesh, result.is_shift ./ 2, result.grid_address  # true / 2 = 0.5, false / 2 = 0
     if ir_only  # Return only irreducible k-points
         return Iterators.map(unique(result.ir_mapping_table)) do i
