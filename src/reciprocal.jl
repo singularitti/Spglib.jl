@@ -1,5 +1,25 @@
 export get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh, eachpoint
 
+"""
+    BrillouinZoneMesh(mesh, is_shift, ir_mapping_table, grid_address)
+
+Represent the Brillouin zone mesh for searching (irreducible) reciprocal grid points from
+uniform mesh grid points specified by `mesh` and `is_shift`.
+
+Reciprocal primitive vectors are divided by the number stored in `mesh` with ``(0, 0,
+0)``-centering. The center of grid mesh is shifted half of a grid spacing along the
+corresponding reciprocal axis by setting `1` or `true` to each `is_shift` element. If `0` or
+`false` is set to each `is_shift` element, there is no shift. This limitation of shifting
+enables the irreducible k-point search to be significantly faster when the mesh is very
+dense.
+
+The reducible uniform grid points are stored in fractional coordinates as `grid_address`. A
+map between reducible and irreducible points is stored as `ir_mapping_table` in the indices
+of `grid_address`.
+
+!!! warning
+    The mapping table's indices start from `1`, not `0` as in Python or C.
+"""
 struct BrillouinZoneMesh
     mesh::SVector{3,Int64}
     is_shift::SVector{3,Bool}
@@ -20,12 +40,6 @@ by setting `1` or `true` to each `is_shift` element. If `0` or `false` is set to
 shifting enables the irreducible k-point search significantly
 faster when the mesh is very dense.
 
-The reducible uniform grid points are returned in fractional
-coordinates as `grid_address`. A map between reducible and
-irreducible points are returned as `ir_mapping_table` as in the indices of
-`grid_address`. The number of the irreducible k-points are also
-returned. The time reversal symmetry is imposed by setting `is_time_reversal=true`.
-
 # Arguments
 - `cell`: the input cell.
 - `mesh`: the mesh numbers along each reciprocal axis. It is given by three integers.
@@ -35,8 +49,7 @@ returned. The time reversal symmetry is imposed by setting `is_time_reversal=tru
   mesh numbers.
 - `is_time_reversal`: whether to impose the time reversal symmetry.
 
-!!! compat "Version 0.2"
-    The returned mapping table is indexed starting at `1`, not `0` as in Python or C.
+See also [`BrillouinZoneMesh`](@ref).
 """
 function get_ir_reciprocal_mesh(
     cell::AbstractCell, mesh, symprec=1e-5; is_shift=falses(3), is_time_reversal=true
@@ -85,13 +98,10 @@ symmetry operations in direct space with one or multiple
 stabilizers.
 
 The stabilizers are written in fractional coordinates.
-Symmetrically equivalent k-points
-(stars) in fractional coordinates are stored in `map` as indices of
-`grid_address`. The number of reduced k-points with the stabilizers
-are returned as the return value.
-
 This function can be used to obtain all mesh grid points by setting
 `rotations = [[1 0 0; 0 1 0; 0 0 1]]`, and `qpoints = [[0, 0, 0]]`.
+
+See also [`BrillouinZoneMesh`](@ref).
 """
 function get_stabilized_reciprocal_mesh(
     rotations, mesh, qpoints=[[0, 0, 0]]; is_shift=falses(3), is_time_reversal=true
