@@ -51,22 +51,18 @@ Therefore, a lattice is represented as
 \end{bmatrix}.
 ```
 
-A reciprocal lattice is its inverse, represented as three row vectors:
+A reciprocal lattice is its inverse, represented as three columns vectors, too:
 
 ```math
-\mathbf{B} =
+\mathbf{B}^\intercal =
 \mathbf{A}^{-1} =
-\begin{bmatrix}
-    \mathbf{b}_1 \\
-    \mathbf{b}_2 \\
-    \mathbf{b}_3
-\end{bmatrix},
+\begin{bmatrix} \mathbf{b}_1 & \mathbf{b}_2 & \mathbf{b}_3 \end{bmatrix}
 ```
 
 so that
 
 ```math
-\mathbf{A} \mathbf{B} = \mathbf{B} \mathbf{A} = \mathbf{I},
+\mathbf{A} \mathbf{B}^\intercal = \mathbf{B}^\intercal \mathbf{A} = \mathbf{I},
 ```
 
 where ``\mathbf{I}`` is the ``3 \times 3`` identity matrix.
