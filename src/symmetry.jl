@@ -52,21 +52,21 @@ See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search
 # Examples
 ```jldoctest
 julia> lattice = Lattice([
-    [5.0759761474456697, 5.0759761474456697, 0],
-    [-2.8280307701821314, 2.8280307701821314, 0],
-    [0, 0, 8.57154746],
-]);
+           [5.0759761474456697, 5.0759761474456697, 0],
+           [-2.8280307701821314, 2.8280307701821314, 0],
+           [0, 0, 8.57154746],
+       ]);
 
 julia> positions = [
-    [0.0, 0.84688439, 0.1203133],
-    [0.0, 0.65311561, 0.6203133],
-    [0.0, 0.34688439, 0.3796867],
-    [0.0, 0.15311561, 0.8796867],
-    [0.5, 0.34688439, 0.1203133],
-    [0.5, 0.15311561, 0.6203133],
-    [0.5, 0.84688439, 0.3796867],
-    [0.5, 0.65311561, 0.8796867],
-];
+           [0.0, 0.84688439, 0.1203133],
+           [0.0, 0.65311561, 0.6203133],
+           [0.0, 0.34688439, 0.3796867],
+           [0.0, 0.15311561, 0.8796867],
+           [0.5, 0.34688439, 0.1203133],
+           [0.5, 0.15311561, 0.6203133],
+           [0.5, 0.84688439, 0.3796867],
+           [0.5, 0.65311561, 0.8796867],
+       ];
 
 julia> atoms = fill(35, length(positions));
 
@@ -75,6 +75,7 @@ julia> cell = SpglibCell(lattice, positions, atoms);
 julia> rotations, translations = get_symmetry(cell);
 
 julia> size(rotations) == size(translations) == (16,)
+true
 ```
 """
 function get_symmetry(cell::AbstractCell, symprec=1e-5)
@@ -311,10 +312,10 @@ is unknown, the following may be a reasonable choice:
 
 ```jldoctest
 julia> lattice = Lattice([
-    1 0 0
-    0 1 0
-    0 0 1
-]);
+           1 0 0
+           0 1 0
+           0 0 1
+       ]);
 ```
 """
 function get_spacegroup_type_from_symmetry(
