@@ -3,7 +3,9 @@ using Spglib
 using Documenter
 
 # See https://stackoverflow.com/questions/70137119/how-to-include-the-docstring-for-a-function-from-another-package-in-my-julia-doc
-DocMeta.setdocmeta!(CrystallographyCore, :DocTestSetup, :(using CrystallographyCore); recursive=true)
+DocMeta.setdocmeta!(
+    CrystallographyCore, :DocTestSetup, :(using CrystallographyCore); recursive=true
+)
 DocMeta.setdocmeta!(Spglib, :DocTestSetup, :(using Spglib); recursive=true)
 
 makedocs(;
@@ -29,7 +31,7 @@ makedocs(;
             "Public API" => "lib/public.md",
             "Internals" => map(
                 s -> "lib/internals/$(s)",
-                sort(readdir(joinpath(@__DIR__, "src/lib/internals")))
+                sort(readdir(joinpath(@__DIR__, "src/lib/internals"))),
             ),
         ],
         "Developer Docs" => [
@@ -40,7 +42,4 @@ makedocs(;
     ],
 )
 
-deploydocs(;
-    repo="github.com/singularitti/Spglib.jl",
-    devbranch="main",
-)
+deploydocs(; repo="github.com/singularitti/Spglib.jl", devbranch="main")
