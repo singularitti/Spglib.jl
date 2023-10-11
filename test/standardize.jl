@@ -33,7 +33,7 @@ using Spglib: SpglibError
         0.84688439 0.65311561 0.34688439 0.15311561
         0.1203133 0.6203133 0.3796867 0.8796867
     ]
-    @test primitive_cell.atoms == [8, 8, 8, 8] ./ 8  # Python results
+    @test primitive_cell.atoms == [8, 8, 8, 8]  # See issue #150
 end
 
 @testset "Rotate the basis vectors rigidly in the above example" begin
@@ -76,13 +76,15 @@ end
         0.84688439 0.65311561 0.34688439 0.15311561
         0.1203133 0.6203133 0.3796867 0.8796867
     ]
-    @test primitive_cell.atoms == [8, 8, 8, 8] ./ 8  # Python results
+    @test primitive_cell.atoms == [8, 8, 8, 8]  # See issue #150
     @testset "Obtain the rotated primitive cell basis vectors" begin
-        @test standardize_cell(cell; to_primitive=true, no_idealize=true).lattice ≈ [
+        new_cell = standardize_cell(cell; to_primitive=true, no_idealize=true)
+        @test Lattice(new_cell) ≈ [
             3.95200346 1.12397269 0.0
             1.12397269 3.95200346 0.0
             0.0 0.0 8.57154746
         ]
+        @test new_cell.atoms == fill(8, 4)  # See issue #150
     end
 end
 
@@ -99,16 +101,16 @@ end
             0.0 0.5
             0.0 0.5
         ]
-        atoms = [1, 1]
+        atoms = ["Fe", "Fe"]
         cell = Cell(lattice, positions, atoms)
         new_cell = find_primitive(cell, 1e-5)
-        @test new_cell.lattice ≈ [
+        @test Lattice(new_cell) ≈ [
             -2.0 2.0 2.0
             2.0 -2.0 2.0
             2.0 2.0 -2.0
         ]
         @test new_cell.positions ≈ [[0.0, 0.0, 0.0]]
-        @test new_cell.atoms == [1]
+        @test new_cell.atoms == ["Fe"]  # See issue #150
     end
     @testset "Test `refine_cell`" begin
         lattice = [
@@ -117,7 +119,7 @@ end
             2.0 2.0 -2.0
         ]
         positions = [0.0 0.0 0.0]'
-        atoms = [1]
+        atoms = [:Fe]
         cell = Cell(lattice, positions, atoms)
         new_cell = refine_cell(cell, 1e-5)
         @test new_cell.lattice ≈ [
@@ -130,7 +132,7 @@ end
             0.0 0.5
             0.0 0.5
         ]
-        @test new_cell.atoms == [1, 1]
+        @test new_cell.atoms == [:Fe, :Fe]  # See issue #150
     end
 end
 
