@@ -86,7 +86,7 @@ end
     @test get_international(cell, 1e-5) == "Cmce"
     @test dataset.hall_number == 304  # Compared with Python results
     @test dataset.hall_symbol == "-C 2bc 2"  # Compared with Python results
-    @test dataset.transformation_matrix == [  # Compared with documented results
+    @test dataset.transformation_matrix ≈ [  # Compared with documented results
         1 0 0
         0 1 0
         0 0 1
