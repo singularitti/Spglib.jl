@@ -151,14 +151,14 @@ See also [`BrillouinZoneMesh`](@ref).
     `collect(eachpoint(result, ir_only))`.
 """
 function eachpoint(result::BrillouinZoneMesh, ir_only=true)
-    mesh, shift, grid_address = result.mesh, result.is_shift ./ 2, result.grid_address  # true / 2 = 0.5, false / 2 = 0
+    mesh, shift, grid_address = result.mesh, result.is_shift .// 2, result.grid_address  # true / 2 = 0.5, false / 2 = 0
     if ir_only  # Return only irreducible k-points
         return Iterators.map(unique(result.ir_mapping_table)) do i
-            (grid_address[i] .+ shift) ./ mesh
+            (grid_address[i] .+ shift) .// mesh
         end
     else  # Return all k-points
         return Iterators.map(grid_address) do point
-            (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+            (point .+ shift) .// mesh
         end
     end
 end
