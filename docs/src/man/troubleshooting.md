@@ -59,6 +59,16 @@ julia --sysimage custom-image.so
 
 See [Fredrik Ekre's talk](https://youtu.be/IuwxE3m0_QQ?t=313) for details.
 
+## Unable to install the package
+
+First, verify if your platform is supported by referring to the
+[`spglib_jll.jl` platforms](https://github.com/JuliaBinaryWrappers/spglib_jll.jl/blob/main/README.md#platforms).
+If it's not supported, kindly report the issue to the developers
+[here](https://github.com/JuliaPackaging/Yggdrasil/issues/new).
+
+If you can install `spglib_jll.jl` but encounter issues with `Spglib.jl`, please report to
+the developer [here](https://github.com/singularitti/Spglib.jl/issues/new).
+
 ## Returned cell symmetry is wrong
 
 Check whether you set the lattice correctly. This is the part where errors can easily occur,
