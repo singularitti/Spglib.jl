@@ -47,8 +47,6 @@ cell. This may not be understandable in crystallographic sense, but is
 practically useful treatment for research in computational materials
 science.
 
-See also [`get_symmetry_with_collinear_spin`](@ref) for magnetic symmetry search.
-
 # Examples
 ```jldoctest
 julia> lattice = Lattice([
