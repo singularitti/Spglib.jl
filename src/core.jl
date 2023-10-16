@@ -152,7 +152,7 @@ Get the lattice from a `cell`.
 Lattice(cell::SpglibCell) = cell.lattice
 
 # This is an internal function, do not export!
-function _expand_cell(cell::SpglibCell)
+function _unwrap_convert(cell::SpglibCell)
     lattice, positions, atoms, magmoms = cell.lattice, cell.positions, cell.atoms, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
@@ -166,7 +166,7 @@ function _expand_cell(cell::SpglibCell)
     end
     return clattice, cpositions, catoms, cmagmoms
 end
-function _expand_cell(cell::CrystallographyCell)
+function _unwrap_convert(cell::CrystallographyCell)
     lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))

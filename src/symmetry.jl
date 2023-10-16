@@ -77,7 +77,7 @@ true
 ```
 """
 function get_symmetry(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     num_atom = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 48num_atom  # Num of symmetry operations = order of the point group of the space group × num of lattice points
@@ -160,7 +160,7 @@ rhombohedral crystals. In this function, the other
 crystallographic setting is not obtained.
 """
 function get_dataset(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     ptr = @ccall libsymspg.spg_get_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -201,7 +201,7 @@ function get_dataset_with_hall_number(
     cell::AbstractCell, hall_number::Integer, symprec=1e-5
 )
     @assert 1 <= hall_number <= 530
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     ptr = @ccall libsymspg.spg_get_dataset_with_hall_number(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -226,7 +226,7 @@ Return the exact number of symmetry operations.
 An error is thrown when it fails.
 """
 function get_multiplicity(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     num_sym = @ccall libsymspg.spg_get_multiplicity(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -244,7 +244,7 @@ end
 Return the space group type in Hermann–Mauguin (international) notation.
 """
 function get_international(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     symbol = Vector{Cchar}(undef, 11)
     @ccall libsymspg.spg_get_international(
         symbol::Ptr{Cchar},
@@ -264,7 +264,7 @@ end
 Return the space group type in Schoenflies notation.
 """
 function get_schoenflies(cell::AbstractCell, symprec=1e-5)
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     symbol = Vector{Cchar}(undef, 7)
     @ccall libsymspg.spg_get_schoenflies(
         symbol::Ptr{Cchar},

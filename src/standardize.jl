@@ -37,7 +37,7 @@ space group type is as explained for [`get_dataset`](@ref).
 function standardize_cell(
     cell::AbstractCell, symprec=1e-5; to_primitive=false, no_idealize=false
 )
-    lattice, _positions, _atoms = _expand_cell(cell)
+    lattice, _positions, _atoms = _unwrap_convert(cell)
     num_atom = natoms(cell)
     allocations = 4  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L440
     positions = Matrix{Cdouble}(undef, 3, num_atom * allocations)
@@ -57,7 +57,7 @@ function standardize_cell(
     new_atom_indices = atoms[1:num_atom_std]  # See issue #150
     atoms_record = atomtypes(cell)  # Record the original atoms with labels
     return Cell(
-        Lattice(transpose(lattice)),  # We have to `transpose` back because of `_expand_cell`!
+        Lattice(transpose(lattice)),  # We have to `transpose` back because of `_unwrap_convert`!
         collect(eachcol(positions[:, 1:num_atom_std])),
         collect(atoms_record[index] for index in new_atom_indices),
     )

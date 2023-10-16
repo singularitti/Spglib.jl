@@ -60,7 +60,7 @@ function get_ir_reciprocal_mesh(
     end
     @assert all(isone(x) || iszero(x) for x in is_shift)
     # Prepare for input
-    lattice, positions, atoms = _expand_cell(cell)
+    lattice, positions, atoms = _unwrap_convert(cell)
     mesh = Base.cconvert(Vector{Cint}, mesh)  # Very important to convert!
     is_shift = Base.cconvert(Vector{Cint}, is_shift)  # Very important to convert!
     # Prepare for output
