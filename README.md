@@ -82,3 +82,8 @@ We welcome contributions, feature requests, and suggestions. If you encounter an
 please open an [issue](https://github.com/singularitti/Spglib.jl/issues).
 The [Contributing](@ref) page has
 a few guidelines that should be followed when opening pull requests and contributing code.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=singularitti/Spglib.jl&type=Date)](https://star-history.com/#singularitti/Spglib.jl&Date)
+
