@@ -55,7 +55,7 @@ function standardize_cell(
     )::Cint  # Note: not `num_atom`!
     check_error()
     new_atom_indices = atoms[1:num_atom_std]  # See issue #150
-    atoms_record = unique(cell.atoms)  # Record the original atoms with labels
+    atoms_record = atomtypes(cell)  # Record the original atoms with labels
     return Cell(
         Lattice(transpose(lattice)),  # We have to `transpose` back because of `_expand_cell`!
         collect(eachcol(positions[:, 1:num_atom_std])),
