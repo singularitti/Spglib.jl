@@ -56,23 +56,19 @@ before posting. You can also find a copy of that info
 [here](https://github.com/singularitti/Spglib.jl/blob/main/.github/ISSUE_TEMPLATE/bug_report.md).
 
 !!! tip
-    If you're unsure whether you have a real bug, post on the
-    [community forum](https://github.com/singularitti/Spglib.jl/discussions)
-    first. Someone will either help you fix the problem or let you know the
-    most appropriate place to open a bug report.
+If you're unsure whether you have a real bug, post on the
+[community forum](https://github.com/singularitti/Spglib.jl/discussions)
+first. Someone will either help you fix the problem or let you know the
+most appropriate place to open a bug report.
 
 ## Contribute code to Spglib
 
 Finally, you can also contribute code to Spglib!
 
 !!! warning
-    If you do not have experience with Git, GitHub, and Julia development, the
-    first steps can be a little daunting. However, there are lots of tutorials
-    available online, including:
-    - [GitHub](https://guides.github.com/activities/hello-world/)
-    - [Git and GitHub](https://try.github.io/)
-    - [Git](https://git-scm.com/book/en/v2)
-    - [Julia package development](https://docs.julialang.org/en/v1/stdlib/Pkg/#Developing-packages-1)
+If you do not have experience with Git, GitHub, and Julia development, the
+first steps can be a little daunting. However, there are lots of tutorials
+available online, including: - [GitHub](https://guides.github.com/activities/hello-world/) - [Git and GitHub](https://try.github.io/) - [Git](https://git-scm.com/book/en/v2) - [Julia package development](https://docs.julialang.org/en/v1/stdlib/Pkg/#Developing-packages-1)
 
 Once you are familiar with Git and GitHub, the workflow for contributing code to
 Spglib is similar to the following:
@@ -87,9 +83,9 @@ improve code quality and avoid time spent writing code that does not get merged 
 Spglib.
 
 !!! tip
-    At this point, remember to be patient and polite; you may get a _lot_ of
-    comments on your issue! However, do not be afraid! Comments mean that people are
-    willing to help you improve the code that you are contributing to Spglib.
+At this point, remember to be patient and polite; you may get a _lot_ of
+comments on your issue! However, do not be afraid! Comments mean that people are
+willing to help you improve the code that you are contributing to Spglib.
 
 ### Step 2: fork Spglib
 
@@ -107,7 +103,7 @@ Pkg.update()
 Pkg.develop("Spglib")
 ```
 
-Then the package will be cloned to your local machine. On *nix systems, the default path is
+Then the package will be cloned to your local machine. On \*nix systems, the default path is
 `~/.julia/dev/Spglib` unless you modify the
 [`JULIA_DEPOT_PATH`](http://docs.julialang.org/en/v1/manual/environment-variables/#JULIA_DEPOT_PATH-1)
 environment variable. If you're on
@@ -126,8 +122,8 @@ to instantiate the project.
 ### Step 4: checkout a new branch
 
 !!! note
-    In the following, replace any instance of `GITHUB_ACCOUNT` with your GitHub
-    username.
+In the following, replace any instance of `GITHUB_ACCOUNT` with your GitHub
+username.
 
 The next step is to check out a development branch. In a terminal (or command
 prompt on Windows), run:
@@ -155,9 +151,9 @@ Make sure you:
 - Add tests and documentation for any changes or new features.
 
 !!! tip
-    When you change the source code, you will need to restart Julia for the
-    changes to take effect. If this is a pain, install
-    [`Revise.jl`](https://github.com/timholy/Revise.jl).
+When you change the source code, you will need to restart Julia for the
+changes to take effect. If this is a pain, install
+[`Revise.jl`](https://github.com/timholy/Revise.jl).
 
 ### Step 6a: test your code changes
 
@@ -176,10 +172,10 @@ julia> Pkg.test()
 ```
 
 !!! warning
-    Running the tests might take a long time.
+Running the tests might take a long time.
 
 !!! tip
-    If you are using `Revise.jl`, you can also run the tests by calling `include`:
+If you are using `Revise.jl`, you can also run the tests by calling `include`:
 
     ```julia-repl
     include("test/runtests.jl")
@@ -206,12 +202,12 @@ After a while, a folder `PKGROOT/docs/build` will appear. Open
 `PKGROOT/docs/build/index.html` with your favorite browser, and have fun!
 
 !!! warning
-    Building the documentation might take a long time.
+Building the documentation might take a long time.
 
 !!! tip
-    If there's a problem with the tests that you don't know how to fix, don't
-    worry. Continue to step 5, and one of the Spglib contributors will comment
-    on your pull request, telling you how to fix things.
+If there's a problem with the tests that you don't know how to fix, don't
+worry. Continue to step 5, and one of the Spglib contributors will comment
+on your pull request, telling you how to fix things.
 
 ### Step 7: make a pull request
 
@@ -255,8 +251,8 @@ git pull
 ```
 
 !!! note
-    If you have suggestions to improve this guide, please make a pull request!
-    It's particularly helpful if you do this after your first pull request
-    because you'll know all the parts that could be explained better.
+If you have suggestions to improve this guide, please make a pull request!
+It's particularly helpful if you do this after your first pull request
+because you'll know all the parts that could be explained better.
 
 Thanks for contributing to Spglib!
