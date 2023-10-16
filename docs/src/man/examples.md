@@ -172,4 +172,3 @@ In summary of the two steps,
     \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}.
 \end{align}
 ```
-
