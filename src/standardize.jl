@@ -9,7 +9,7 @@ Return the standardized cell.
 The standardized unit cell (see [Spglib conventions of standardized unit cell](@ref)) is
 generated from an input unit cell structure and its symmetry found by
 the symmetry search. The choice of the setting for each space group
-type is as explained for [`spg_get_dataset`](@ref).
+type is as explained for [`get_dataset`](@ref).
 Usually `to_primitive=false` and `no_idealize=false` are recommended to
 set and this setting results in the same behavior as
 `spg_refine_cell`.
@@ -31,7 +31,7 @@ space group type is as explained for [`get_dataset`](@ref).
   rotated in Cartesian coordinates by the idealization of the basis
   vectors. `no_idealize=true` disables this. The detail of the
   idealization (`no_idealize=false`) is written at
-  [Idealization of unit cell structure](@ref). `no_idealize=true` may be useful when we want
+  [Idealization of unit cell structure](@ref idealization). `no_idealize=true` may be useful when we want
   to leave basis vectors and atomic positions in Cartesian coordinates fixed.
 """
 function standardize_cell(
