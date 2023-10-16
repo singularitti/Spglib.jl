@@ -113,7 +113,7 @@ where ``\mathbf{R}`` is the rotation matrix. This is computed by
 ```math
 \mathbf{R} =
 \begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}
-\bigl(\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}\bigr)^{-1}
+\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}^{-1}
 ```
 
 In Julia code, this is
