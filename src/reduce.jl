@@ -17,7 +17,7 @@ by
 
 ```math
 \\mathbf{P} = \\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}
-\\bigl(\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}\\bigr)^{-1}
+\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}^{-1}
 ```
 
 and the matrix elements have to be almost integers.
@@ -55,7 +55,7 @@ by
 
 ```math
 \\mathbf{P} = \\begin{bmatrix} \\mathbf{a} & \\mathbf{b} & \\mathbf{c} \\end{bmatrix}
-\\bigl(\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}\\bigr)^{-1}
+\\begin{bmatrix} \\mathbf{a}' & \\mathbf{b}' & \\mathbf{c}' \\end{bmatrix}^{-1}
 ```
 
 and the matrix elements have to be almost integers.
