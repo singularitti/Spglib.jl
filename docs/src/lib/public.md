@@ -15,6 +15,20 @@ Pages = ["public.md"]
 
 ## Public interface
 
+To utilize the public interface, first import the required packages:
+
+```@repl
+using CrystallographyCore, Spglib
+```
+
+For documentation on `CrystallographyCore.jl`, refer to
+[this link](https://mineralscloud.github.io/CrystallographyCore.jl/stable/).
+
+For extended functionalities, consider exploring my other packages:
+[`CrystallographyBase.jl`](https://github.com/MineralsCloud/CrystallographyBase.jl),
+[`Crystallography.jl`](https://github.com/MineralsCloud/Crystallography.jl),
+and [`MillerIndices.jl`](https://github.com/MineralsCloud/MillerIndices.jl).
+
 ### Types
 
 ```@autodocs
