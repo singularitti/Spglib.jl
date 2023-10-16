@@ -22,6 +22,7 @@ makedocs(;
         "Manual" => [
             "Installation Guide" => "man/installation.md",
             "Definitions and conventions" => "man/definitions.md",
+            "Spglib dataset" => "man/dataset.md",
             "Examples" => "man/examples.md",
             "Troubleshooting" => "man/troubleshooting.md",
         ],
