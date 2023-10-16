@@ -153,22 +153,18 @@ Lattice(cell::SpglibCell) = cell.lattice
 
 # This is an internal function, do not export!
 function _expand_cell(cell::SpglibCell)
-    lattice, positions, atoms, magmoms = cell.lattice,
-    cell.positions, cell.atoms,
-    cell.magmoms
+    lattice, positions, atoms, magmoms = cell.lattice, cell.positions, cell.atoms, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
-    positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     atomtypes = unique(atoms)
-    atoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
-    if !isempty(magmoms)
-        magmoms = if eltype(magmoms) <: AbstractVector
-            Base.cconvert(Matrix{Cdouble}, reduce(hcat, magmoms))
-        else
-            Base.cconvert(Vector{Cdouble}, magmoms)
-        end
+    catoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
+    cmagmoms = if eltype(magmoms) <: AbstractVector
+        Base.cconvert(Matrix{Cdouble}, reduce(hcat, magmoms))
+    else
+        Base.cconvert(Vector{Cdouble}, magmoms)  # `magmoms` could be empty!
     end
-    return lattice, positions, atoms, magmoms
+    return clattice, cpositions, catoms, cmagmoms
 end
 function _expand_cell(cell::CrystallographyCell)
     lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
