@@ -131,13 +131,13 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.mapping_to_primitive == [0, 1, 2, 3, 0, 1, 2, 3]
-    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 0, 1, 2, 3]
+    @test dataset.mapping_to_primitive .- 1 == [0, 1, 2, 3, 0, 1, 2, 3]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1, 2, 3, 0, 1, 2, 3]
     @test dataset.wyckoffs == ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']
     @test dataset.site_symmetry_symbols ==
         ["m..", "m..", "m..", "m..", "m..", "m..", "m..", "m.."]
-    @test dataset.equivalent_atoms == [0, 0, 0, 0, 0, 0, 0, 0]
-    @test dataset.crystallographic_orbits == [0, 0, 0, 0, 0, 0, 0, 0]
+    @test dataset.equivalent_atoms .- 1 == [0, 0, 0, 0, 0, 0, 0, 0]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0, 0, 0, 0, 0, 0, 0]
     @test dataset.primitive_lattice ≈ Lattice(
         [2.82803077, -2.82803077, 0], [1.12397269, 3.95200346, 0], [0, 0, 8.57154746]
     )
@@ -307,11 +307,11 @@ end
     @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
     @test dataset.wyckoffs == ['a', 'a', 'f', 'f', 'f', 'f']
     @test dataset.site_symmetry_symbols == ["m.mm", "m.mm", "m.2m", "m.2m", "m.2m", "m.2m"]
-    @test dataset.crystallographic_orbits == [0, 0, 2, 2, 2, 2]
-    @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0, 2, 2, 2, 2]
+    @test dataset.equivalent_atoms .- 1 == [0, 0, 2, 2, 2, 2]
     @test dataset.primitive_lattice ==
         Lattice([[0.0, 0.0, 3.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0]])  # Compared with Python results, the Python version is a transposed version of this
-    @test dataset.mapping_to_primitive == 0:5
+    @test dataset.mapping_to_primitive .- 1 == 0:5
     @test dataset.std_lattice ==
         Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 3.0]])  # Compared with Python results, the Python version is a transposed version of this
     @test dataset.std_positions == [
@@ -334,7 +334,7 @@ end
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
     @test dataset.std_types == [1, 1, 2, 2, 2, 2]  # 14, 14, 8, 8, 8, 8
-    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1, 2, 3, 4, 5]
     @test dataset.pointgroup_symbol == "4/mmm"
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
@@ -406,11 +406,11 @@ end
     @test dataset.translations == [[0.0, 0.0, 0.0]]
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols == ["1", "1", "1", "1", "1", "1"]
-    @test dataset.crystallographic_orbits == [0, 1, 2, 3, 4, 5]
-    @test dataset.equivalent_atoms == [0, 1, 2, 3, 4, 5]
+    @test dataset.crystallographic_orbits .- 1 == [0, 1, 2, 3, 4, 5]
+    @test dataset.equivalent_atoms .- 1 == [0, 1, 2, 3, 4, 5]
     @test dataset.primitive_lattice ==
         Lattice([[0.0, 0.0, 3.0], [3.97, 0.0, 0.0], [0.0, 4.03, 0.0]])
-    @test dataset.mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+    @test dataset.mapping_to_primitive .- 1 == [0, 1, 2, 3, 4, 5]
     @test dataset.std_lattice ≈ Lattice([
         [3, 0, 0], [2.4309239e-16, 3.97, 0], [2.4676633e-16, 2.4676633e-16, 4.03]
     ])
@@ -439,7 +439,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive == [0, 1, 2, 3, 4, 5]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1, 2, 3, 4, 5]
     @test dataset.pointgroup_symbol == "1"
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test get_symmetry_from_database(dataset.hall_number)[1] == dataset.rotations
@@ -553,11 +553,11 @@ end
     ]  # Compared with Python results
     @test dataset.wyckoffs == ['d', 'd']
     @test dataset.site_symmetry_symbols == ["3m.", "3m."]
-    @test dataset.equivalent_atoms == [0, 0]
-    @test dataset.crystallographic_orbits == [0, 0]
+    @test dataset.equivalent_atoms .- 1 == [0, 0]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0]
     @test dataset.primitive_lattice ==
         Lattice([[2.0, -3.4641, 0], [-2.0, -3.4641, 0], [0.0, 0.0, -12.0]])
-    @test dataset.mapping_to_primitive == [0, 1]
+    @test dataset.mapping_to_primitive .- 1 == [0, 1]
     @test dataset.std_lattice ≈
         Lattice([[3.9999986, 0, 0], [-1.9999993, 3.4641004, 0], [0, 0, 12.0]])
     @test dataset.std_types == [1, 1]
@@ -579,7 +579,7 @@ end
             atol=5e-6,
         )
     end
-    @test dataset.std_mapping_to_primitive == [0, 1]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1]
     @test dataset.pointgroup_symbol == "-3m"
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
@@ -1038,11 +1038,11 @@ end
     @test dataset.wyckoffs == ['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
     @test dataset.site_symmetry_symbols ==
         ["-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m", "-43m"]
-    @test dataset.equivalent_atoms == [0, 0, 0, 0, 0, 0, 0, 0]
-    @test dataset.crystallographic_orbits == [0, 0, 0, 0, 0, 0, 0, 0]
+    @test dataset.equivalent_atoms .- 1 == [0, 0, 0, 0, 0, 0, 0, 0]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0, 0, 0, 0, 0, 0, 0]
     @test dataset.primitive_lattice ==
         Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
-    @test dataset.mapping_to_primitive == [0, 0, 0, 0, 1, 1, 1, 1]
+    @test dataset.mapping_to_primitive .- 1 == [0, 0, 0, 0, 1, 1, 1, 1]
     @test dataset.std_lattice ==
         Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])
     @test dataset.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
@@ -1067,7 +1067,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
@@ -1227,11 +1227,11 @@ end
         (192,)  # Symmetry breaking
     @test dataset.wyckoffs == ['b', 'b']
     @test dataset.site_symmetry_symbols == ["-43m", "-43m"]
-    @test dataset.crystallographic_orbits == [0, 0]
-    @test dataset.equivalent_atoms == [0, 0]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0]
+    @test dataset.equivalent_atoms .- 1 == [0, 0]
     @test dataset.primitive_lattice ==
         Lattice([[2.0, -2.0, 0.0], [-2.0, -0.0, -2.0], [2.0, 2.0, 0.0]])
-    @test dataset.mapping_to_primitive == [0, 1]
+    @test dataset.mapping_to_primitive .- 1 == [0, 1]
     @test dataset.std_lattice ==
         Lattice([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])
     @test dataset.std_types == [14, 14, 14, 14, 14, 14, 14, 14] / 14
@@ -1256,7 +1256,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive == [0, 1, 0, 1, 0, 1, 0, 1]
+    @test dataset.std_mapping_to_primitive .- 1 == [0, 1, 0, 1, 0, 1, 0, 1]
     @test dataset.pointgroup_symbol == "m-3m"
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
@@ -1368,11 +1368,11 @@ end
     @test get_symmetry_from_database(dataset.hall_number)[2] == dataset.translations
     @test dataset.wyckoffs == ['a', 'd', 'd']
     @test dataset.site_symmetry_symbols == ["6/mmm", "-6m2", "-6m2"]
-    @test dataset.crystallographic_orbits == [0, 1, 1]
-    @test dataset.equivalent_atoms == [0, 1, 1]
+    @test dataset.crystallographic_orbits .- 1 == [0, 1, 1]
+    @test dataset.equivalent_atoms .- 1 == [0, 1, 1]
     @test dataset.primitive_lattice ≈
         Lattice([[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]])
-    @test dataset.mapping_to_primitive == 0:2
+    @test dataset.mapping_to_primitive .- 1 == 0:2
     @test dataset.std_lattice ≈
         Lattice([[3.07, 0.0, 0.0], [-1.535, 2.65869799, 0.0], [0.0, 0.0, 3.52]])
     @test dataset.std_types == [1, 2, 2]
@@ -1389,7 +1389,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive == 0:2
+    @test dataset.std_mapping_to_primitive .- 1 == 0:2
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
     ) == SpacegroupType(
@@ -1496,11 +1496,11 @@ end
     ]  # Compared with Python results
     @test dataset.wyckoffs == ['b', 'b', 'b', 'b']
     @test dataset.site_symmetry_symbols == ["3m.", "3m.", "3m.", "3m."]
-    @test dataset.crystallographic_orbits == [0, 0, 2, 2]
-    @test dataset.equivalent_atoms == [0, 0, 2, 2]
+    @test dataset.crystallographic_orbits .- 1 == [0, 0, 2, 2]
+    @test dataset.equivalent_atoms .- 1 == [0, 0, 2, 2]
     @test dataset.primitive_lattice ≈
         Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
-    @test dataset.mapping_to_primitive == 0:3  # FIXME: should I +1?
+    @test dataset.mapping_to_primitive .- 1 == 0:3  # FIXME: should I +1?
     @test dataset.std_lattice ≈
         Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
     @test dataset.std_positions ≈ [
@@ -1520,7 +1520,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive == 0:3  # FIXME: should I +1?
+    @test dataset.std_mapping_to_primitive .- 1 == 0:3  # FIXME: should I +1?
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
     ) == SpacegroupType(
