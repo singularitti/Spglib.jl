@@ -45,7 +45,7 @@ Crystallography (ITA).
 
 ### `hall_number`
 
-The serial number from ``1`` to ``530`` which are found at
+The serial number from `1` to `530` which are found at
 [list of space groups (Seto's web site)](https://yseto.net/?page_id=29%3E). Be
 sure that this is not a standard crystallographic definition as far as
 the author of Spglib knows.
@@ -68,9 +68,9 @@ The information on unique axis, setting or cell choices.
 
 The symmetry operations of the input unit cell are stored in
 `rotations` and `translations`. A crystallographic symmetry
-operation ``(\mathbf{W}, \mathbf{w})`` is made from a pair
-of rotation ``\mathbf{W}`` and translation
-``\mathbf{w}`` parts with the same index. Number of symmetry
+operation `(\mathbf{W}, \mathbf{w})` is made from a pair
+of rotation `\mathbf{W}` and translation
+`\mathbf{w}` parts with the same index. Number of symmetry
 operations is given as `n_operations`. The detailed explanation of
 the values is found at [`get_symmetry`](@ref).
 
@@ -84,8 +84,8 @@ elements in `wyckoffs` and `equivalent_atoms`.
 ### `wyckoffs`
 
 This gives the information of Wyckoff letters by integer
-numbers, where ``0``, ``1``, ``2``, ``\ldots``, represent the Wyckoff letters
-of ``a``, ``b``, ``c``, ``\ldots`` These are assigned to all atomic positions
+numbers, where `0`, `1`, `2`, `\ldots`, represent the Wyckoff letters
+of `a`, `b`, `c`, `\ldots` These are assigned to all atomic positions
 of the input unit cell in this order. Therefore the number of elements in
 `wyckoffs` is same as the number of atoms in the input unit cell,
 which is given by `n_atoms`.
@@ -105,17 +105,17 @@ This is determined from the symmetry of the primitive cell.
 This gives the mapping table from the atomic indices of the input unit
 cell to the atomic indices of symmetrically independent atom, such as
 `[1, 1, 1, 1, 5, 5, 5, 5]`, where the symmetrically independent
-atomic indices are ``1`` and
-``5``. We can see that the atoms from ``1`` to ``4`` are mapped to ``1`` and those
-from ``5`` to ``8`` are mapped to ``5``.  The number of elements in
+atomic indices are `1` and
+`5`. We can see that the atoms from `1` to `4` are mapped to `1` and those
+from `5` to `8` are mapped to `5`. The number of elements in
 `equivalent_atoms` is same as the number of atoms in the input unit
 cell, which is given by `n_atoms`.
 
 !!! warning
-    You may notice that the indices here differ from those in
-    [Spglib's official documentation](https://spglib.readthedocs.io/en/latest/dataset.html#equivalent-atoms),
-    where the indices start from ``0``. This discrepancy arises because indices in Julia
-    start from ``1`` by default. Consequently, all indices here are incremented by ``1``.
+You may notice that the indices here differ from those in
+[Spglib's official documentation](https://spglib.readthedocs.io/en/latest/dataset.html#equivalent-atoms),
+where the indices start from `0`. This discrepancy arises because indices in Julia
+start from `1` by default. Consequently, all indices here are incremented by `1`.
 
 Symmetry operations found for the input cell are used to determine the
 equivalent atoms. `equivalent_atoms` and `crystallographic_orbits`
@@ -131,8 +131,8 @@ primitive cell is used to determine the symmetrically equivalent atoms.
 
 ### `transformation_matrix` and `origin_shift`
 
-`transformation_matrix` (``\mathbf{P}``) and
-`origin_shift` (``\mathbf{p}``) are obtained as a result of
+`transformation_matrix` (`\mathbf{P}`) and
+`origin_shift` (`\mathbf{p}`) are obtained as a result of
 space-group-type matching under a set of unique axis, setting and cell
 choices. These are operated to the basis vectors and atomic point
 coordinates of the input unit cell as
@@ -164,11 +164,11 @@ rearrangement of the order atoms with respect to the input unit cell.
 
 Rotation matrix that rotates the standardized crystal structure
 before idealization
-``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``
+`\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}`
 to that after idealization
-``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``
+`\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}`
 in Cartesian coordinates of the given input unit cell. The rotation
-matrix ``\mathbf{R}`` is defined by
+matrix `\mathbf{R}` is defined by
 
 ```math
 \begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix} =
@@ -176,12 +176,12 @@ matrix ``\mathbf{R}`` is defined by
 ```
 
 More precisely, this rotation matrix is an orthonormal matrix. Since
-``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``
-can be distored, to make ``\mathbf{R}`` orthonormal, it is calculated as
+`\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}`
+can be distored, to make `\mathbf{R}` orthonormal, it is calculated as
 follows. Make cubes of
-``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``
+`\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}`
 and
-``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``
+`\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}`
 by
 
 ```math
@@ -192,7 +192,7 @@ by
 \end{bmatrix}.
 ```
 
-Watching ``\mathbf{L}_\text{s}`` as ``3\times 3`` matrices, ``\mathbf{R}`` is
+Watching `\mathbf{L}_\text{s}` as `3\times 3` matrices, `\mathbf{R}` is
 obtained by solving
 
 ```math
