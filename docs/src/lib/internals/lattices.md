@@ -1,5 +1,0 @@
-# Lattices
-
-```@docs
-CrystallographyCore.AbstractLattice
-```
