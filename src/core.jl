@@ -157,7 +157,7 @@ function _expand_cell(cell::SpglibCell)
     cell.positions, cell.atoms,
     cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
-    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
     positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     atomtypes = unique(atoms)
     atoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
@@ -172,7 +172,7 @@ function _expand_cell(cell::SpglibCell)
 end
 function _expand_cell(cell::CrystallographyCell)
     lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
-    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
     positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     atomtypes = unique(atoms)
     atoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
