@@ -168,11 +168,11 @@ function _expand_cell(cell::SpglibCell)
 end
 function _expand_cell(cell::CrystallographyCell)
     lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
-    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
-    positions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
+    clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
     atomtypes = unique(atoms)
-    atoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
-    return lattice, positions, atoms
+    catoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
+    return clattice, cpositions, catoms
 end
 
 # This is an internal type, do not export!
