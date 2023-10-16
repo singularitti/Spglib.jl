@@ -151,7 +151,7 @@ directory.
 
 Make sure you:
 
-- Follow our [Style Guide](@ref style) and [Run JuliaFormatter](@ref).
+- Follow our [Style Guide](@ref) and [Run JuliaFormatter](@ref).
 - Add tests and documentation for any changes or new features.
 
 !!! tip
