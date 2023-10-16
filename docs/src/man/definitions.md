@@ -34,10 +34,7 @@ In this package, basis vectors are represented by three-column vectors:
 \end{bmatrix},
 ```
 
-in Cartesian coordinates. Depending on the situation,
-``\begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix}``
-is used instead of
-``\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix}``.
+in Cartesian coordinates.
 
 Therefore, a lattice is represented as
 
@@ -50,6 +47,11 @@ Therefore, a lattice is represented as
     a_z & b_z & c_z
 \end{bmatrix}.
 ```
+
+Depending on the situation,
+``\begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix}``
+is used instead of
+``\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix}``.
 
 A reciprocal lattice is its inverse, represented as three columns vectors, too:
 
@@ -67,7 +69,24 @@ so that
 
 where ``\mathbf{I}`` is the ``3 \times 3`` identity matrix.
 
-## Crystal coordinates
+We choose this convention because it is convenient for converting reduced reciprocal
+coordinates ``\mathbf{x}^\ast`` to Cartesian coordinates using the expression:
+
+```math
+\mathbf{B} \mathbf{x}^\ast.
+```
+
+This is analogous to the convention employed in [Atomic point coordinates](@ref) for the
+definition of reduced coordinates.
+
+!!! note
+    In crystallography, the convention used is
+    ``\mathbf{a}_i \cdot \mathbf{b}_j = \delta_{ij}``, where ``\delta_{ij}`` is the
+    [Kronecker delta](https://en.wikipedia.org/wiki/Kronecker_delta).
+    This is in contrast to the solid-state physics convention, which is
+    ``\mathbf{a}_i \cdot \mathbf{b}_j = 2\pi\delta_{ij}``.
+
+## Atomic point coordinates
 
 Coordinates of an atomic point ``\mathbf{x}`` are represented
 as three fractional values relative to basis vectors as follows,
