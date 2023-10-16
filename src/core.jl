@@ -319,39 +319,35 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     transformation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
     )
-    rotations = [
-        transpose(_convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i))) for
-        i in Base.OneTo(dataset.n_operations)
-    ]
-    translations = [
-        SVector{3}(unsafe_load(dataset.translations, i)) for
-        i in Base.OneTo(dataset.n_operations)
-    ]
+    rotations = transpose.(
+        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for i in Base.OneTo(dataset.n_operations)
+    )
+    translations = SVector{3}.(
+        unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
+    )
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
-    wyckoffs = [('a':'z')[x + 1] for x in wyckoffs]  # Need to add 1 because of C-index starts from 0
-    site_symmetry_symbols = [
-        tostring(unsafe_load(dataset.site_symmetry_symbols, i)) for
-        i in Base.OneTo(dataset.n_atoms)
-    ]
-    equivalent_atoms =
+    wyckoffs = [('a':'z')[w + 1] for w in wyckoffs]  # Need to add 1 because of C-index starts from 0
+    site_symmetry_symbols = tostring.(
+        unsafe_load(dataset.site_symmetry_symbols, i) for i in Base.OneTo(dataset.n_atoms)
+    )
+    equivalent_atoms =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms) .+ 1
-    crystallographic_orbits =
+    crystallographic_orbits =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms) .+ 1
     primitive_lattice = Lattice(
         transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))
     )
-    mapping_to_primitive =
+    mapping_to_primitive =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms) .+ 1
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
-    std_positions = [
-        SVector{3}(unsafe_load(dataset.std_positions, i)) for
-        i in Base.OneTo(dataset.n_std_atoms)
-    ]
+    std_positions = SVector{3}.(
+        unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
+    )
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )
-    std_mapping_to_primitive =
+    std_mapping_to_primitive =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms) .+
         1
     pointgroup_symbol = tostring(dataset.pointgroup_symbol)
