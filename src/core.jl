@@ -333,16 +333,15 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         tostring(unsafe_load(dataset.site_symmetry_symbols, i)) for
         i in Base.OneTo(dataset.n_atoms)
     ]
-    equivalent_atoms = unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms)
-    crystallographic_orbits = unsafe_wrap(
-        Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms
-    )
+    equivalent_atoms =
+        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms) .+ 1
+    crystallographic_orbits =
+        unsafe_wrap(Vector{Int32}, dataset.crystallographic_orbits, dataset.n_atoms) .+ 1
     primitive_lattice = Lattice(
         transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))
     )
-    mapping_to_primitive = unsafe_wrap(
-        Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms
-    )
+    mapping_to_primitive =
+        unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms) .+ 1
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
     std_positions = [
@@ -352,9 +351,9 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )
-    std_mapping_to_primitive = unsafe_wrap(
-        Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms
-    )
+    std_mapping_to_primitive =
+        unsafe_wrap(Vector{Int32}, dataset.std_mapping_to_primitive, dataset.n_std_atoms) .+
+        1
     pointgroup_symbol = tostring(dataset.pointgroup_symbol)
     return Dataset(
         dataset.spacegroup_number,
