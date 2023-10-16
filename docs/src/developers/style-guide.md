@@ -1,4 +1,4 @@
-# [Style Guide](@id style)
+# Style Guide
 
 This section describes the coding style rules that apply to our code and that
 we recommend you to use it also.

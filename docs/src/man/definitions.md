@@ -56,8 +56,8 @@ is used instead of
 A reciprocal lattice is its inverse, represented as three columns vectors, too:
 
 ```math
-\mathbf{B}^\intercal =
-\mathbf{A}^{-1} =
+\mathbf{B} =
+\bigl(\mathbf{A}^{-1}\bigr)^\intercal =
 \begin{bmatrix} \mathbf{b}_1 & \mathbf{b}_2 & \mathbf{b}_3 \end{bmatrix}
 ```
 
@@ -70,11 +70,8 @@ so that
 where ``\mathbf{I}`` is the ``3 \times 3`` identity matrix.
 
 We choose this convention because it is convenient for converting reduced reciprocal
-coordinates ``\mathbf{x}^\ast`` to Cartesian coordinates using the expression:
-
-```math
-\mathbf{B} \mathbf{x}^\ast.
-```
+coordinates ``\mathbf{x}^\ast`` to Cartesian coordinates using the expression
+``\mathbf{B} \mathbf{x}^\ast``.
 
 This is analogous to the convention employed in [Atomic point coordinates](@ref) for the
 definition of reduced coordinates.
@@ -295,7 +292,7 @@ For rhombohedral lattice systems with the H setting (hexagonal lattice),
 primitive basis vectors. However, with the R setting (rhombohedral lattice),
 no transformation matrix is used because it is already a primitive cell.
 
-### Idealization of unit cell structure
+### [Idealization of unit cell structure](@id idealization)
 
 Spglib allows tolerance parameters to match a slightly distorted unit
 cell structure to a space group type with some higher symmetry. Using
@@ -382,7 +379,7 @@ change-of-basis transformation explained above.
 ### Rotation introduced by idealization
 
 In the idealization step presented above, the input unit cell crystal
-structure can be rotated in the Cartesian coordinates.  The rotation
+structure can be rotated in the Cartesian coordinates. The rotation
 matrix ``\mathbf{R}`` of this rotation is defined by
 
 ```math
@@ -391,7 +388,7 @@ matrix ``\mathbf{R}`` of this rotation is defined by
 ```
 
 This rotation matrix rotates the standardized crystal structure before idealization
-``\mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``
+``\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}``
 to that after idealization
 ``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``
 in Cartesian coordinates of the given input unit cell.

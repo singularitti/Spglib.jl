@@ -5,7 +5,14 @@ using StructEquality: @struct_hash_equal_isequal
 import CrystallographyCore: Lattice, natoms, atomtypes
 
 export Lattice,
-    SpglibCell, Cell, Dataset, SpacegroupType, basisvectors, basis_vectors, natoms
+    SpglibCell,
+    Cell,
+    Dataset,
+    SpacegroupType,
+    basisvectors,
+    basis_vectors,
+    natoms,
+    atomtypes
 
 const basis_vectors = basisvectors  # For backward compatibility
 
