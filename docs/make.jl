@@ -13,6 +13,7 @@ makedocs(;
         canonical="https://singularitti.github.io/Spglib.jl",
         edit_link="main",
         assets=String[],
+        mathengine=Documenter.HTMLWriter.MathJax3(),
     ),
     pages=[
         "Home" => "index.md",
