@@ -128,7 +128,7 @@ or
       [ a_y, b_y, c_y ],
       [ a_z, b_z, c_z ] ]
     ```
-
+    
     Here, we adopt the C-API convention, i.e., writing basis vectors as columns.
 
 ## Space group operation and change of basis
@@ -298,7 +298,7 @@ Spglib allows tolerance parameters to match a slightly distorted unit
 cell structure to a space group type with some higher symmetry. Using
 obtained symmetry operations, the distortion is removed to idealize
 the unit cell structure. The coordinates of atomic points are
-idealized using respective site-symmetries (Grosse-Kunstleve *et al*. (2002)).
+idealized using respective site-symmetries[^1].
 The basis vectors are idealized by forcing them into
 respective lattice shapes as follows. In this treatment, except for
 triclinic crystals, crystals can be rotated in Cartesian coordinates,
@@ -392,3 +392,5 @@ This rotation matrix rotates the standardized crystal structure before idealizat
 to that after idealization
 ``\begin{bmatrix} \bar{\mathbf{a}}_\text{s} & \bar{\mathbf{b}}_\text{s} & \bar{\mathbf{c}}_\text{s} \end{bmatrix}``
 in Cartesian coordinates of the given input unit cell.
+
+[^1]: [Grosse-Kunstleve, R. W. & Adams, P. D. (2002). *Acta Crystallogr A Found Crystallogr* **58**, 60–65.](https://doi.org/10.1107/S0108767301016658)
