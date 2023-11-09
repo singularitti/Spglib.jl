@@ -22,6 +22,115 @@ atoms = [1, 1]
 cell = Cell(lattice, positions, atoms)
 ```
 
+## Crystallographic choice and rigid rotation
+
+The following example of a python script gives a crystal structure of
+Br whose space group type is *Cmce*. The basis vectors
+``\begin{bmatrix} \mathbf{a}_\text{p} & \mathbf{b}_\text{p} & \mathbf{c}_\text{p} \end{bmatrix}``
+are fixed by the symmetry
+crystal in the standardization. The C-centering determines the c-axis,
+and *m* and *c* operations in *Cmce* fix which directions a- and
+b-axes should be with respect to each other axis. This is the first
+one choice appearing in the list of Hall symbols among 6 different
+choices for this space group type.
+
+```@repl rigid
+using Spglib
+lattice = Lattice([[7.17851431, 0, 0],  # a
+                   [0, 3.99943947, 0],  # b
+                   [0, 0, 8.57154746]])  # c
+positions = [[0.0, 0.84688439, 0.1203133],
+             [0.0, 0.65311561, 0.6203133],
+             [0.0, 0.34688439, 0.3796867],
+             [0.0, 0.15311561, 0.8796867],
+             [0.5, 0.34688439, 0.1203133],
+             [0.5, 0.15311561, 0.6203133],
+             [0.5, 0.84688439, 0.3796867],
+             [0.5, 0.65311561, 0.8796867]];
+atoms = fill(35, length(positions));
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
+```
+
+we get
+
+```@repl rigid
+print("Space group type: ", dataset.international_symbol)
+print("Space group number: ", dataset.spacegroup_number)
+print("Transformation matrix: ")
+dataset.transformation_matrix
+print("Origin shift: ", dataset.origin_shift)
+```
+
+No rotation was introduced in the idealization. Next, we swap the a- and c-axes.
+
+```@repl rigid
+lattice = Lattice([[8.57154746, 0, 0],  # a
+                   [0, 3.99943947, 0],  # b
+                   [0, 0, 7.17851431]])  # c
+positions = [[0.1203133, 0.84688439, 0.0],
+             [0.6203133, 0.65311561, 0.0],
+             [0.3796867, 0.34688439, 0.0],
+             [0.8796867, 0.15311561, 0.0],
+             [0.1203133, 0.34688439, 0.5],
+             [0.6203133, 0.15311561, 0.5],
+             [0.3796867, 0.84688439, 0.5],
+             [0.8796867, 0.65311561, 0.5]];
+atoms = fill(35, length(positions));
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
+```
+
+By this, we get
+
+```@repl rigid
+print("Space group type: ", dataset.international_symbol)
+print("Space group number: ", dataset.spacegroup_number)
+print("Transformation matrix: ")
+dataset.transformation_matrix
+print("Origin shift: ", dataset.origin_shift)
+```
+
+We get a non-identity transformation matrix, which wants to transform
+back to the original (above) crystal structure by swapping a- and
+c-axes. The transformation back of the basis vectors is achieved by
+Eq. . Next, we try to rotate rigidly the
+crystal structure by ``45^\circ`` around c-axis in Cartesian
+coordinates from the first one:
+
+
+```@repl rigid
+lattice = Lattice([[5.0759761474456697, 5.0759761474456697, 0],  # a
+                   [-2.8280307701821314, 2.8280307701821314, 0],  # b
+                   [0, 0, 8.57154746]])  # c
+positions = [[0.0, 0.84688439, 0.1203133],
+             [0.0, 0.65311561, 0.6203133],
+             [0.0, 0.34688439, 0.3796867],
+             [0.0, 0.15311561, 0.8796867],
+             [0.5, 0.34688439, 0.1203133],
+             [0.5, 0.15311561, 0.6203133],
+             [0.5, 0.84688439, 0.3796867],
+             [0.5, 0.65311561, 0.8796867]];
+atoms = fill(35, length(positions));
+cell = Cell(lattice, positions, atoms)
+dataset = get_dataset(cell, 1e-5)
+```
+
+and
+
+```@repl rigid
+print("Space group type: ", dataset.international_symbol)
+print("Space group number: ", dataset.spacegroup_number)
+print("Transformation matrix: ")
+dataset.transformation_matrix
+print("Origin shift: ", dataset.origin_shift)
+```
+
+The transformation matrix is kept unchanged even though the crystal
+structure is rotated in Cartesian coordinates. The origin shift is
+different but it changes only the order of atoms, so effectively it
+does nothing.
+
 ## Transformation to a primitive cell
 
 There are infinite number of choices of primitive cell. The
