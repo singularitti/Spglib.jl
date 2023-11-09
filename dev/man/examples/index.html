@@ -222,18 +222,7 @@
    0.5  0.84688439  0.3796867
    0.5  0.65311561  0.8796867
  8 atoms:
-   8  8  8  8  8  8  8  8</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell = find_primitive(cell)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
- lattice:
-   3.589257155  3.589257155  0.0
-   -1.999719735  1.999719735  0.0
-   0.0  0.0  8.57154746
- 4 atomic positions:
-   0.15311560999999996  0.84688439  0.1203133
-   0.34688439000000004  0.65311561  0.6203133
-   0.65311561  0.34688439000000004  0.3796867
-   0.84688439  0.15311560999999996  0.8796867
- 4 atoms:
-   8  8  8  8</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell.lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+   8  8  8  8  8  8  8  8</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; find_primitive(cell).lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
  3.589257155  3.589257155  0.0
  -1.999719735  1.999719735  0.0
  0.0  0.0  8.57154746</code></pre><p>This is same as what we manually obtained above. Even when the basis vectors are rigidly rotated as:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; new_lattice = Lattice([[5.0759761474456697, 5.0759761474456697, 0],
@@ -244,14 +233,14 @@
  0.0  0.0  8.57154746</code></pre><p>the relationship of <span>$a$</span>, <span>$b$</span>, <span>$c$</span> axes is unchanged. Therefore the same transformation matrix to the primitive cell can be used. Then we get:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; new_lattice * Pc</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
  3.952    1.12397  0.0
  1.12397  3.952    0.0
- 0.0      0.0      8.57155</code></pre><p>However applying <code>find_primitive</code> rigidly rotates automatically and so the following script doesn&#39;t give this basis vectors:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [
+ 0.0      0.0      8.57155</code></pre><p>However applying <code>find_primitive</code> rigidly rotates automatically and so the following script doesn&#39;t give this basis vectors:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = Lattice([
            [5.0759761474456697, 5.0759761474456697, 0],
            [-2.8280307701821314, 2.8280307701821314, 0],
            [0, 0, 8.57154746],
-       ]</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Vector{Float64}}:
- [5.07597614744567, 5.07597614744567, 0.0]
- [-2.8280307701821314, 2.8280307701821314, 0.0]
- [0.0, 0.0, 8.57154746]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
+       ])</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+ 5.07597614744567  -2.8280307701821314  0.0
+ 5.07597614744567  2.8280307701821314  0.0
+ 0.0  0.0  8.57154746</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
            [0.0, 0.84688439, 0.1203133],
            [0.0, 0.65311561, 0.6203133],
            [0.0, 0.34688439, 0.3796867],
@@ -275,32 +264,10 @@
    0.5  0.84688439  0.3796867
    0.5  0.65311561  0.8796867
  8 atoms:
-   8  8  8  8  8  8  8  8</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell = find_primitive(cell)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
- lattice:
-   3.5892571549999994  3.5892571549999994  0.0
-   -1.999719735  1.999719735  0.0
-   0.0  0.0  8.57154746
- 4 atomic positions:
-   0.15311560999999996  0.84688439  0.1203133
-   0.34688439000000004  0.65311561  0.6203133
-   0.65311561  0.34688439000000004  0.3796867
-   0.84688439  0.15311560999999996  0.8796867
- 4 atoms:
-   8  8  8  8</code></pre><p>but gives those with respect to the idealized ones:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell.lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+   8  8  8  8  8  8  8  8</code></pre><p>but gives those with respect to the idealized ones:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; find_primitive(cell).lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
  3.5892571549999994  3.5892571549999994  0.0
  -1.999719735  1.999719735  0.0
- 0.0  0.0  8.57154746</code></pre><p>To obtain the rotated primitive cell basis vectors, we can use <code>standardize_cell</code> as shown below:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell = standardize_cell(cell, to_primitive=1, no_idealize=1)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Any}
- lattice:
-   3.9520034588139006  1.1239726886317691  0.0
-   1.1239726886317691  3.9520034588139006  0.0
-   0.0  0.0  8.57154746
- 4 atomic positions:
-   0.15311561  0.84688439  0.12031329999999997
-   0.34688439000000004  0.65311561  0.6203133000000001
-   0.65311561  0.34688439  0.3796866999999999
-   0.84688439  0.15311560999999996  0.8796867
- 4 atoms:
-   8  8  8  8</code></pre><p>then we get:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; primitive_cell.lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
+ 0.0  0.0  8.57154746</code></pre><p>To obtain the rotated primitive cell basis vectors, we can use <code>standardize_cell</code> as shown below:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; standardize_cell(cell, to_primitive=true, no_idealize=true).lattice</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Lattice{Float64}
  3.9520034588139006  1.1239726886317691  0.0
  1.1239726886317691  3.9520034588139006  0.0
  0.0  0.0  8.57154746</code></pre><p>which is equivalent to that we get manually. However, using <code>standardize_cell</code>, distortion is not removed for the distorted crystal structure.</p><h2 id="Computing-rigid-rotation-introduced-by-idealization"><a class="docs-heading-anchor" href="#Computing-rigid-rotation-introduced-by-idealization">Computing rigid rotation introduced by idealization</a><a id="Computing-rigid-rotation-introduced-by-idealization-1"></a><a class="docs-heading-anchor-permalink" href="#Computing-rigid-rotation-introduced-by-idealization" title="Permalink"></a></h2><p>This example is from <a href="https://spglib.readthedocs.io/en/latest/definition.html#computing-rigid-rotation-introduced-by-idealization">here</a>.</p><p>In this package, rigid rotation is purposely introduced in the idealization step though this is unlikely as a crystallographic operation.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using StaticArrays, Spglib</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = Lattice([
@@ -406,4 +373,4 @@
     \begin{bmatrix} \bar{\mathbf{a}}_\text{s} &amp; \bar{\mathbf{b}}_\text{s} &amp; \bar{\mathbf{c}}_\text{s} \end{bmatrix}
     \mathbf{P} &amp;=
     \mathbf{R} \begin{bmatrix} \mathbf{a}_\text{s} &amp; \mathbf{b}_\text{s} &amp; \mathbf{c}_\text{s} \end{bmatrix}.
-\end{align}\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dataset/">« Spglib dataset</a><a class="docs-footer-nextpage" href="../troubleshooting/">Troubleshooting »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Thursday 9 November 2023 07:30">Thursday 9 November 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+\end{align}\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dataset/">« Spglib dataset</a><a class="docs-footer-nextpage" href="../troubleshooting/">Troubleshooting »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Thursday 9 November 2023 10:20">Thursday 9 November 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
