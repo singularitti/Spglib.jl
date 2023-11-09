@@ -190,8 +190,7 @@ positions = [
 ];
 atoms = fill(8, length(positions));
 cell = Cell(lattice, positions, atoms)
-primitive_cell = find_primitive(cell)
-primitive_cell.lattice
+find_primitive(cell).lattice
 ```
 
 This is same as what we manually obtained above.
@@ -214,11 +213,11 @@ However applying `find_primitive` rigidly rotates automatically and
 so the following script doesn't give this basis vectors:
 
 ```@repl prim
-lattice = [
+lattice = Lattice([
     [5.0759761474456697, 5.0759761474456697, 0],
     [-2.8280307701821314, 2.8280307701821314, 0],
     [0, 0, 8.57154746],
-]
+])
 positions = [
     [0.0, 0.84688439, 0.1203133],
     [0.0, 0.65311561, 0.6203133],
@@ -231,26 +230,19 @@ positions = [
 ];
 atoms = fill(8, length(positions));
 cell = Cell(lattice, positions, atoms)
-primitive_cell = find_primitive(cell)
 ```
 
 but gives those with respect to the idealized ones:
 
 ```@repl prim
-primitive_cell.lattice
+find_primitive(cell).lattice
 ```
 
 To obtain the rotated primitive cell basis vectors, we can use
 `standardize_cell` as shown below:
 
 ```@repl prim
-primitive_cell = standardize_cell(cell, to_primitive=1, no_idealize=1)
-```
-
-then we get:
-
-```@repl prim
-primitive_cell.lattice
+standardize_cell(cell, to_primitive=true, no_idealize=true).lattice
 ```
 
 which is equivalent to that we get manually. However, using
