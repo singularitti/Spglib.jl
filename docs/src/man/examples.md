@@ -26,7 +26,7 @@ cell = Cell(lattice, positions, atoms)
 
 The following example of a python script gives a crystal structure of
 Br whose space group type is *Cmce*. The basis vectors
-``\begin{bmatrix} \mathbf{a}_\text{p} & \mathbf{b}_\text{p} & \mathbf{c}_\text{p} \end{bmatrix}``
+``\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix}``
 are fixed by the symmetry
 crystal in the standardization. The C-centering determines the c-axis,
 and *m* and *c* operations in *Cmce* fix which directions a- and
@@ -94,7 +94,14 @@ print("Origin shift: ", dataset.origin_shift)
 We get a non-identity transformation matrix, which wants to transform
 back to the original (above) crystal structure by swapping a- and
 c-axes. The transformation back of the basis vectors is achieved by
-Eq. . Next, we try to rotate rigidly the
+
+```math
+\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} \end{bmatrix} =
+\begin{bmatrix} \mathbf{a}_\text{s} & \mathbf{b}_\text{s} & \mathbf{c}_\text{s} \end{bmatrix}
+\mathbf{P},
+```
+
+Next, we try to rotate rigidly the
 crystal structure by ``45^\circ`` around c-axis in Cartesian
 coordinates from the first one:
 
