@@ -34,19 +34,20 @@ function get_symmetry_with_site_tensors(
     cell::SpglibCell, symprec=1e-5; with_time_reversal=true, is_axial=false
 )
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
-    n = length(cell.magmoms)
+    num_atom = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
-    max_size = 96n  # 96 = 48 × 2 since we have spins
+    max_size = 96num_atom  # 96 = 48 × 2 since we have spins
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
     translations = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, n)
+    equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
     spin_flips = if ndims(magmoms) == 1
-        zeros(length(rotations))
+        zeros(Cint, length(rotations))
     else
         nothing
     end
-    nsym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
+    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         equivalent_atoms::Ptr{Cint},
@@ -56,19 +57,19 @@ function get_symmetry_with_site_tensors(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        tensors::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         tensor_rank::Cint,
-        natoms(cell)::Cint,
+        num_atom::Cint,
         with_time_reversal::Cint,
         is_axial::Cint,
         symprec::Cdouble,
     )::Cint
     check_error()
-    rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
-    ),
-    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
-    return rotations, translations
+    rotations = map(
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+    )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
+    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    return rotations, translations, spin_flips[1:num_sym]
 end
 
 struct SpglibMagneticDataset
