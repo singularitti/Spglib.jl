@@ -26,7 +26,7 @@ function tostring(cchars)
 end
 
 include("core.jl")
-# include("magnetic.jl")
+include("magnetic.jl")
 include("error.jl")
 include("symmetry.jl")
 include("standardize.jl")
