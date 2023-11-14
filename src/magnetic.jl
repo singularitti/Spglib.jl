@@ -1,4 +1,8 @@
-export MagneticDataset, get_symmetry_with_collinear_spin, get_magnetic_symmetry
+export MagneticDataset,
+    get_symmetry_with_collinear_spin,
+    get_symmetry_with_site_tensors,
+    get_magnetic_symmetry,
+    get_magnetic_dataset
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
@@ -116,15 +120,13 @@ struct MagneticDataset
     primitive_lattice::Lattice{Float64}
 end
 
-function get_magnetic_dataset(
-    cell::SpglibCell, tensor_rank::Cint, is_axial=false, symprec=1e-5
-)
+function get_magnetic_dataset(cell::SpglibCell, tensor_rank, is_axial=false, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        tensors::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         tensor_rank::Cint,
         natoms(cell)::Cint,
         is_axial::Cint,
@@ -138,9 +140,7 @@ function get_magnetic_dataset(
     end
 end
 
-function get_magnetic_symmetry_from_database(
-    cell::SpglibCell, uni_number::Cint, hall_number::Cint
-)
+function get_magnetic_symmetry_from_database(cell::SpglibCell, uni_number, hall_number)
     @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
     @ccall libsymspg.spg_get_magnetic_symmetry_from_database(
         rotations::Ptr{Cint},
