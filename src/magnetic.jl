@@ -1,4 +1,5 @@
 export MagneticDataset,
+    MagneticSpacegroupType,
     get_symmetry_with_collinear_spin,
     get_symmetry_with_site_tensors,
     get_magnetic_symmetry,
