@@ -197,15 +197,13 @@ function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e
 end
 
 function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
-    rotations =
-        transpose.(
-            _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
-            i in Base.OneTo(dataset.n_operations)
-        )
-    translations =
-        SVector{
-            3
-        }.(unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations))
+    rotations = transpose.(
+        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+        i in Base.OneTo(dataset.n_operations)
+    )
+    translations = SVector{3}.(
+        unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
+    )
     time_reversals = unsafe_wrap(
         Vector{Int32}, dataset.time_reversals, dataset.n_operations
     )
@@ -216,10 +214,9 @@ function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     )
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
-    std_positions =
-        SVector{
-            3
-        }.(unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms))
+    std_positions = SVector{3}.(
+        unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
+    )
     std_tensors = unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
