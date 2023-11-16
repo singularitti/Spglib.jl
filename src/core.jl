@@ -175,8 +175,10 @@ function _unwrap_convert(cell::CrystallographyCell)
     return clattice, cpositions, catoms
 end
 
+abstract type AbstractSpacegroupType end
+
 # This is an internal type, do not export!
-struct SpglibSpacegroupType
+struct SpglibSpacegroupType <: AbstractSpacegroupType
     number::Cint
     international_short::NTuple{11,Cchar}
     international_full::NTuple{20,Cchar}
@@ -198,7 +200,7 @@ Represent `SpglibSpacegroupType`, see its [official documentation](https://spgli
 
 See also [`get_spacegroup_type`](@ref), [`get_spacegroup_type_from_symmetry`](@ref).
 """
-struct SpacegroupType
+struct SpacegroupType <: AbstractSpacegroupType
     number::Int32
     international_short::String
     international_full::String
@@ -213,8 +215,10 @@ struct SpacegroupType
     arithmetic_crystal_class_symbol::String
 end
 
+abstract type AbstractDataset end
+
 # This is an internal type, do not export!
-struct SpglibDataset
+struct SpglibDataset <: AbstractDataset
     spacegroup_number::Cint
     hall_number::Cint
     international_symbol::NTuple{11,Cchar}
@@ -283,7 +287,7 @@ Represent `SpglibDataset`, see its [official documentation](https://spglib.githu
 
 See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
 """
-@struct_hash_equal_isequal struct Dataset
+@struct_hash_equal_isequal struct Dataset <: AbstractDataset
     spacegroup_number::Int32
     hall_number::Int32
     international_symbol::String

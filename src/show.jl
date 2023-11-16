@@ -32,7 +32,7 @@ function Base.show(io::IO, ::MIME"text/plain", spgtype::SpacegroupType)
     end
     return nothing
 end
-function Base.show(io::IO, ::MIME"text/plain", dataset::Dataset)
+function Base.show(io::IO, ::MIME"text/plain", dataset::AbstractDataset)
     summary(io, dataset)
     println(io)
     for name in propertynames(dataset)

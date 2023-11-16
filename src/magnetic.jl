@@ -1,4 +1,9 @@
-export MagneticDataset, get_symmetry_with_collinear_spin, get_magnetic_symmetry
+export MagneticDataset,
+    MagneticSpacegroupType,
+    get_symmetry_with_collinear_spin,
+    get_symmetry_with_site_tensors,
+    get_magnetic_symmetry,
+    get_magnetic_dataset
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
@@ -34,19 +39,20 @@ function get_symmetry_with_site_tensors(
     cell::SpglibCell, symprec=1e-5; with_time_reversal=true, is_axial=false
 )
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
-    n = length(cell.magmoms)
+    num_atom = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
-    max_size = 96n  # 96 = 48 × 2 since we have spins
+    max_size = 96num_atom  # 96 = 48 × 2 since we have spins
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
     translations = Matrix{Cdouble}(undef, 3, max_size)
-    equivalent_atoms = Vector{Cint}(undef, n)
+    equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
     spin_flips = if ndims(magmoms) == 1
-        zeros(length(rotations))
+        zeros(Cint, length(rotations))
     else
         nothing
     end
-    nsym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
+    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         equivalent_atoms::Ptr{Cint},
@@ -56,44 +62,44 @@ function get_symmetry_with_site_tensors(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        tensors::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         tensor_rank::Cint,
-        natoms(cell)::Cint,
+        num_atom::Cint,
         with_time_reversal::Cint,
         is_axial::Cint,
         symprec::Cdouble,
     )::Cint
     check_error()
-    rotations, translations = map(
-        SMatrix{3,3,Int32,9}, eachslice(rotations[:, :, 1:nsym]; dims=3)
-    ),
-    map(SVector{3,Float64}, eachcol(translations[:, 1:nsym]))
-    return rotations, translations
+    rotations = map(
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+    )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
+    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    return rotations, translations, spin_flips[1:num_sym]
 end
 
-struct SpglibMagneticDataset
+struct SpglibMagneticDataset <: AbstractDataset
     uni_number::Cint
     msg_type::Cint
     hall_number::Cint
     tensor_rank::Cint
     n_operations::Cint
-    rotations::Ptr{Cint}
-    translations::Ptr{Cdouble}
+    rotations::Ptr{NTuple{3,NTuple{3,Cint}}}
+    translations::Ptr{NTuple{3,Cdouble}}
     time_reversals::Ptr{Cint}
     n_atoms::Cint
     equivalent_atoms::Ptr{Cint}
-    transformation_matrix::NTuple{9,Cdouble}
+    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
     origin_shift::NTuple{3,Cdouble}
     n_std_atoms::Cint
-    std_lattice::NTuple{9,Cdouble}
+    std_lattice::NTuple{3,NTuple{3,Cdouble}}
     std_types::Ptr{Cint}
-    std_positions::Ptr{Cdouble}
+    std_positions::Ptr{NTuple{3,Cdouble}}
     std_tensors::Ptr{Cdouble}
-    std_rotation_matrix::NTuple{9,Cdouble}
-    primitive_lattice::NTuple{9,Cdouble}
+    std_rotation_matrix::NTuple{3,NTuple{3,Cdouble}}
+    primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
 end
 
-struct MagneticDataset
+@struct_hash_equal_isequal struct MagneticDataset <: AbstractDataset
     uni_number::Int32
     msg_type::Int32
     hall_number::Int32
@@ -115,15 +121,14 @@ struct MagneticDataset
     primitive_lattice::Lattice{Float64}
 end
 
-function get_magnetic_dataset(
-    cell::SpglibCell, tensor_rank::Cint, is_axial=false, symprec=1e-5
-)
+function get_magnetic_dataset(cell::SpglibCell, is_axial=false, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
+    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        tensors::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         tensor_rank::Cint,
         natoms(cell)::Cint,
         is_axial::Cint,
@@ -133,13 +138,11 @@ function get_magnetic_dataset(
         check_error()
     else
         raw = unsafe_load(ptr)
-        return convert(Dataset, raw)
+        return convert(MagneticDataset, raw)
     end
 end
 
-function get_magnetic_symmetry_from_database(
-    cell::SpglibCell, uni_number::Cint, hall_number::Cint
-)
+function get_magnetic_symmetry_from_database(cell::SpglibCell, uni_number, hall_number)
     @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
     @ccall libsymspg.spg_get_magnetic_symmetry_from_database(
         rotations::Ptr{Cint},
@@ -150,7 +153,7 @@ function get_magnetic_symmetry_from_database(
     )::Cint
 end
 
-struct SpglibMagneticSpacegroupType
+struct SpglibMagneticSpacegroupType <: AbstractSpacegroupType
     uni_number::Cint
     litvin_number::Cint
     bns_number::NTuple{8,Cchar}
@@ -159,7 +162,7 @@ struct SpglibMagneticSpacegroupType
     type::Cint
 end
 
-struct MagneticSpacegroupType
+struct MagneticSpacegroupType <: AbstractSpacegroupType
     uni_number::Int32
     litvin_number::Int32
     bns_number::String
@@ -194,25 +197,33 @@ function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e
 end
 
 function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
-    rotations = [
+    rotations = transpose.(
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
         i in Base.OneTo(dataset.n_operations)
-    ]
-    translations = [
-        SVector{3}(unsafe_load(dataset.translations, i)) for
-        i in Base.OneTo(dataset.n_operations)
-    ]
+    )
+    translations = SVector{3}.(
+        unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
+    )
     time_reversals = unsafe_wrap(
         Vector{Int32}, dataset.time_reversals, dataset.n_operations
     )
-    equivalent_atoms = unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms)
+    equivalent_atoms =  # Need to add 1 because of C-index starts from 0
+        unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms) .+ 1
+    transformation_matrix = transpose(
+        _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
+    )
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
-    std_positions = [
-        SVector{3}(unsafe_load(dataset.std_positions, i)) for
-        i in Base.OneTo(dataset.n_std_atoms)
-    ]
+    std_positions = SVector{3}.(
+        unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
+    )
     std_tensors = unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
+    std_rotation_matrix = transpose(
+        _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
+    )
+    primitive_lattice = Lattice(
+        transpose(_convert(SMatrix{3,3,Float64}, dataset.primitive_lattice))
+    )
     return MagneticDataset(
         dataset.uni_number,
         dataset.msg_type,
@@ -224,14 +235,14 @@ function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
         time_reversals,
         dataset.n_atoms,
         equivalent_atoms,
-        dataset.transformation_matrix,
+        transformation_matrix,
         dataset.origin_shift,
         dataset.n_std_atoms,
         std_lattice,
         std_types,
         std_positions,
         std_tensors,
-        dataset.std_rotation_matrix,
-        dataset.primitive_lattice,
+        std_rotation_matrix,
+        primitive_lattice,
     )
 end

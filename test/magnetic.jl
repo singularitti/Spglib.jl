@@ -67,3 +67,39 @@ end
         end
     end
 end
+
+# From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_magnetic_dataset.py#L9-L44
+@testset "Test Type-I" begin
+    lattice = [
+        6.8083 0.0 0.0
+        0.0 6.8083 0.0
+        0.0 0.0 12.3795
+    ]
+    positions = [
+        [0.87664, 0.35295, 0.13499],
+        [0.14705, 0.37664, 0.38499],
+        [0.85295, 0.62336, 0.88499],
+        [0.37664, 0.14705, 0.61501],
+        [0.62336, 0.85295, 0.11501],
+        [0.12336, 0.64705, 0.63499],
+        [0.35295, 0.87664, 0.86501],
+        [0.64705, 0.12336, 0.36501],
+    ]
+    atoms = [0, 0, 0, 0, 0, 0, 0, 0]
+    magmoms = [
+        [1.67, -8.9, 0.0],
+        [8.9, 1.67, 0.0],
+        [-8.9, -1.67, 0.0],
+        [1.67, 8.9, 0.0],
+        [-1.67, -8.9, 0.0],
+        [-1.67, 8.9, 0.0],
+        [-8.9, 1.67, 0.0],
+        [8.9, -1.67, 0.0],
+    ]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell, 1e-5)
+    @test dataset.hall_number == 369
+    @test dataset.msg_type == 1
+    @test dataset.uni_number == 771
+    @test dataset.time_reversals == falses(8)
+end
