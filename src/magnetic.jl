@@ -120,8 +120,9 @@ end
     primitive_lattice::Lattice{Float64}
 end
 
-function get_magnetic_dataset(cell::SpglibCell, tensor_rank, is_axial=false, symprec=1e-5)
+function get_magnetic_dataset(cell::SpglibCell, is_axial=false, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
+    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -136,7 +137,7 @@ function get_magnetic_dataset(cell::SpglibCell, tensor_rank, is_axial=false, sym
         check_error()
     else
         raw = unsafe_load(ptr)
-        return convert(Dataset, raw)
+        return convert(MagneticDataset, raw)
     end
 end
 
