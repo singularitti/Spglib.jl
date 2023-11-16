@@ -82,23 +82,23 @@ struct SpglibMagneticDataset
     hall_number::Cint
     tensor_rank::Cint
     n_operations::Cint
-    rotations::Ptr{Cint}
-    translations::Ptr{Cdouble}
+    rotations::Ptr{NTuple{3,NTuple{3,Cint}}}
+    translations::Ptr{NTuple{3,Cdouble}}
     time_reversals::Ptr{Cint}
     n_atoms::Cint
     equivalent_atoms::Ptr{Cint}
-    transformation_matrix::NTuple{9,Cdouble}
+    transformation_matrix::NTuple{3,NTuple{3,Cdouble}}
     origin_shift::NTuple{3,Cdouble}
     n_std_atoms::Cint
-    std_lattice::NTuple{9,Cdouble}
+    std_lattice::NTuple{3,NTuple{3,Cdouble}}
     std_types::Ptr{Cint}
-    std_positions::Ptr{Cdouble}
+    std_positions::Ptr{NTuple{3,Cdouble}}
     std_tensors::Ptr{Cdouble}
-    std_rotation_matrix::NTuple{9,Cdouble}
-    primitive_lattice::NTuple{9,Cdouble}
+    std_rotation_matrix::NTuple{3,NTuple{3,Cdouble}}
+    primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
 end
 
-struct MagneticDataset
+@struct_hash_equal_isequal struct MagneticDataset
     uni_number::Int32
     msg_type::Int32
     hall_number::Int32
