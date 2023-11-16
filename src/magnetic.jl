@@ -152,7 +152,7 @@ function get_magnetic_symmetry_from_database(cell::SpglibCell, uni_number, hall_
     )::Cint
 end
 
-struct SpglibMagneticSpacegroupType
+struct SpglibMagneticSpacegroupType <: AbstractSpacegroupType
     uni_number::Cint
     litvin_number::Cint
     bns_number::NTuple{8,Cchar}
@@ -161,7 +161,7 @@ struct SpglibMagneticSpacegroupType
     type::Cint
 end
 
-struct MagneticSpacegroupType
+struct MagneticSpacegroupType <: AbstractSpacegroupType
     uni_number::Int32
     litvin_number::Int32
     bns_number::String

@@ -175,8 +175,10 @@ function _unwrap_convert(cell::CrystallographyCell)
     return clattice, cpositions, catoms
 end
 
+abstract type AbstractSpacegroupType end
+
 # This is an internal type, do not export!
-struct SpglibSpacegroupType
+struct SpglibSpacegroupType <: AbstractSpacegroupType
     number::Cint
     international_short::NTuple{11,Cchar}
     international_full::NTuple{20,Cchar}
@@ -198,7 +200,7 @@ Represent `SpglibSpacegroupType`, see its [official documentation](https://spgli
 
 See also [`get_spacegroup_type`](@ref), [`get_spacegroup_type_from_symmetry`](@ref).
 """
-struct SpacegroupType
+struct SpacegroupType <: AbstractSpacegroupType
     number::Int32
     international_short::String
     international_full::String
