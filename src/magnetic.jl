@@ -76,7 +76,7 @@ function get_symmetry_with_site_tensors(
     return rotations, translations, spin_flips[1:num_sym]
 end
 
-struct SpglibMagneticDataset
+struct SpglibMagneticDataset <: AbstractDataset
     uni_number::Cint
     msg_type::Cint
     hall_number::Cint
@@ -98,7 +98,7 @@ struct SpglibMagneticDataset
     primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
 end
 
-@struct_hash_equal_isequal struct MagneticDataset
+@struct_hash_equal_isequal struct MagneticDataset <: AbstractDataset
     uni_number::Int32
     msg_type::Int32
     hall_number::Int32
