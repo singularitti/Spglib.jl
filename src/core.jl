@@ -126,7 +126,7 @@ function SpglibCell(lattice, positions, atoms, magmoms=[])
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
-SpglibCell(cell::CrystallographyCell, magmoms) =
+SpglibCell(cell::CrystallographyCell, magmoms=[]) =
     SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 const Cell = SpglibCell
 
