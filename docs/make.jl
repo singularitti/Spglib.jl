@@ -28,7 +28,7 @@ makedocs(;
             "Public API" => "lib/public.md",
             "Internals" => map(
                 s -> "lib/internals/$(s)",
-                sort(readdir(joinpath(@__DIR__, "src/lib/internals")))
+                sort(readdir(joinpath(@__DIR__, "src/lib/internals"))),
             ),
         ],
         "Developer Docs" => [
@@ -39,7 +39,4 @@ makedocs(;
     ],
 )
 
-deploydocs(;
-    repo="github.com/singularitti/Spglib.jl",
-    devbranch="main",
-)
+deploydocs(; repo="github.com/singularitti/Spglib.jl", devbranch="main")
