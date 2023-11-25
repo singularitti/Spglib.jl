@@ -98,8 +98,75 @@ end
     ]
     cell = SpglibCell(lattice, positions, atoms, magmoms)
     dataset = get_magnetic_dataset(cell, 1e-5)
-    @test dataset.hall_number == 369
-    @test dataset.msg_type == 1
     @test dataset.uni_number == 771
+    @test dataset.msg_type == 1
+    @test dataset.hall_number == 369
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 8
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [0 -1 0; 1 0 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [0 1 0; -1 0 0; 0 0 1],
+        [1 0 0; 0 -1 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [-1 0 0; 0 1 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 -1],
+    ]  # Compared with Python results
+    @test dataset.translations ≈ [
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.25],
+        [-1.11022302e-16, 1.11022302e-16, 0.5],
+        [0.5, 0.5, 0.75],
+        [0.5, 0.5, 0.75],
+        [0.0, 0.0, 0.5],
+        [0.5, 0.5, 0.25],
+        [-1.11022302e-16, 1.11022302e-16, 0.0],
+    ]  # Compared with Python results
     @test dataset.time_reversals == falses(8)
+    @test dataset.n_atoms == 8
+    @test dataset.equivalent_atoms == zeros(Int32, 8) .+ 1
+    @test dataset.transformation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.origin_shift == [5.55111512e-17, -1.66533454e-16, 0]
+    @test dataset.n_std_atoms == 8
+    @test dataset.std_lattice ≈ Lattice([
+        6.8083 0 0
+        0 6.8083 0
+        0 0 12.3795
+    ])  # Compared with Python results
+    @test dataset.std_types == fill(1, 8)
+    @test dataset.std_positions ≈ [
+        [0.87664, 0.35295, 0.13499],
+        [0.14705, 0.37664, 0.38499],
+        [0.85295, 0.62336, 0.88499],
+        [0.37664, 0.14705, 0.61501],
+        [0.62336, 0.85295, 0.11501],
+        [0.12336, 0.64705, 0.63499],
+        [0.35295, 0.87664, 0.86501],
+        [0.64705, 0.12336, 0.36501],
+    ]
+    @test dataset.std_tensors == [
+        [1.67, -8.9, 0.0],
+        [8.9, 1.67, 0.0],
+        [-8.9, -1.67, 0.0],
+        [1.67, 8.9, 0.0],
+        [-1.67, -8.9, 0.0],
+        [-1.67, 8.9, 0.0],
+        [-8.9, 1.67, 0.0],
+        [8.9, -1.67, 0.0],
+    ]
+    @test dataset.std_rotation_matrix ≈ [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice == Lattice([
+        6.8083 0 0
+        0 6.8083 0
+        0 0 12.3795
+    ])
 end
