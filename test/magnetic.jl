@@ -172,7 +172,7 @@ end
 end
 
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L46-L97
-@testset "Test rutile type III" begin
+@testset "Test site tensors for rutile (type III)" begin
     lattice = [
         4.0 0.0 0.0
         0.0 4.0 0.0
@@ -280,7 +280,7 @@ end
 end
 
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L99-L146
-@testset "Test Cr type IV" begin
+@testset "Test site tensors for Cr (type IV)" begin
     lattice = Lattice([
         4.0 0.0 0.0
         0.0 4.0 0.0
