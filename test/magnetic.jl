@@ -131,7 +131,7 @@ end
         0 1 0
         0 0 1
     ]
-    @test dataset.origin_shift == [5.55111512e-17, -1.66533454e-16, 0]
+    @test dataset.origin_shift ≈ [5.55111512e-17, -1.66533454e-16, 0]
     @test dataset.n_std_atoms == 8
     @test dataset.std_lattice ≈ Lattice([
         6.8083 0 0
@@ -149,7 +149,7 @@ end
         [0.35295, 0.87664, 0.86501],
         [0.64705, 0.12336, 0.36501],
     ]
-    @test dataset.std_tensors == [
+    @test dataset.std_tensors ≈ [
         [1.67, -8.9, 0.0],
         [8.9, 1.67, 0.0],
         [-8.9, -1.67, 0.0],
@@ -295,7 +295,7 @@ end
     @test dataset.msg_type == 4
     @test dataset.hall_number == 400
     @test dataset.tensor_rank == 0
-    @test dataset.n_operations == 32
+    @test dataset.n_operations == 32  # FIXME: 96?
     @test dataset.rotations == [
         [1 0 0; 0 1 0; 0 0 1],
         [-1 0 0; 0 -1 0; 0 0 -1],
