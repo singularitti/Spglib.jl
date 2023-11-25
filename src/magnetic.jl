@@ -46,12 +46,12 @@ function get_symmetry_with_site_tensors(
     translations = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
-    spin_flips = if ndims(magmoms) == 1
+    spin_flips = if isone(ndims(magmoms))
         zeros(Cint, length(rotations))
     else
         nothing
     end
-    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
     num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -124,7 +124,7 @@ end
 function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
-    is_axial = tensor_rank == 0 ? false : true  # Collinear spin & non-collinear spin
+    is_axial = iszero(tensor_rank) ? false : true  # Collinear spin & non-collinear spin
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -218,7 +218,7 @@ function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     std_positions = SVector{3}.(
         unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
     )
-    std_tensors = if dataset.tensor_rank == 0  # Collinear spin
+    std_tensors = if iszero(dataset.tensor_rank)  # Collinear spin
         unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
     else  # Non-collinear spin
         SVector{3}.(
