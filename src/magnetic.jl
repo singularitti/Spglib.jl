@@ -116,7 +116,7 @@ end
     std_lattice::Lattice{Float64}
     std_types::Vector{Int32}
     std_positions::Vector{SVector{3,Float64}}
-    std_tensors::Vector{Float64}
+    std_tensors::Vector{Union{Float64,SVector{3,Float64}}}
     std_rotation_matrix::SMatrix{3,3,Float64,9}
     primitive_lattice::Lattice{Float64}
 end
