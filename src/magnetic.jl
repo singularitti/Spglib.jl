@@ -121,9 +121,10 @@ end
     primitive_lattice::Lattice{Float64}
 end
 
-function get_magnetic_dataset(cell::SpglibCell, is_axial=false, symprec=1e-5)
+function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
-    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
+    is_axial = tensor_rank == 0 ? false : true  # Collinear spin & non-collinear spin
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
