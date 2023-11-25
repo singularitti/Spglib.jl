@@ -5,10 +5,45 @@
     atoms = [1, 1]
     magmoms = [[0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
     cell = Cell(lattice, positions, atoms, magmoms)
-    rotations, translations = get_symmetry(cell, 1e-5)
-    @test size(rotations) == size(translations) == (12,)
-    rotations, translations, equivalent_atoms = get_magnetic_symmetry(cell, 1e-5)
-    @test size(rotations) == size(translations) == (4,)
+    dataset = get_magnetic_dataset(cell, 1e-5)
+    @test dataset.uni_number == 68
+    @test dataset.msg_type == 3
+    @test dataset.hall_number == 63
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 4
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 1],
+    ]  # Compared with Python results
+    @test dataset.translations == fill(zeros(3), 4)  # Compared with Python results
+    @test dataset.time_reversals == [false, true, false, true]  # Compared with Python results
+    @test dataset.n_atoms == 2
+    @test dataset.equivalent_atoms == [0, 0] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        0.5 0.5 0.0
+        -0.5 0.5 0.0
+        0.0 0.0 1.0
+    ]
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.n_std_atoms == 4
+    @test dataset.std_lattice == Lattice([
+        1.0 -1.0 0.0
+        1.0 1.0 0.0
+        0.0 0.0 1.0
+    ])
+    @test dataset.std_types == [1, 1, 1, 1]
+    @test dataset.std_positions ≈
+        [[0.9, 0.0, 0.9], [0.4, 0.5, 0.9], [0.1, 0.0, 0.1], [0.6, 0.5, 0.1]]
+    @test dataset.std_tensors ==
+        [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, -1.0], [0.0, 0.0, -1.0]]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice == Lattice([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 end
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
