@@ -422,3 +422,82 @@ end
         0.0 0.0 4.0
     ])
 end
+
+# From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L149-L180
+@testset "Test site tensors non-collinear" begin
+    lattice = Lattice([
+        10 0 0
+        0 10 0
+        0 0 10
+    ])
+    positions = [[0.0, 0.0, 0.0]]
+    atoms = [1]
+    magmoms = [[1, 0, 0]]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell)
+    @test dataset.uni_number == 1005
+    @test dataset.msg_type == 3
+    @test dataset.hall_number == 400
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 16
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 1 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 0 1; 0 -1 0],
+        [-1 0 0; 0 0 -1; 0 1 0],
+        [-1 0 0; 0 0 1; 0 1 0],
+        [1 0 0; 0 0 -1; 0 -1 0],
+        [-1 0 0; 0 0 -1; 0 -1 0],
+        [1 0 0; 0 0 1; 0 1 0],
+        [1 0 0; 0 0 -1; 0 1 0],
+        [-1 0 0; 0 0 1; 0 -1 0],
+    ]
+    @test dataset.translations == fill(zeros(3), 16)
+    @test dataset.time_reversals == [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+    ]
+    @test dataset.n_atoms == 1
+    @test dataset.equivalent_atoms == [1]
+    @test dataset.transformation_matrix == [
+        0.0 0.0 -1.0
+        0.0 1.0 0.0
+        1.0 0.0 0.0
+    ]
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.n_std_atoms == 1
+    @test dataset.std_lattice == Lattice([0, 0, -10], [0, 10, 0], [10, 0, 0])
+    @test dataset.std_types == [1]
+    @test dataset.std_positions == [[0.0, 0.0, 0.0]]
+    @test dataset.std_tensors == [[1.0, 0.0, 0.0]]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice == Lattice([
+        10 0 0
+        0 10 0
+        0 0 10
+    ])
+end
