@@ -218,7 +218,19 @@ function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     std_positions = SVector{3}.(
         unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
     )
-    std_tensors = unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
+    std_tensors = if dataset.tensor_rank == 0  # Collinear spin
+        unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
+    else  # Non-collinear spin
+        SVector{3}.(
+            eachcol(
+                unsafe_wrap(
+                    Matrix{Float64},
+                    dataset.std_tensors,
+                    (3, Int64(dataset.n_std_atoms)),  # Issue to Julia community
+                ),
+            ),
+        )
+    end
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )
