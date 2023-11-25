@@ -170,3 +170,111 @@ end
         0 0 12.3795
     ])
 end
+
+# From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L46-L97
+@testset "Test rutile type III" begin
+    lattice = [
+        4.0 0.0 0.0
+        0.0 4.0 0.0
+        0.0 0.0 3.0
+    ]
+    positions =
+        [
+            0.0 0.0 0.0
+            0.5 0.5 0.5
+            0.3 0.3 0.0
+            0.7 0.7 0.0
+            0.2 0.8 0.5
+            0.8 0.2 0.5
+        ] .+ [0.1 0.1 0.0]
+    atoms = [1, 1, 2, 2, 2, 2]
+    magmoms = [1.0, -1.0, 0.0, 0.0, 0.0, 0.0]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell)
+    @test dataset.uni_number == 1158
+    @test dataset.msg_type == 3
+    @test dataset.hall_number == 419
+    @test dataset.tensor_rank == 0
+    @test dataset.n_operations == 16
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [0 -1 0; 1 0 0; 0 0 1],
+        [0 1 0; -1 0 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+        [0 1 0; -1 0 0; 0 0 1],
+        [0 -1 0; 1 0 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 1 0; 0 0 1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 1],
+        [-1 0 0; 0 1 0; 0 0 -1],
+        [1 0 0; 0 -1 0; 0 0 1],
+        [0 1 0; 1 0 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 1],
+    ]  # Compared with Python results
+    @test dataset.translations ≈ [
+        [0.0, 0.0, 0.0],
+        [0.2, 0.2, 0.0],
+        [0.7, 0.5, 0.5],
+        [0.5, 0.7, 0.5],
+        [0.2, 0.2, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.5, 0.7, 0.5],
+        [0.7, 0.5, 0.5],
+        [0.5, 0.7, 0.5],
+        [0.7, 0.5, 0.5],
+        [0.2, 0.2, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.7, 0.5, 0.5],
+        [0.5, 0.7, 0.5],
+        [0.0, 0.0, 0.0],
+        [0.2, 0.2, 0.0],
+    ]  # Compared with Python results
+    @test dataset.time_reversals == [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+    ]  # Compared with Python results
+    @test dataset.n_atoms == 6
+    @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.origin_shift == [0.9, 0.9, 0.0]
+    @test dataset.n_std_atoms == 6
+    @test dataset.std_lattice == Lattice([4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 3.0])
+    @test dataset.std_types == [1, 1, 2, 2, 2, 2]
+    @test dataset.std_positions ≈ [
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.3, 0.3, 0.0],
+        [0.7, 0.7, 0.0],
+        [0.2, 0.8, 0.5],
+        [0.8, 0.2, 0.5],
+    ]
+    @test dataset.std_tensors == [1.0, -1.0, 0.0, 0.0, 0.0, 0.0]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice ==
+        Lattice([0.0, 0.0, 3.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0])
+end
