@@ -31,7 +31,7 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
         SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
     translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
-    return rotations, translations, equivalent_atoms
+    return rotations, translations, equivalent_atoms .+ 1
 end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
@@ -46,12 +46,12 @@ function get_symmetry_with_site_tensors(
     translations = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
-    spin_flips = if ndims(magmoms) == 1
+    spin_flips = if isone(ndims(magmoms))
         zeros(Cint, length(rotations))
     else
         nothing
     end
-    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
     num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
@@ -116,14 +116,15 @@ end
     std_lattice::Lattice{Float64}
     std_types::Vector{Int32}
     std_positions::Vector{SVector{3,Float64}}
-    std_tensors::Vector{Float64}
+    std_tensors::Vector{Union{Float64,SVector{3,Float64}}}
     std_rotation_matrix::SMatrix{3,3,Float64,9}
     primitive_lattice::Lattice{Float64}
 end
 
-function get_magnetic_dataset(cell::SpglibCell, is_axial=false, symprec=1e-5)
+function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
-    tensor_rank = ndims(magmoms) == 1 ? 0 : 1
+    tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
+    is_axial = iszero(tensor_rank) ? false : true  # Collinear spin & non-collinear spin
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -217,7 +218,19 @@ function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
     std_positions = SVector{3}.(
         unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
     )
-    std_tensors = unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
+    std_tensors = if iszero(dataset.tensor_rank)  # Collinear spin
+        unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
+    else  # Non-collinear spin
+        SVector{3}.(
+            eachcol(
+                unsafe_wrap(
+                    Matrix{Float64},
+                    dataset.std_tensors,
+                    (3, Int64(dataset.n_std_atoms)),  # Issue to Julia community
+                ),
+            ),
+        )
+    end
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )
