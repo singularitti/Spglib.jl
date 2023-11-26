@@ -314,7 +314,7 @@ See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
     pointgroup_symbol::String
 end
 
-function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
+function Dataset(dataset::SpglibDataset)
     international_symbol = tostring(dataset.international_symbol)
     hall_symbol = tostring(dataset.hall_symbol)
     choice = tostring(dataset.choice)
@@ -380,7 +380,7 @@ function Base.convert(::Type{Dataset}, dataset::SpglibDataset)
         pointgroup_symbol,
     )
 end
-function Base.convert(::Type{SpacegroupType}, spgtype::SpglibSpacegroupType)
+function SpacegroupType(spgtype::SpglibSpacegroupType)
     international_short = tostring(spgtype.international_short)
     international_full = tostring(spgtype.international_full)
     international = tostring(spgtype.international)

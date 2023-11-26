@@ -197,7 +197,7 @@ function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e
     return convert(MagneticSpacegroupType, spgtype)
 end
 
-function Base.convert(::Type{MagneticDataset}, dataset::SpglibMagneticDataset)
+function MagneticDataset(dataset::SpglibMagneticDataset)
     rotations = transpose.(
         _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
         i in Base.OneTo(dataset.n_operations)
