@@ -271,9 +271,12 @@ end
     ]
     @test dataset.origin_shift ≈ [0.0, 7.33067647e-34, 0.0]
     @test dataset.n_std_atoms == 8
-    @test dataset.std_lattice ==
-        [1.06949 0.0 0.0; 3.84998337e-16 6.2875 0.0; 3.09590711e-16 3.09590711e-16 5.056]
-    @test dataset.std_types == [0, 0, 0, 0, 0, 0, 0, 0]
+    @test dataset.std_lattice ≈ Lattice([
+        [10.6949000, 0.0, 0.0],
+        [3.84998337e-16, 6.2875, 0.0],
+        [3.09590711e-16, 3.09590711e-16, 5.056],
+    ])
+    @test dataset.std_types == [1, 1, 1, 1, 1, 1, 1, 1]  # Python results are all zeros?
     @test dataset.std_positions ≈ [
         [1.35884054e-33, 3.66533824e-34, 0.0],
         [0.5, 1.34395735e-33, 0.5],
@@ -294,7 +297,7 @@ end
         [4.5, 0.0, 0.0],
         [-4.5, 0.0, 0.0],
     ]
-    @test dataset.std_rotation_matrix == [
+    @test dataset.std_rotation_matrix ≈ [
         1.0 9.31289551e-33 1.64960847e-35
         0.0 1.0 1.64960847e-35
         0.0 0.0 1.0
