@@ -56,9 +56,9 @@ end
         rotations, translations = get_symmetry(cell, 1e-5)
         @test size(rotations) == (96,)
         @test size(translations) == (96,)
-        @test get_hall_number_from_symmetry(cell, 1e-5) == 529
+        @test get_hall_number_from_symmetry(rotations, translations, 1e-5) == 529
     end
-    # See https://github.com/spglib/spglib/blob/378240e/python/test/test_collinear_spin.py#L18-L37
+    # See https://github.com/spglib/spglib/blob/378240e/python/test/test_collinear_spin.py#L19-L46
     @testset "Get symmetry with collinear spins" begin
         lattice = [
             4.0 0.0 0.0
@@ -79,7 +79,7 @@ end
             @test all(
                 translation == [1 / 2, 1 / 2, 1 / 2] for translation in translations[49:96]
             )  # Compared with Python
-            @test equivalent_atoms == [0, 0]
+            @test equivalent_atoms == [1, 1]
         end
         @testset "Test antiferromagnetism" begin
             magmoms = [1.0, -1.0]
@@ -87,8 +87,12 @@ end
             rotations, translations, equivalent_atoms = get_symmetry_with_collinear_spin(
                 cell, 1e-5
             )
-            @test size(rotations) == (3, 3, 96)
-            @test equivalent_atoms == [0, 0]
+            @test size(rotations) == (96,)
+            @test all(iszero(translation) for translation in translations[1:48])
+            @test all(
+                translation == [1 / 2, 1 / 2, 1 / 2] for translation in translations[49:96]
+            )  # Compared with Python
+            @test equivalent_atoms == [1, 1]
         end
         @testset "Test broken magmoms" begin
             magmoms = [1.0, 2.0]
@@ -96,9 +100,10 @@ end
             rotations, translations, equivalent_atoms = get_symmetry_with_collinear_spin(
                 cell, 1e-5
             )
-            @test size(rotations) == (3, 3, 48)
-            @test size(translations) == (3, 48)
-            @test equivalent_atoms == [0, 1]
+            @test size(rotations) == (48,)
+            @test size(translations) == (48,)
+            @test all(iszero(translation) for translation in translations)  # Compared with Python
+            @test equivalent_atoms == [1, 2]  # Compared with Python
         end
     end
 end
