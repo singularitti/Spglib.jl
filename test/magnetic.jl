@@ -104,7 +104,7 @@ end
 end
 
 # From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_magnetic_dataset.py#L9-L44
-@testset "Test Type-I" begin
+@testset "Test type I" begin
     lattice = [
         6.8083 0.0 0.0
         0.0 6.8083 0.0
@@ -558,7 +558,7 @@ end
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0],
-    ]  # Compared with Python results 
+    ]  # Compared with Python results
     @test dataset.time_reversals ==
         [false, false, true, true, false, false, true, true, false, false, true, true]  # Compared with Python results
     @test dataset.n_atoms == 4
