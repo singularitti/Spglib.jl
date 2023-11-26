@@ -31,7 +31,7 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
         SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
     translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
-    return rotations, translations, equivalent_atoms
+    return rotations, translations, equivalent_atoms .+ 1
 end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
