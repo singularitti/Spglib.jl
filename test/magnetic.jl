@@ -306,6 +306,90 @@ end
     ])
 end
 
+# From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_magnetic_dataset.py#L89-L146
+@testset "Test monoclinic" begin
+    a = 10.6926
+    b = 6.2851
+    c = 5.0557
+    lattice = Lattice([10.6926, 0.0, 0.0], [0.0, 6.2851, 0.0], [0.0, 0.0, 5.0557])
+    positions = [
+        [0, 0, 0],
+        [0.5, 0, 0.5],
+        [0, 0.5, 0],
+        [0.5, 0.5, 0.5],
+        [0.2794, 0.25, 0.9903],
+        [0.2206, 0.75, 0.4903],
+        [0.7206, 0.75, 0.0097],
+        [0.7794, 0.25, 0.5097],
+    ]
+    atoms = [0, 0, 0, 0, 0, 0, 0, 0]
+    magmoms = [
+        [1.9, 2.8, 0.3],
+        [-1.9, -2.8, 0.3],
+        [1.7, 2.4, -0.3],
+        [-1.7, -2.4, -0.3],
+        [2.9, 3.4, 0],
+        [-2.9, -3.4, 0],
+        [2.9, 3.4, 0],
+        [-2.9, -3.4, 0],
+    ]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell)
+    @test dataset.uni_number == 82
+    @test dataset.msg_type == 1
+    @test dataset.hall_number == 81
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 4
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 1 0; 0 0 -1],
+    ]  # Compared with Python results
+    @test dataset.translations ==
+        [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.0, 0.5]]  # Compared with Python results
+    @test dataset.time_reversals == [false, false, false, false]  # Compared with Python results
+    @test dataset.n_atoms == 8
+    @test dataset.equivalent_atoms == [0, 0, 2, 2, 4, 4, 4, 4] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        0.0 1.0 0.0
+        0.0 0.0 1.0
+        1.0 0.0 0.0
+    ]
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.n_std_atoms == 8
+    @test dataset.std_lattice ==
+        Lattice([[0.0, 6.2851, 0.0], [0.0, 0.0, 5.0557], [10.6926, 0.0, 0.0]])
+    @test dataset.std_types == [1, 1, 1, 1, 1, 1, 1, 1]  # Python results are all zeros?
+    @test dataset.std_positions ≈ [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.5, 0.5],
+        [0.5, 0.0, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.25, 0.9903, 0.2794],
+        [0.75, 0.4903, 0.2206],
+        [0.75, 0.0097, 0.7206],
+        [0.25, 0.5097, 0.7794],
+    ]
+    @test dataset.std_tensors == [
+        [1.9, 2.8, 0.3],
+        [-1.9, -2.8, 0.3],
+        [1.7, 2.4, -0.3],
+        [-1.7, -2.4, -0.3],
+        [2.9, 3.4, 0.0],
+        [-2.9, -3.4, 0.0],
+        [2.9, 3.4, 0.0],
+        [-2.9, -3.4, 0.0],
+    ]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice ==
+        Lattice([[0.0, 0.0, -5.0557], [0.0, -6.2851, 0.0], [-10.6926, 0.0, 0.0]])
+end
+
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L46-L97
 @testset "Test site tensors for rutile (type III)" begin
     lattice = [
