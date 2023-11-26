@@ -996,6 +996,103 @@ end
         Lattice([[6.1096, 0.0, 0.0], [0.0, 7.2555, 0.0], [0.0, 0.0, 7.5708]])
 end
 
+# From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_magnetic_dataset.py#L414-L456
+@testset "Test nonstandard setting 2" begin
+    lattice = [[7.6476, 0.0, 0.0], [0.0, 6.8855, 0.0], [0.0, 0.0, 14.6058]]
+    positions = [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.5, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.5, 0.0, 0.5],
+        [0.3386, 0.25, 0.6426],
+        [0.6614, 0.75, 0.3574],
+        [0.8386, 0.25, 0.8574],
+        [0.1614, 0.75, 0.1426],
+        [0.2055, 0.25, 0.4372],
+        [0.7945, 0.75, 0.5628],
+        [0.7055, 0.25, 0.0628],
+        [0.2945, 0.75, 0.9372],
+    ]
+    atoms = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    magmoms = [
+        [0.7, 0.0, 0.7],
+        [-0.7, -0.0, -0.7],
+        [-0.7, 0.0, 0.7],
+        [0.7, -0.0, -0.7],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.7, 0.0, 0.7],
+        [-0.7, -0.0, -0.7],
+        [-0.7, 0.0, 0.7],
+        [0.7, -0.0, -0.7],
+    ]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell)
+    @test dataset.uni_number == 125
+    @test dataset.msg_type == 3
+    @test dataset.hall_number == 115
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 4
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 1],
+        [1 0 0; 0 -1 0; 0 0 -1],
+        [-1 0 0; 0 1 0; 0 0 -1],
+    ]  # Compared with Python results
+    @test dataset.translations ≈
+        [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.5, 0.5], [0.0, 0.5, 0.0]]  # Compared with Python results
+    @test dataset.time_reversals == [false, true, true, false]  # Compared with Python results
+    @test dataset.n_atoms == 12
+    @test dataset.equivalent_atoms == [0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        -1.0 0.0 0.0
+        0.0 0.0 -1.0
+        0.0 -1.0 0.0
+    ]
+    @test dataset.origin_shift == [0.25, -0.5, 0.25]
+    @test dataset.n_std_atoms == 12
+    @test dataset.std_lattice ≈
+        Lattice([[-7.6476, 0.0, 0.0], [0.0, 0.0, -14.6058], [0.0, -6.8855, 0.0]])
+    @test dataset.std_types == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] .+ 1
+    @test dataset.std_positions ≈ [
+        [0.25, 0.5, 0.25],
+        [0.25, 0.5, 0.75],
+        [0.75, -5.55111512e-17, 0.75],
+        [0.75, -5.55111512e-17, 0.25],
+        [0.9114, 0.8574, 0.0],
+        [0.5886, 0.1426, 0.5],
+        [0.4114, 0.6426, 0.0],
+        [0.0886, 0.3574, 0.5],
+        [0.0445, 0.0628, 0.0],
+        [0.4555, 0.9372, 0.5],
+        [0.5445, 0.4372, 0.0],
+        [0.9555, 0.5628, 0.5],
+    ]
+    @test dataset.std_tensors ≈ [
+        [0.7, 0.0, 0.7],
+        [-0.7, 0.0, -0.7],
+        [-0.7, 0.0, 0.7],
+        [0.7, 0.0, -0.7],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.7, 0.0, 0.7],
+        [-0.7, 0.0, -0.7],
+        [-0.7, 0.0, 0.7],
+        [0.7, 0.0, -0.7],
+    ]
+    @test dataset.std_rotation_matrix ≈ [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice ==
+        Lattice([[0, -6.8855, 0], [-7.6476, 0, 0], [0, 0, -14.6058]])
+end
+
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L46-L97
 @testset "Test site tensors for rutile (type III)" begin
     lattice = [
