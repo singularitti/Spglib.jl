@@ -214,6 +214,31 @@ struct SpacegroupType <: AbstractSpacegroupType
     arithmetic_crystal_class_number::Int32
     arithmetic_crystal_class_symbol::String
 end
+function SpacegroupType(spgtype::SpglibSpacegroupType)
+    international_short = tostring(spgtype.international_short)
+    international_full = tostring(spgtype.international_full)
+    international = tostring(spgtype.international)
+    schoenflies = tostring(spgtype.schoenflies)
+    hall_symbol = tostring(spgtype.hall_symbol)
+    choice = tostring(spgtype.choice)
+    pointgroup_international = tostring(spgtype.pointgroup_international)
+    pointgroup_schoenflies = tostring(spgtype.pointgroup_schoenflies)
+    arithmetic_crystal_class_symbol = tostring(spgtype.arithmetic_crystal_class_symbol)
+    return SpacegroupType(
+        spgtype.number,
+        international_short,
+        international_full,
+        international,
+        schoenflies,
+        spgtype.hall_number,
+        hall_symbol,
+        choice,
+        pointgroup_international,
+        pointgroup_schoenflies,
+        spgtype.arithmetic_crystal_class_number,
+        arithmetic_crystal_class_symbol,
+    )
+end
 
 abstract type AbstractDataset end
 
@@ -313,7 +338,6 @@ See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
     std_mapping_to_primitive::Vector{Int32}
     pointgroup_symbol::String
 end
-
 function Dataset(dataset::SpglibDataset)
     international_symbol = tostring(dataset.international_symbol)
     hall_symbol = tostring(dataset.hall_symbol)
@@ -378,31 +402,6 @@ function Dataset(dataset::SpglibDataset)
         std_rotation_matrix,
         std_mapping_to_primitive,
         pointgroup_symbol,
-    )
-end
-function SpacegroupType(spgtype::SpglibSpacegroupType)
-    international_short = tostring(spgtype.international_short)
-    international_full = tostring(spgtype.international_full)
-    international = tostring(spgtype.international)
-    schoenflies = tostring(spgtype.schoenflies)
-    hall_symbol = tostring(spgtype.hall_symbol)
-    choice = tostring(spgtype.choice)
-    pointgroup_international = tostring(spgtype.pointgroup_international)
-    pointgroup_schoenflies = tostring(spgtype.pointgroup_schoenflies)
-    arithmetic_crystal_class_symbol = tostring(spgtype.arithmetic_crystal_class_symbol)
-    return SpacegroupType(
-        spgtype.number,
-        international_short,
-        international_full,
-        international,
-        schoenflies,
-        spgtype.hall_number,
-        hall_symbol,
-        choice,
-        pointgroup_international,
-        pointgroup_schoenflies,
-        spgtype.arithmetic_crystal_class_number,
-        arithmetic_crystal_class_symbol,
     )
 end
 
