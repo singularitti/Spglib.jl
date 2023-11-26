@@ -200,8 +200,8 @@ function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
     if ptr == C_NULL
         check_error()
     else
-        raw = unsafe_load(ptr)
-        return convert(MagneticDataset, raw)
+        raw_dataset = unsafe_load(ptr)
+        return MagneticDataset(raw_dataset)
     end
 end
 

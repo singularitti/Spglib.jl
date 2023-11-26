@@ -171,8 +171,8 @@ function get_dataset(cell::AbstractCell, symprec=1e-5)
     if ptr == C_NULL  # See https://github.com/spglib/spglib/blob/v2.1.0-rc2/python/spglib/spglib.py#L498-L504
         check_error()
     else
-        dataset = unsafe_load(ptr)
-        return convert(Dataset, dataset)
+        raw_dataset = unsafe_load(ptr)
+        return Dataset(raw_dataset)
     end
 end
 
@@ -213,8 +213,8 @@ function get_dataset_with_hall_number(
     if ptr == C_NULL
         check_error()
     else
-        dataset = unsafe_load(ptr)
-        return convert(Dataset, dataset)
+        raw_dataset = unsafe_load(ptr)
+        return Dataset(raw_dataset)
     end
 end
 
@@ -289,7 +289,7 @@ function get_spacegroup_type(hall_number)
         hall_number::Cint
     )::SpglibSpacegroupType
     check_error()
-    return convert(SpacegroupType, spgtype)
+    return SpacegroupType(spgtype)
 end
 
 """
@@ -334,7 +334,7 @@ function get_spacegroup_type_from_symmetry(
         symprec::Cdouble,
     )::SpglibSpacegroupType
     check_error()
-    return convert(SpacegroupType, spgtype)
+    return SpacegroupType(spgtype)
 end
 
 """
