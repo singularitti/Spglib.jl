@@ -1951,3 +1951,13 @@ end
         @test time_reversals == [0, 0, 1, 0, 1, 1]
     end
 end
+
+# From https://github.com/spglib/spglib/blob/59bea8a7df30c8f2202ed0ee1033be0d98d9ed5e/test/functional/python/test_spglib.py#L257-L292
+@testset "Test `get_magnetic_spacegroup_type`" begin
+    @test get_magnetic_spacegroup_type(1279) ==
+        MagneticSpacegroupType(1279, 1279, "156.49", "156.1.1279", 156, 1)
+    @test get_magnetic_spacegroup_type(452) ==
+        MagneticSpacegroupType(452, 442, "55.354", "55.2.442", 55, 2)
+    @test get_magnetic_spacegroup_type(1262) ==
+        MagneticSpacegroupType(1262, 1270, "151.32", "153.4.1270", 151, 4)
+end
