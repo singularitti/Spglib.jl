@@ -1765,3 +1765,189 @@ end
         0 0 10
     ])
 end
+
+@testset "Test `get_magnetic_symmetry_from_database`" begin
+    # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_spglib.py#L297-L300
+    @testset "Test hexagonal axes: hall_number 433" begin
+        rotations, translations, time_reversals = get_magnetic_symmetry_from_database(1242)
+        @test rotations == [
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+            [
+                -1 1 0
+                -1 0 0
+                0 0 1
+            ],
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+            [
+                0 -1 0
+                1 -1 0
+                0 0 1
+            ],
+        ]
+        @test translations ≈ [
+            [0.0, 0.0, 0.0],
+            [0.66666667, 0.33333333, 0.33333333],
+            [0.33333333, 0.66666667, 0.66666667],
+            [0.0, 0.0, 0.5],
+            [0.33333333, 0.66666667, 0.16666667],
+            [0.66666667, 0.33333333, 0.83333333],
+            [0.33333333, 0.66666667, 0.66666667],
+            [0.66666667, 0.33333333, 0.83333333],
+            [0.33333333, 0.66666667, 0.16666667],
+            [0.66666667, 0.33333333, 0.33333333],
+            [0.0, 0.0, 0.0],
+            [0.66666667, 0.33333333, 0.33333333],
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.5],
+            [0.0, 0.0, 0.5],
+            [0.33333333, 0.66666667, 0.16666667],
+            [0.66666667, 0.33333333, 0.83333333],
+            [0.33333333, 0.66666667, 0.66666667],
+        ]
+        @test time_reversals == [
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+        ]
+    end
+    # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_spglib.py#L302-L363
+    @testset "Test rhombohedral axes: hall_number 434" begin
+        rotations, translations, time_reversals = get_magnetic_symmetry_from_database(
+            1242, 434
+        )
+        @test rotations == [
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],  # x,y,z
+            [
+                0 0 1
+                1 0 0
+                0 1 0
+            ],  # y,z,x
+            [
+                0 0 1
+                1 0 0
+                0 1 0
+            ],  # y+1/2,z+1/2,x+1/2
+            [
+                0 1 0
+                0 0 1
+                1 0 0
+            ],  # z,x,y
+            [
+                1 0 0
+                0 1 0
+                0 0 1
+            ],  # x+1/2,y+1/2,z+1/2
+            [
+                0 1 0
+                0 0 1
+                1 0 0
+            ],  # z+1/2,x+1/2,y+1/2
+        ]
+        @test translations == [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0.5, 0.5, 0.5],
+            [0, 0, 0],
+            [0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5],
+        ]
+        @test time_reversals == [0, 0, 1, 0, 1, 1]
+    end
+end
