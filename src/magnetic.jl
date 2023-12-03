@@ -245,6 +245,18 @@ struct MagneticSpacegroupType <: AbstractSpacegroupType
     number::Int32
     type::Int32
 end
+function MagneticSpacegroupType(spgtype::SpglibMagneticSpacegroupType)
+    bns_number = tostring(spgtype.bns_number)
+    og_number = tostring(spgtype.og_number)
+    return MagneticSpacegroupType(
+        spgtype.uni_number,
+        spgtype.litvin_number,
+        bns_number,
+        og_number,
+        spgtype.number,
+        spgtype.type,
+    )
+end
 
 function get_magnetic_spacegroup_type(uni_number::Integer)
     spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type(
