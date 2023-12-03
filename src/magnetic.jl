@@ -109,7 +109,7 @@ end
     n_operations::Int32
     rotations::Vector{SMatrix{3,3,Int32,9}}
     translations::Vector{SVector{3,Float64}}
-    time_reversals::Vector{Int32}
+    time_reversals::BitVector
     n_atoms::Int32
     equivalent_atoms::Vector{Int32}
     transformation_matrix::SMatrix{3,3,Float64,9}
@@ -130,9 +130,8 @@ function MagneticDataset(dataset::SpglibMagneticDataset)
     translations = SVector{3}.(
         unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
     )
-    time_reversals = unsafe_wrap(
-        Vector{Int32}, dataset.time_reversals, dataset.n_operations
-    )
+    time_reversals =
+        Bool.(unsafe_wrap(Vector{Int32}, dataset.time_reversals, dataset.n_operations))
     equivalent_atoms =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms) .+ 1
     transformation_matrix = transpose(
