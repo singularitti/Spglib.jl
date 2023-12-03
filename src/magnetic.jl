@@ -4,7 +4,8 @@ export MagneticDataset,
     get_symmetry_with_site_tensors,
     get_magnetic_symmetry,
     get_magnetic_dataset,
-    get_magnetic_symmetry_from_database
+    get_magnetic_symmetry_from_database,
+    get_magnetic_spacegroup_type
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
