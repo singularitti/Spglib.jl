@@ -149,7 +149,7 @@ function MagneticDataset(dataset::SpglibMagneticDataset)
                 unsafe_wrap(
                     Matrix{Float64},
                     dataset.std_tensors,
-                    (3, Int64(dataset.n_std_atoms)),  # Issue to Julia community
+                    (3, Int(dataset.n_std_atoms)),  # Issue to Julia community
                 ),
             ),
         )
