@@ -208,22 +208,22 @@ end
 # Python version: https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L1108-L1138
 function get_magnetic_symmetry_from_database(uni_number, hall_number=0)
     @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
-    rotations = Array{Cint,3}(undef, 3, 3, 384)  # See https://github.com/spglib/spglib/blob/v2.1.0/src/spglib.h#L398
-    translations = Matrix{Cdouble}(undef, 3, 384)
-    time_reversals = Vector{Bool}(undef, 384)
+    _rotations = Array{Cint,3}(undef, 3, 3, 384)  # See https://github.com/spglib/spglib/blob/v2.1.0/src/spglib.h#L398
+    _translations = Matrix{Cdouble}(undef, 3, 384)
+    _time_reversals = Vector{Cint}(undef, 384)  # It cannot be `Vector{Bool}`!
     num_sym = @ccall libsymspg.spg_get_magnetic_symmetry_from_database(
-        rotations::Ptr{Cint},
-        translations::Ptr{Cdouble},
-        time_reversals::Ptr{Cint},
+        _rotations::Ptr{Cint},
+        _translations::Ptr{Cdouble},
+        _time_reversals::Ptr{Cint},
         uni_number::Cint,
         hall_number::Cint,
     )::Cint
     check_error()
     rotations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, begin:num_sym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(_rotations[:, :, begin:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    translations = map(SVector{3,Float64}, eachcol(translations[:, begin:num_sym]))
-    time_reversals = time_reversals[begin:num_sym]
+    translations = map(SVector{3,Float64}, eachcol(_translations[:, begin:num_sym]))
+    time_reversals = Bool.(_time_reversals[begin:num_sym])
     return rotations, translations, time_reversals
 end
 
