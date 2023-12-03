@@ -4,7 +4,8 @@ export MagneticDataset,
     get_symmetry_with_site_tensors,
     get_magnetic_symmetry,
     get_magnetic_dataset,
-    get_magnetic_symmetry_from_database
+    get_magnetic_symmetry_from_database,
+    get_magnetic_spacegroup_type
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
@@ -245,13 +246,25 @@ struct MagneticSpacegroupType <: AbstractSpacegroupType
     number::Int32
     type::Int32
 end
+function MagneticSpacegroupType(spgtype::SpglibMagneticSpacegroupType)
+    bns_number = tostring(spgtype.bns_number)
+    og_number = tostring(spgtype.og_number)
+    return MagneticSpacegroupType(
+        spgtype.uni_number,
+        spgtype.litvin_number,
+        bns_number,
+        og_number,
+        spgtype.number,
+        spgtype.type,
+    )
+end
 
-function get_magnetic_spacegroup_type(uni_number::Integer)
+function get_magnetic_spacegroup_type(uni_number)
     spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type(
         uni_number::Cint
     )::SpglibMagneticSpacegroupType
     check_error()
-    return convert(MagneticSpacegroupType, spgtype)
+    return MagneticSpacegroupType(spgtype)
 end
 
 function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e-5)
@@ -268,5 +281,5 @@ function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e
         symprec::Cdouble,
     )::SpglibMagneticSpacegroupType
     check_error()
-    return convert(MagneticSpacegroupType, spgtype)
+    return MagneticSpacegroupType(spgtype)
 end
