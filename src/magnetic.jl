@@ -258,12 +258,12 @@ function MagneticSpacegroupType(spgtype::SpglibMagneticSpacegroupType)
     )
 end
 
-function get_magnetic_spacegroup_type(uni_number::Integer)
+function get_magnetic_spacegroup_type(uni_number)
     spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type(
         uni_number::Cint
     )::SpglibMagneticSpacegroupType
     check_error()
-    return convert(MagneticSpacegroupType, spgtype)
+    return MagneticSpacegroupType(spgtype)
 end
 
 function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e-5)
@@ -280,5 +280,5 @@ function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e
         symprec::Cdouble,
     )::SpglibMagneticSpacegroupType
     check_error()
-    return convert(MagneticSpacegroupType, spgtype)
+    return MagneticSpacegroupType(spgtype)
 end
