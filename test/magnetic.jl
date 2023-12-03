@@ -274,7 +274,7 @@ end
         0 1 0
         0 0 1
     ]
-    @test dataset.origin_shift ≈ [0.0, 7.33067647e-34, 0.0]
+    @test dataset.origin_shift ≈ [0.0, 7.33067647e-34, 0.0] atol = eps()
     @test dataset.n_std_atoms == 8
     @test dataset.std_lattice ≈ Lattice([
         [10.6949000, 0.0, 0.0],
