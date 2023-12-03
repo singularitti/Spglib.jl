@@ -1,51 +1,3 @@
-# See https://github.com/singularitti/Spglib.jl/issues/91#issuecomment-1206106977
-@testset "Test example given by Jae-Mo Lihm (@jaemolihm)" begin
-    lattice = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-    positions = [[-0.1, -0.1, -0.1], [0.1, 0.1, 0.1]]
-    atoms = [1, 1]
-    magmoms = [[0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
-    cell = Cell(lattice, positions, atoms, magmoms)
-    dataset = get_magnetic_dataset(cell, 1e-5)
-    @test dataset.uni_number == 68
-    @test dataset.msg_type == 3
-    @test dataset.hall_number == 63
-    @test dataset.tensor_rank == 1
-    @test dataset.n_operations == 4
-    @test dataset.rotations == [
-        [1 0 0; 0 1 0; 0 0 1],
-        [-1 0 0; 0 -1 0; 0 0 -1],
-        [0 -1 0; -1 0 0; 0 0 -1],
-        [0 1 0; 1 0 0; 0 0 1],
-    ]  # Compared with Python results
-    @test dataset.translations == fill(zeros(3), 4)  # Compared with Python results
-    @test dataset.time_reversals == [false, true, false, true]  # Compared with Python results
-    @test dataset.n_atoms == 2
-    @test dataset.equivalent_atoms == [0, 0] .+ 1  # Compared with Python results
-    @test dataset.transformation_matrix == [
-        0.5 0.5 0.0
-        -0.5 0.5 0.0
-        0.0 0.0 1.0
-    ]
-    @test dataset.origin_shift == [0.0, 0.0, 0.0]
-    @test dataset.n_std_atoms == 4
-    @test dataset.std_lattice == Lattice([
-        1.0 -1.0 0.0
-        1.0 1.0 0.0
-        0.0 0.0 1.0
-    ])
-    @test dataset.std_types == [1, 1, 1, 1]
-    @test dataset.std_positions ≈
-        [[0.9, 0.0, 0.9], [0.4, 0.5, 0.9], [0.1, 0.0, 0.1], [0.6, 0.5, 0.1]]
-    @test dataset.std_tensors ==
-        [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, -1.0], [0.0, 0.0, -1.0]]
-    @test dataset.std_rotation_matrix == [
-        1 0 0
-        0 1 0
-        0 0 1
-    ]
-    @test dataset.primitive_lattice == Lattice([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-end
-
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
 @testset "Get symmetry operations" begin
     @testset "Normal symmetry" begin
@@ -106,6 +58,54 @@ end
             @test equivalent_atoms == [1, 2]  # Compared with Python
         end
     end
+end
+
+# See https://github.com/singularitti/Spglib.jl/issues/91#issuecomment-1206106977
+@testset "Test example given by Jae-Mo Lihm (@jaemolihm)" begin
+    lattice = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    positions = [[-0.1, -0.1, -0.1], [0.1, 0.1, 0.1]]
+    atoms = [1, 1]
+    magmoms = [[0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
+    cell = Cell(lattice, positions, atoms, magmoms)
+    dataset = get_magnetic_dataset(cell, 1e-5)
+    @test dataset.uni_number == 68
+    @test dataset.msg_type == 3
+    @test dataset.hall_number == 63
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 4
+    @test dataset.rotations == [
+        [1 0 0; 0 1 0; 0 0 1],
+        [-1 0 0; 0 -1 0; 0 0 -1],
+        [0 -1 0; -1 0 0; 0 0 -1],
+        [0 1 0; 1 0 0; 0 0 1],
+    ]  # Compared with Python results
+    @test dataset.translations == fill(zeros(3), 4)  # Compared with Python results
+    @test dataset.time_reversals == [false, true, false, true]  # Compared with Python results
+    @test dataset.n_atoms == 2
+    @test dataset.equivalent_atoms == [0, 0] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        0.5 0.5 0.0
+        -0.5 0.5 0.0
+        0.0 0.0 1.0
+    ]
+    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.n_std_atoms == 4
+    @test dataset.std_lattice == Lattice([
+        1.0 -1.0 0.0
+        1.0 1.0 0.0
+        0.0 0.0 1.0
+    ])
+    @test dataset.std_types == [1, 1, 1, 1]
+    @test dataset.std_positions ≈
+        [[0.9, 0.0, 0.9], [0.4, 0.5, 0.9], [0.1, 0.0, 0.1], [0.6, 0.5, 0.1]]
+    @test dataset.std_tensors ==
+        [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, -1.0], [0.0, 0.0, -1.0]]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice == Lattice([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 end
 
 # From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_magnetic_dataset.py#L9-L44
