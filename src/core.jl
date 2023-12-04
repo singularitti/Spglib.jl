@@ -1,4 +1,5 @@
-using CrystallographyCore: AbstractCell, Cell as CrystallographyCell, basisvectors
+using CrystallographyCore:
+    ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
 using StaticArrays: MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal_isequal
 
@@ -95,7 +96,7 @@ julia> cell = SpglibCell(lattice, positions, atoms, magmoms);
 """
 @struct_hash_equal_isequal struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
-    positions::Vector{MVector{3,P}}
+    positions::Vector{ReducedCoordinates{P}}
     atoms::Vector{T}
     magmoms::Vector{M}
 end
@@ -120,8 +121,8 @@ function SpglibCell(lattice, positions, atoms, magmoms=[])
             )
         end
     else  # positions isa AbstractVector or a Tuple
-        P = eltype(Base.promote_typeof(positions...))
-        positions = collect(map(MVector{3,P}, positions))
+        P = reduce(promote_type, eltype.(positions))  # See https://github.com/MineralsCloud/CrystallographyCore.jl/blob/v0.3.3/src/cell.jl#L39-L40
+        positions = map(ReducedCoordinates{P} ∘ collect, positions)
     end
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
