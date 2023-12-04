@@ -95,9 +95,9 @@ function get_symmetry(cell::AbstractCell, symprec=1e-5)
     )::Cint  # The number of operations is returned.
     check_error()
     rotations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, begin:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    translations = map(SVector{3,Float64}, eachcol(translations[:, begin:num_sym]))
     return rotations, translations
 end
 
@@ -132,9 +132,9 @@ function get_symmetry_from_database(hall_number)
     )::Cint
     check_error()
     rotations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, begin:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    translations = map(SVector{3,Float64}, eachcol(translations[:, begin:num_sym]))
     return rotations, translations
 end
 

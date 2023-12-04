@@ -30,9 +30,9 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     )::Cint
     check_error()
     rotations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, begin:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
+    translations = map(SVector{3,Float64}, eachcol(translations[:, begin:num_sym]))
     return rotations, translations, equivalent_atoms .+ 1
 end
 
@@ -69,10 +69,10 @@ function get_symmetry_with_site_tensors(
     )::Cint
     check_error()
     rotations = map(
-        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, 1:num_sym]; dims=3)
+        SMatrix{3,3,Int32,9} ∘ transpose, eachslice(rotations[:, :, begin:num_sym]; dims=3)
     )  # Remember to transpose, see https://github.com/singularitti/Spglib.jl/blob/8aed6e0/src/core.jl#L195-L198
-    translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
-    return rotations, translations, spin_flips[1:num_sym]
+    translations = map(SVector{3,Float64}, eachcol(translations[:, begin:num_sym]))
+    return rotations, translations, spin_flips[begin:num_sym]
 end
 
 struct SpglibMagneticDataset <: AbstractDataset

@@ -42,8 +42,8 @@ function standardize_cell(
     allocations = 4  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L440
     positions = Matrix{Cdouble}(undef, 3, num_atom * allocations)
     atoms = Vector{Cint}(undef, num_atom * allocations)
-    positions[:, 1:num_atom] .= _positions
-    atoms[1:num_atom] .= _atoms
+    positions[:, begin:num_atom] .= _positions
+    atoms[begin:num_atom] .= _atoms
     num_atom_std = @ccall libsymspg.spg_standardize_cell(
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
@@ -54,11 +54,11 @@ function standardize_cell(
         symprec::Cdouble,
     )::Cint  # Note: not `num_atom`!
     check_error()
-    new_atom_indices = atoms[1:num_atom_std]  # See issue #150
+    new_atom_indices = atoms[begin:num_atom_std]  # See issue #150
     atoms_record = atomtypes(cell)  # Record the original atoms with labels
     return Cell(
         Lattice(transpose(lattice)),  # We have to `transpose` back because of `_unwrap_convert`!
-        collect(eachcol(positions[:, 1:num_atom_std])),
+        collect(eachcol(positions[:, begin:num_atom_std])),
         collect(atoms_record[index] for index in new_atom_indices),
     )
 end
