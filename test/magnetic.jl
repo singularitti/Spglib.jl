@@ -1658,6 +1658,13 @@ end
     ]
     @test dataset.primitive_lattice ==
         Lattice([0.0, 0.0, 3.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0])
+    @testset "Test `get_symmetry_with_site_tensors`" begin
+        rotations, translations, spin_flips = get_symmetry_with_site_tensors(cell, 1e-5)
+        @test rotations == dataset.rotations
+        @test translations == dataset.translations
+        @test dataset.time_reversals == (1 .- spin_flips) ./ 2  # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L156-L160
+        @test sum(dataset.time_reversals) == 8  # See https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L96
+    end
 end
 
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L99-L146
@@ -1802,6 +1809,13 @@ end
         0.0 4.0 0.0
         0.0 0.0 4.0
     ])
+    @testset "Test `get_symmetry_with_site_tensors`" begin
+        rotations, translations, spin_flips = get_symmetry_with_site_tensors(cell, 1e-5)
+        @test rotations == dataset.rotations
+        @test translations == dataset.translations
+        @test dataset.time_reversals == (1 .- spin_flips) ./ 2  # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L156-L160
+        @test sum(dataset.time_reversals) == 16  # See https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L145
+    end
 end
 
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L149-L180
@@ -1881,6 +1895,12 @@ end
         0 10 0
         0 0 10
     ])
+    @testset "Test `get_symmetry_with_site_tensors`" begin
+        rotations, translations, spin_flips = get_symmetry_with_site_tensors(cell, 1e-5)
+        @test rotations == dataset.rotations
+        @test translations == dataset.translations
+        @test dataset.time_reversals == (1 .- spin_flips) ./ 2  # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L156-L160
+    end
 end
 
 @testset "Test `get_magnetic_symmetry_from_database`" begin
