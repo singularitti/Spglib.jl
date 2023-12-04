@@ -2,7 +2,6 @@ export MagneticDataset,
     MagneticSpacegroupType,
     get_symmetry_with_collinear_spin,
     get_symmetry_with_site_tensors,
-    get_magnetic_symmetry,
     get_magnetic_dataset,
     get_magnetic_symmetry_from_database,
     get_magnetic_spacegroup_type
@@ -35,10 +34,9 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
     return rotations, translations, equivalent_atoms .+ 1
 end
-const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
 function get_symmetry_with_site_tensors(
-    cell::SpglibCell, symprec=1e-5; with_time_reversal=true, is_axial=false
+    cell::SpglibCell, symprec=1e-5; with_time_reversal=true
 )
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     num_atom = natoms(cell)
@@ -48,12 +46,9 @@ function get_symmetry_with_site_tensors(
     translations = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
-    spin_flips = if isone(ndims(magmoms))
-        zeros(Cint, length(rotations))
-    else
-        nothing
-    end
+    spin_flips = zeros(Cint, max_size)
     tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
+    is_axial = iszero(tensor_rank) ? false : true  # Collinear spin & non-collinear spin
     num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
