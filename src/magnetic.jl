@@ -48,12 +48,9 @@ function get_symmetry_with_site_tensors(
     translations = Matrix{Cdouble}(undef, 3, max_size)
     equivalent_atoms = Vector{Cint}(undef, num_atom)
     primitive_lattice = zeros(Cdouble, 3, 3)
-    spin_flips = if isone(ndims(magmoms))
-        zeros(Cint, length(rotations))
-    else
-        nothing
-    end
+    spin_flips = zeros(Cint, max_size)
     tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
+    is_axial = iszero(tensor_rank) ? false : true  # Collinear spin & non-collinear spin
     num_sym = @ccall libsymspg.spg_get_symmetry_with_site_tensors(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
