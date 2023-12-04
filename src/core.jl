@@ -1,4 +1,5 @@
-using CrystallographyCore: AbstractCell, Cell as CrystallographyCell, basisvectors
+using CrystallographyCore:
+    ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
 using StaticArrays: MVector, SMatrix, SVector
 using StructEquality: @struct_hash_equal_isequal
 
@@ -95,7 +96,7 @@ julia> cell = SpglibCell(lattice, positions, atoms, magmoms);
 """
 @struct_hash_equal_isequal struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
-    positions::Vector{MVector{3,P}}
+    positions::Vector{ReducedCoordinates{P}}
     atoms::Vector{T}
     magmoms::Vector{M}
 end
