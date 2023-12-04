@@ -121,8 +121,8 @@ function SpglibCell(lattice, positions, atoms, magmoms=[])
             )
         end
     else  # positions isa AbstractVector or a Tuple
-        P = eltype(Base.promote_typeof(positions...))
-        positions = collect(map(MVector{3,P}, positions))
+        P = reduce(promote_type, eltype.(positions))  # See https://github.com/MineralsCloud/CrystallographyCore.jl/blob/v0.3.3/src/cell.jl#L39-L40
+        positions = map(ReducedCoordinates{P} ∘ collect, positions)
     end
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
