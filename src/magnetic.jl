@@ -9,7 +9,7 @@ export MagneticDataset,
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
-    lattice, positions, atoms, spins = _unwrap_convert(cell)
+    lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     num_atom = length(cell.magmoms)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 96num_atom  # 96 = 48 × 2 since we have spins
@@ -24,7 +24,7 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
         lattice::Ptr{Cdouble},
         positions::Ptr{Cdouble},
         atoms::Ptr{Cint},
-        spins::Ptr{Cdouble},
+        magmoms::Ptr{Cdouble},
         num_atom::Cint,
         symprec::Cdouble,
     )::Cint
