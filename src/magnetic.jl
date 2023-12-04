@@ -38,7 +38,7 @@ end
 const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
 function get_symmetry_with_site_tensors(
-    cell::SpglibCell, symprec=1e-5; with_time_reversal=true, is_axial=false
+    cell::SpglibCell, symprec=1e-5; with_time_reversal=true
 )
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     num_atom = natoms(cell)
