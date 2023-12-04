@@ -261,17 +261,23 @@ function get_magnetic_spacegroup_type(uni_number)
     return MagneticSpacegroupType(spgtype)
 end
 
-function get_magnetic_spacegroup_type_from_symmetry(cell::SpglibCell, symprec=1e-5)
-    rotations, translations = get_symmetry(cell, symprec)
-    nsym = length(translations)
-    rotations, translations = reduce(hcat, rotations), reduce(hcat, translations)
-    time_reversals = zeros(Int32, nsym)
+function get_magnetic_spacegroup_type_from_symmetry(
+    rotations, translations, time_reversals, lattice::Lattice, symprec=1e-5
+)
+    if length(rotations) != length(translations)
+        throw(DimensionMismatch("the numbers of rotations and translations are different!"))
+    end
+    num_sym = length(translations)
+    rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
+    translations = Base.cconvert(Matrix{Cdouble}, reduce(hcat, translations))
+    time_reversals = Base.cconvert(Vector{Cint}, time_reversals)
+    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
     spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
         time_reversals::Ptr{Cint},
-        nsym::Cint,
-        Lattice(cell)::Ptr{Cdouble},
+        num_sym::Cint,
+        lattice::Ptr{Cdouble},
         symprec::Cdouble,
     )::SpglibMagneticSpacegroupType
     check_error()
