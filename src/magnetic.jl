@@ -2,7 +2,6 @@ export MagneticDataset,
     MagneticSpacegroupType,
     get_symmetry_with_collinear_spin,
     get_symmetry_with_site_tensors,
-    get_magnetic_symmetry,
     get_magnetic_dataset,
     get_magnetic_symmetry_from_database,
     get_magnetic_spacegroup_type
@@ -35,7 +34,6 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     translations = map(SVector{3,Float64}, eachcol(translations[:, 1:num_sym]))
     return rotations, translations, equivalent_atoms .+ 1
 end
-const get_magnetic_symmetry = get_symmetry_with_collinear_spin
 
 function get_symmetry_with_site_tensors(
     cell::SpglibCell, symprec=1e-5; with_time_reversal=true
