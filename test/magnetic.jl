@@ -11,6 +11,7 @@
         @test get_hall_number_from_symmetry(rotations, translations, 1e-5) == 529
     end
     # See https://github.com/spglib/spglib/blob/378240e/python/test/test_collinear_spin.py#L19-L46
+    # and https://github.com/spglib/spglib/blob/15a31f6/test/functional/c/test_magnetic_symmetry.cpp#L25-L81
     @testset "Get symmetry with collinear spins" begin
         lattice = [
             4.0 0.0 0.0
@@ -32,6 +33,13 @@
                 translation == [1 / 2, 1 / 2, 1 / 2] for translation in translations[49:96]
             )  # Compared with Python
             @test equivalent_atoms == [1, 1]
+            @testset "Test `get_symmetry_with_site_tensors`" begin
+                rotations₂, translations₂, spin_flips = get_symmetry_with_site_tensors(
+                    cell, 1e-5
+                )
+                @test rotations == rotations₂
+                @test translations == translations₂
+            end
         end
         @testset "Test antiferromagnetism" begin
             magmoms = [1.0, -1.0]
@@ -45,6 +53,13 @@
                 translation == [1 / 2, 1 / 2, 1 / 2] for translation in translations[49:96]
             )  # Compared with Python
             @test equivalent_atoms == [1, 1]
+            @testset "Test `get_symmetry_with_site_tensors`" begin
+                rotations₂, translations₂, spin_flips = get_symmetry_with_site_tensors(
+                    cell, 1e-5
+                )
+                @test rotations == rotations₂
+                @test translations == translations₂
+            end
         end
         @testset "Test broken magmoms" begin
             magmoms = [1.0, 2.0]
@@ -56,6 +71,13 @@
             @test size(translations) == (48,)
             @test all(iszero(translation) for translation in translations)  # Compared with Python
             @test equivalent_atoms == [1, 2]  # Compared with Python
+            @testset "Test `get_symmetry_with_site_tensors`" begin
+                rotations₂, translations₂, spin_flips = get_symmetry_with_site_tensors(
+                    cell, 1e-5
+                )
+                @test rotations == rotations₂
+                @test translations == translations₂
+            end
         end
     end
 end
