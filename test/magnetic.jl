@@ -60,6 +60,116 @@
     end
 end
 
+# From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L84-L160
+@testset "Test LaMnO₃" begin
+    lattice = Lattice([[5.7461, 0, 0], [0, 7.6637, 0], [0, 0, 5.5333]])
+    positions = [
+        [0.051300, 0.250000, 0.990500],  # La
+        [0.948700, 0.750000, 0.009500],  # La
+        [0.551300, 0.250000, 0.509500],  # La
+        [0.448700, 0.750000, 0.490500],  # La
+        [0.000000, 0.000000, 0.500000],  # Mn
+        [0.000000, 0.500000, 0.500000],  # Mn
+        [0.500000, 0.500000, 0.000000],  # Mn
+        [0.500000, 0.000000, 0.000000],  # Mn
+        [0.484900, 0.250000, 0.077700],  # O1
+        [0.515100, 0.750000, 0.922300],  # O1
+        [0.984900, 0.250000, 0.422300],  # O1
+        [0.015100, 0.750000, 0.577700],  # O1
+        [0.308500, 0.040800, 0.722700],  # O2
+        [0.691500, 0.540800, 0.277300],  # O2
+        [0.691500, 0.959200, 0.277300],  # O2
+        [0.308500, 0.459200, 0.722700],  # O2
+        [0.808500, 0.459200, 0.777300],  # O2
+        [0.191500, 0.959200, 0.222700],  # O2
+        [0.191500, 0.540800, 0.222700],  # O2
+        [0.808500, 0.040800, 0.777300],  # O2
+    ]
+    atoms = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    magmoms = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [3.87, 0, 0],
+        [-3.87, 0, 0],
+        [-3.87, 0, 0],
+        [3.87, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+    cell = Cell(lattice, positions, atoms, magmoms)
+    rotations, translations, spin_flips = get_symmetry_with_site_tensors(cell, 1e-5)
+    @test length(rotations) == length(translations) == length(spin_flips) == 8
+    @test rotations == [
+        [
+            1 0 0
+            0 1 0
+            0 0 1
+        ],
+        [
+            -1 0 0
+            0 -1 0
+            0 0 -1
+        ],
+        [
+            -1 0 0
+            0 -1 0
+            0 0 1
+        ],
+        [
+            1 0 0
+            0 1 0
+            0 0 -1
+        ],
+        [
+            1 0 0
+            0 -1 0
+            0 0 -1
+        ],
+        [
+            -1 0 0
+            0 1 0
+            0 0 1
+        ],
+        [
+            -1 0 0
+            0 1 0
+            0 0 -1
+        ],
+        [
+            1 0 0
+            0 -1 0
+            0 0 1
+        ],
+    ]  # Compared with Python results
+    @test translations == [
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.5, 0.5],
+        [0.5, 0.5, 0.5],
+        [0.0, 0.5, 0.0],
+        [0.0, 0.5, 0.0],
+    ]  # Compared with Python results
+    dataset = get_magnetic_dataset(cell, 1e-5)
+    @test rotations == dataset.rotations
+    @test translations == dataset.translations
+    @test dataset.time_reversals == [false, false, true, true, true, true, false, false]  # Compared with Python results
+    @test dataset.time_reversals == (1 .- spin_flips) ./ 2  # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L156-L160
+end
+
 # See https://github.com/singularitti/Spglib.jl/issues/91#issuecomment-1206106977
 @testset "Test example given by Jae-Mo Lihm (@jaemolihm)" begin
     lattice = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
