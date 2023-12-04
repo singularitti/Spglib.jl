@@ -1310,8 +1310,8 @@ end
     @test dataset.transformation_matrix == [0.0 0.0 -1.0; -1.0 0.0 0.0; 0.0 1.0 0.0]
     @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.n_std_atoms == 16
-    @test dataset.std_lattice ==
-        Lattice([[0.0, 0.0, -5.4676], [-19.2776, 0.0, 0.0], [0.0, 9.2409, 0.0]])
+    @test dataset.std_lattice ≈
+        Lattice([[0.0, 0.0, -5.4676], [-19.2776, 0.0, 0.0], [0.0, 9.2409, 0.0]])  # To work on 32-bit systems
     @test dataset.std_types == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     @test dataset.std_positions ≈ [
         [0.6408, 0.8772, 0.3456],
