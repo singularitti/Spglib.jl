@@ -168,6 +168,13 @@ end
     @test translations == dataset.translations
     @test dataset.time_reversals == [false, false, true, true, true, true, false, false]  # Compared with Python results
     @test dataset.time_reversals == (1 .- spin_flips) ./ 2  # See https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L156-L160
+    @testset "Test `get_magnetic_spacegroup_type_from_symmetry`" begin
+        # From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/c/test_magnetic_symmetry.cpp#L161-L164
+        spgtype = get_magnetic_spacegroup_type_from_symmetry(
+            rotations, translations, dataset.time_reversals, lattice, 1e-5
+        )
+        @test spgtype.uni_number == 546
+    end
 end
 
 # See https://github.com/singularitti/Spglib.jl/issues/91#issuecomment-1206106977
