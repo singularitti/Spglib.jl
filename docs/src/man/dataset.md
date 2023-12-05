@@ -7,33 +7,9 @@ Depth = 2
 
 The dataset is accessible through the `struct` given by
 
-```julia
-struct Dataset
-    spacegroup_number::Int32
-    hall_number::Int32
-    international_symbol::String
-    hall_symbol::String
-    choice::String
-    transformation_matrix::SMatrix{3,3,Float64,9}
-    origin_shift::SVector{3,Float64}
-    n_operations::Int32
-    rotations::Vector{SMatrix{3,3,Int32,9}}
-    translations::Vector{SVector{3,Float64}}
-    n_atoms::Int32
-    wyckoffs::Vector{Char}
-    site_symmetry_symbols::Vector{String}
-    equivalent_atoms::Vector{Int32}
-    crystallographic_orbits::Vector{Int32}
-    primitive_lattice::Lattice{Float64}
-    mapping_to_primitive::Vector{Int32}
-    n_std_atoms::Int32
-    std_lattice::Lattice{Float64}
-    std_types::Vector{Int32}
-    std_positions::Vector{SVector{3,Float64}}
-    std_rotation_matrix::SMatrix{3,3,Float64,9}
-    std_mapping_to_primitive::Vector{Int32}
-    pointgroup_symbol::String
-end
+```@example
+using Spglib
+dump(Dataset)
 ```
 
 ## Space group type
