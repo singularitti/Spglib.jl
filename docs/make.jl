@@ -21,6 +21,7 @@ makedocs(;
             "Installation Guide" => "man/installation.md",
             "Definitions and conventions" => "man/definitions.md",
             "Spglib dataset" => "man/dataset.md",
+            "Magnetic dataset (experimental)" => "man/magnetic_dataset.md",
             "Examples" => "man/examples.md",
             "Troubleshooting" => "man/troubleshooting.md",
         ],

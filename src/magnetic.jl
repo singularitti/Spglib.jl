@@ -8,6 +8,15 @@ export MagneticDataset,
     get_magnetic_spacegroup_type_from_symmetry
 
 # Python version: https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L182-L319
+"""
+    get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
+
+Find symmetry operations with collinear polarizations (spins) on atoms.
+
+Except for the magmoms in the `cell`, the usage is basically the same as [`get_symmetry`](@ref).
+But as an output, `equivalent_atoms` are obtained as the last returned value. The size of this
+array is the same of number of atoms in the cell.
+"""
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     num_atom = length(cell.magmoms)
@@ -36,6 +45,14 @@ function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
     return rotations, translations, equivalent_atoms .+ 1
 end
 
+"""
+    get_symmetry_with_site_tensors(cell::SpglibCell, symprec=1e-5; with_time_reversal=true)
+
+Return magnetic symmetry operations represented by `rotation`, `translation`, and `spin_flips`.
+
+Returned `spin_flips` represents sign of site tensors after applying time-reversal operations:
+``1`` for non time reversal, and ``-1`` for time reversal.
+"""
 function get_symmetry_with_site_tensors(
     cell::SpglibCell, symprec=1e-5; with_time_reversal=true
 )
@@ -180,6 +197,13 @@ function MagneticDataset(dataset::SpglibMagneticDataset)
     )
 end
 
+"""
+    get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
+
+Return magnetic symmetry operations and standardized structure of given structure with site tensors.
+
+The description of returned dataset is given at [Magnetic dataset (experimental)](@ref).
+"""
 function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = _unwrap_convert(cell)
     tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615

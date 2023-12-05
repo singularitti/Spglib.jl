@@ -59,6 +59,7 @@ Pages = [
     "man/installation.md",
     "man/definitions.md",
     "man/dataset.md",
+    "man/magnetic_dataset.md",
     "man/examples.md",
     "man/troubleshooting.md",
     "developers/contributing.md",
