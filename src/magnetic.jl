@@ -114,6 +114,13 @@ struct SpglibMagneticDataset <: AbstractDataset
     primitive_lattice::NTuple{3,NTuple{3,Cdouble}}
 end
 
+"""
+    MagneticDataset(uni_number, msg_type, hall_number, tensor_rank, n_operations, rotations, translations, time_reversals, n_atoms, equivalent_atoms, transformation_matrix, origin_shift, n_std_atoms, std_lattice, std_types, std_positions, std_tensors, std_rotation_matrix, primitive_lattice)
+
+Represent `MagneticDataset`, see its [official documentation](https://spglib.readthedocs.io/en/latest/magnetic_dataset.html).
+
+See also [`get_magnetic_dataset`](@ref).
+"""
 @struct_hash_equal_isequal struct MagneticDataset <: AbstractDataset
     uni_number::Int32
     msg_type::Int32
