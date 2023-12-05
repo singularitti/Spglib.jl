@@ -104,9 +104,8 @@ function SpglibCell(lattice, positions, atoms, magmoms=[])
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
     end
-    N = length(atoms)
     if positions isa AbstractMatrix
-        P = eltype(positions)
+        N, P = length(atoms), eltype(positions)
         if size(positions) == (3, 3)
             error("ambiguous `positions` size 3×3! Use a vector of `Vector`s instead!")
         elseif size(positions) == (3, N)
