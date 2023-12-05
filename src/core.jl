@@ -105,23 +105,20 @@ function SpglibCell(lattice, positions, atoms, magmoms=[])
         lattice = Lattice(lattice)
     end
     if positions isa AbstractMatrix
-        N, P = length(atoms), eltype(positions)
+        P = eltype(positions)
         if size(positions) == (3, 3)
             error("ambiguous `positions` size 3×3! Use a vector of `Vector`s instead!")
-        elseif size(positions) == (3, N)
+        elseif size(positions, 1) == 3
             positions = collect(eachcol(positions))
-        elseif size(positions) == (N, 3)
-            positions = collect(eachrow(positions))
         else
-            throw(
-                DimensionMismatch(
-                    "the `positions` has a different number of atoms from the `types`!"
-                ),
-            )
+            positions = collect(eachrow(positions))
         end
-    else  # positions isa AbstractVector or a Tuple
+    else  # Other iterables
         P = reduce(promote_type, eltype.(positions))  # See https://github.com/MineralsCloud/CrystallographyCore.jl/blob/v0.3.3/src/cell.jl#L39-L40
         positions = map(ReducedCoordinates{P} ∘ collect, positions)
+    end
+    if length(positions) != length(atoms)
+        throw(DimensionMismatch("the number of atomic positions ≠ number of atoms!"))
     end
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
