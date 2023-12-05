@@ -227,6 +227,16 @@ function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
 end
 
 # Python version: https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L1108-L1138
+"""
+    get_magnetic_symmetry_from_database(uni_number, hall_number=0)
+
+Accesses magnetic space-group operations in the built-in database using UNI number (from ``1`` to ``1651``).
+
+Optionally alternative settings can be specified with hall_number. For type-I, type-II, and
+type-III magnetic space groups, `hall_number` changes settings in family space group. For
+type-IV, `hall_number` changes settings in maximal space group. When `hall_number=0`, the
+smallest hall number corresponding to `uni_number` is used.
+"""
 function get_magnetic_symmetry_from_database(uni_number, hall_number=0)
     @assert 1 <= uni_number <= 1651  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L390
     _rotations = Array{Cint,3}(undef, 3, 3, 384)  # See https://github.com/spglib/spglib/blob/v2.1.0/src/spglib.h#L398
@@ -257,6 +267,21 @@ struct SpglibMagneticSpacegroupType <: AbstractSpacegroupType
     type::Cint
 end
 
+"""
+   MagneticSpacegroupType(uni_number, litvin_number, bns_number, og_number, number, type)
+
+Represent `SpglibMagneticSpacegroupType`, see its [official documentation](https://spglib.readthedocs.io/en/latest/api.html#spg-get-magnetic-spacegroup-type).
+
+# Arguments
+- `uni_number::Int32`: Serial number of UNI (or BNS) symbols.
+- `litvin_number::Int32`: Serial number in Litvin's [Magnetic Group Tables](https://www.iucr.org/publ/978-0-9553602-2-0).
+- `bns_number::String`: BNS number, e.g. `"151.32"`.
+- `og_number::String`: OG number, e.g. `"153.4.1270"`.
+- `number::Int32`: ITA's serial number of space group for reference setting.
+- `type::Int32`: Type of MSG, from ``1`` to ``4``.
+
+See also [`get_magnetic_spacegroup_type`](@ref), [`get_magnetic_spacegroup_type_from_symmetry`](@ref).
+"""
 struct MagneticSpacegroupType <: AbstractSpacegroupType
     uni_number::Int32
     litvin_number::Int32
@@ -278,6 +303,11 @@ function MagneticSpacegroupType(spgtype::SpglibMagneticSpacegroupType)
     )
 end
 
+"""
+    get_magnetic_spacegroup_type(uni_number)
+
+Accesses magnetic space-group type by serial number (from ``1`` to ``1651``) of UNI (or BNS) symbols.
+"""
 function get_magnetic_spacegroup_type(uni_number)
     spgtype = @ccall libsymspg.spg_get_magnetic_spacegroup_type(
         uni_number::Cint
@@ -286,6 +316,13 @@ function get_magnetic_spacegroup_type(uni_number)
     return MagneticSpacegroupType(spgtype)
 end
 
+"""
+    get_magnetic_spacegroup_type_from_symmetry(rotations, translations, time_reversals, lattice::Lattice, symprec=1e-5)
+
+Determine magnetic space-group type from magnetic symmetry operations.
+
+`time_reversals` takes `false` for ordinary operations and `true` for time-reversal operations.
+"""
 function get_magnetic_spacegroup_type_from_symmetry(
     rotations, translations, time_reversals, lattice::Lattice, symprec=1e-5
 )
