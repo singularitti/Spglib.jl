@@ -5,10 +5,13 @@ Pages = ["definitions.md"]
 Depth = 2
 ```
 
+```@setup dataset
+using Spglib
+```
+
 The dataset is accessible through the `struct` given by
 
-```@example
-using Spglib
+```@example dataset
 dump(Dataset)
 ```
 

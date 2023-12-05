@@ -1,10 +1,18 @@
 # Magnetic dataset (experimental)
 
+```@contents
+Pages = ["definitions.md"]
+Depth = 2
+```
+
+```@setup dataset
+using Spglib
+```
+
 The dataset is accessible through the C-structure given by
 
-```@example
-using Spglib
-dump(Dataset)
+```@example dataset
+dump(MagneticDataset)
 ```
 
 ## Magnetic space-group type
@@ -19,12 +27,12 @@ Magnetic space groups (MSG) is classified by its family space group (FSG) and ma
 subgroup (XSG). FSG is a non-magnetic space group obtained by ignoring time-reversal term in
 MSG. XSG is a space group obtained by picking out non time-reversal operations in MSG.
 
-- `msg_type==1` (type-I): MSG, XSG, FSG are all isomorphic.
-- `msg_type==2` (type-II): XSG and FSG are isomorphic, and MSG is generated from XSG and
+- `msg_type=1` (type-I): MSG, XSG, FSG are all isomorphic.
+- `msg_type=2` (type-II): XSG and FSG are isomorphic, and MSG is generated from XSG and
   pure time reversal operations
-- `msg_type==3` (type-III): XSG is a proper subgroup of MSG with isomorphic translational
+- `msg_type=3` (type-III): XSG is a proper subgroup of MSG with isomorphic translational
   subgroups.
-- `msg_type==4` (type-IV): XSG is a proper subgroup of MSG with isomorphic point group.
+- `msg_type=4` (type-IV): XSG is a proper subgroup of MSG with isomorphic point group.
 
 ### `hall_number`
 
