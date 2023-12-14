@@ -16,7 +16,7 @@ function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
         println(io, " $num_atom magmoms:")
         if eltype(cell.magmoms) <: AbstractArray
             for magmom in cell.magmoms
-                println(io, "   ", magmom)
+                println(io, "   ", join(magmom, "  "))
             end
         else
             println(io, "   ", join(cell.magmoms, "  "))
