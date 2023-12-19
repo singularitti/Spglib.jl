@@ -1,7 +1,7 @@
 name = "Spglib"
 uuid = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
 authors = ["singularitti <singularitti@outlook.com> and contributors"]
-version = "0.9.1"
+version = "0.9.2"
 
 [deps]
 CrystallographyCore = "80545937-1184-4bc9-b283-396e91386b5c"
