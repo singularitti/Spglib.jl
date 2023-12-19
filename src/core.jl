@@ -350,7 +350,7 @@ function Dataset(dataset::SpglibDataset)
         unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
     )
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
-    wyckoffs = [('a':'z')[w + 1] for w in wyckoffs]  # Need to add 1 because of C-index starts from 0
+    wyckoffs = [WYCKOFF_LETTERS[w + 1] for w in wyckoffs]  # Need to add 1 because of C-index starts from 0
     site_symmetry_symbols = tostring.(
         unsafe_load(dataset.site_symmetry_symbols, i) for i in Base.OneTo(dataset.n_atoms)
     )
