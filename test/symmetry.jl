@@ -1543,3 +1543,23 @@ end
     @test get_dataset_with_hall_number(cell, dataset.hall_number) == dataset
     @test get_schoenflies(cell, 1e-5) == "C6v^4"
 end
+
+@testset "Test issue 176" begin  # See https://github.com/singularitti/Spglib.jl/issues/176
+    lattice = [6.42 0 0; 0.0 6.41 0; 0.0 0.0 6.44]
+    x = 0.79
+    y = 1 - x
+    positions = [
+        [y, y, x],
+        [y, x, y],
+        [x, y, y],
+        [x, x, x],
+        [x, x, y],
+        [x, y, x],
+        [y, x, x],
+        [y, y, y],
+    ]
+    atoms = ["Ga", "Ga", "Ga", "Ga", "Ga", "Ga", "Ga", "Ga"]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell)
+    @test dataset.wyckoffs == ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']  # Compared with Python results
+end
