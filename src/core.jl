@@ -16,6 +16,7 @@ export Lattice,
     atomtypes
 
 const basis_vectors = basisvectors  # For backward compatibility
+const WYCKOFF_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"  # See https://github.com/spglib/spglib/blob/v2.2.0/python/spglib/spglib.py#L364
 
 """
     SpglibCell(lattice, positions, atoms, magmoms=[])
