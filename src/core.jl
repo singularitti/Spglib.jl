@@ -151,7 +151,9 @@ Lattice(cell::SpglibCell) = cell.lattice
 
 # This is an internal function, do not export!
 function _unwrap_convert(cell::SpglibCell)
-    lattice, positions, atoms, magmoms = cell.lattice, cell.positions, cell.atoms, cell.magmoms
+    lattice, positions, atoms, magmoms = cell.lattice,
+    cell.positions, cell.atoms,
+    cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
     cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
@@ -343,17 +345,22 @@ function Dataset(dataset::SpglibDataset)
     transformation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.transformation_matrix)
     )
-    rotations = transpose.(
-        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for i in Base.OneTo(dataset.n_operations)
-    )
-    translations = SVector{3}.(
-        unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
-    )
+    rotations =
+        transpose.(
+            _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+            i in Base.OneTo(dataset.n_operations)
+        )
+    translations =
+        SVector{
+            3
+        }.(unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations))
     wyckoffs = unsafe_wrap(Vector{Int32}, dataset.wyckoffs, dataset.n_atoms)
     wyckoffs = [WYCKOFF_LETTERS[w + 1] for w in wyckoffs]  # Need to add 1 because of C-index starts from 0
-    site_symmetry_symbols = tostring.(
-        unsafe_load(dataset.site_symmetry_symbols, i) for i in Base.OneTo(dataset.n_atoms)
-    )
+    site_symmetry_symbols =
+        tostring.(
+            unsafe_load(dataset.site_symmetry_symbols, i) for
+            i in Base.OneTo(dataset.n_atoms)
+        )
     equivalent_atoms =  # Need to add 1 because of C-index starts from 0
         unsafe_wrap(Vector{Int32}, dataset.equivalent_atoms, dataset.n_atoms) .+ 1
     crystallographic_orbits =  # Need to add 1 because of C-index starts from 0
@@ -365,9 +372,10 @@ function Dataset(dataset::SpglibDataset)
         unsafe_wrap(Vector{Int32}, dataset.mapping_to_primitive, dataset.n_atoms) .+ 1
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
-    std_positions = SVector{3}.(
-        unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
-    )
+    std_positions =
+        SVector{
+            3
+        }.(unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms))
     std_rotation_matrix = transpose(
         _convert(SMatrix{3,3,Float64}, dataset.std_rotation_matrix)
     )
