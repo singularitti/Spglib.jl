@@ -1,10 +1,12 @@
+using SumTypes: @sum_type
+
 export get_error_code, get_error_message
 
 # See https://www.mcobject.com/docs/Content/Programming/C/Return_Codes.htm or
 # https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
 "Represent various return codes from the Spglib library."
-@enum SpglibReturnCode begin
-    SUCCESS  # 0
+@sum_type SpglibReturnCode begin
+    SUCCESS
     SPACEGROUP_SEARCH_FAILED
     CELL_STANDARDIZATION_FAILED
     SYMMETRY_OPERATION_SEARCH_FAILED
