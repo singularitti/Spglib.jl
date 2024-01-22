@@ -143,13 +143,15 @@ See also [`get_magnetic_dataset`](@ref).
     primitive_lattice::Lattice{Float64}
 end
 function MagneticDataset(dataset::SpglibMagneticDataset)
-    rotations = transpose.(
-        _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
-        i in Base.OneTo(dataset.n_operations)
-    )
-    translations = SVector{3}.(
-        unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations)
-    )
+    rotations =
+        transpose.(
+            _convert(SMatrix{3,3,Int32}, unsafe_load(dataset.rotations, i)) for
+            i in Base.OneTo(dataset.n_operations)
+        )
+    translations =
+        SVector{
+            3
+        }.(unsafe_load(dataset.translations, i) for i in Base.OneTo(dataset.n_operations))
     time_reversals =
         Bool.(unsafe_wrap(Vector{Int32}, dataset.time_reversals, dataset.n_operations))
     equivalent_atoms =  # Need to add 1 because of C-index starts from 0
@@ -159,13 +161,16 @@ function MagneticDataset(dataset::SpglibMagneticDataset)
     )
     std_lattice = Lattice(transpose(_convert(SMatrix{3,3,Float64}, dataset.std_lattice)))
     std_types = unsafe_wrap(Vector{Int32}, dataset.std_types, dataset.n_std_atoms)
-    std_positions = SVector{3}.(
-        unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms)
-    )
+    std_positions =
+        SVector{
+            3
+        }.(unsafe_load(dataset.std_positions, i) for i in Base.OneTo(dataset.n_std_atoms))
     std_tensors = if iszero(dataset.tensor_rank)  # Collinear spin
         unsafe_wrap(Vector{Float64}, dataset.std_tensors, dataset.n_std_atoms)
     else  # Non-collinear spin
-        SVector{3}.(
+        SVector{
+            3
+        }.(
             eachcol(
                 unsafe_wrap(
                     Matrix{Float64},
