@@ -1,4 +1,4 @@
-using Spglib: SpglibError
+using Spglib: SPACEGROUP_SEARCH_FAILED, SpglibError, get_error_code
 
 # This example is from https://spglib.github.io/spglib/definition.html#transformation-to-a-primitive-cell
 @testset "Transformation to a primitive cell" begin
@@ -147,5 +147,7 @@ end
     atoms = ["Na", "Na", "Cl"]
     cell = Cell(lattice, positions, atoms)
     @test_throws SpglibError find_primitive(cell)
+    @test get_error_code() == SPACEGROUP_SEARCH_FAILED
     @test_throws SpglibError standardize_cell(cell, to_primitive=true)
+    @test get_error_code() == SPACEGROUP_SEARCH_FAILED
 end
