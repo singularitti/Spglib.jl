@@ -10,7 +10,7 @@ const SPGERR_POINTGROUP_NOT_FOUND = 5
 const SPGERR_NIGGLI_FAILED = 6
 const SPGERR_DELAUNAY_FAILED = 7
 const SPGERR_ARRAY_SIZE_SHORTAGE = 8
-const SPGERR_NONE = 8
+const SPGERR_NONE = 9
 
 struct SpglibError <: Exception
     msg::String
