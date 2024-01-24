@@ -1,12 +1,6 @@
 export get_error_code, get_error_message
 
-# The return value for the C function `spg_get_error_code` is a C enum called
-# SpglibError. The C compiler guarantees that enums are internally stored as
-# type `int`, which Julia represents as `Cint`. The size of `int` is
-# "implementation dependent". Frequently 4 or 8 bytes, but this depends on the
-# architecture and compiler details https://stackoverflow.com/a/366033/500314.
-# Below is a mapping of the `SpglibError` enum variants to integer values.
-
+# Mapping of the `SpglibError` C enum variants to integer values.
 const SPGLIB_SUCCESS = 0
 const SPGERR_SPACEGROUP_SEARCH_FAILED = 1
 const SPGERR_CELL_STANDARDIZATION_FAILED = 2
@@ -22,6 +16,13 @@ struct SpglibError <: Exception
     msg::String
 end
 
+# The return value for the C function `spg_get_error_code` is a C enum called
+# `SpglibError`. The C compiler guarantees that enums are internally stored as
+# type `int`, which Julia represents as `Cint`. The size of `int` is
+# "implementation dependent". Frequently 4 or 8 bytes, but this depends on
+# architecture and compiler details: https://stackoverflow.com/a/366033/500314.
+# Directly casting this Cint into an @enum or SumTypes.jl value would be memory
+# unsafe (see https://github.com/singularitti/Spglib.jl/issues/183).
 """
     get_error_code()
 
