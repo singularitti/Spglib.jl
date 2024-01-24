@@ -9,4 +9,5 @@ using Test
     include("reciprocal.jl")
     include("reduce.jl")
     include("symmetry.jl")
+    include("error.jl")
 end
