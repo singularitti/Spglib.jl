@@ -45,8 +45,8 @@ julia> import Pkg; Pkg.add("Spglib")
 
 ## Documentation
 
-- [**STABLE**][docs-stable-url] — **documentation of the most recently tagged version.**
-- [**DEV**][docs-dev-url] — _documentation of the in-development version._
+- [**STABLE**](https://singularitti.github.io/Spglib.jl/stable/) — **documentation of the most recently tagged version.**
+- [**DEV**](https://singularitti.github.io/Spglib.jl/dev/) — _documentation of the in-development version._
 
 ## Project status
 
