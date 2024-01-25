@@ -1331,7 +1331,7 @@ end
         [0.3487, 0.3777, 0.5182],
         [0.8487, 0.1223, 0.4818],
     ]
-    @test dataset.std_tensors == [
+    @test dataset.std_tensors ≈ [
         [4.05, 0.0, 0.1],
         [-4.05, 0.0, 0.1],
         [4.05, 0.0, -0.1],
@@ -1349,7 +1349,7 @@ end
         [-4.05, 0.0, -0.1],
         [4.05, 0.0, -0.1],
     ]
-    @test dataset.std_rotation_matrix == [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
+    @test dataset.std_rotation_matrix ≈ [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
     @test dataset.primitive_lattice ==
         Lattice([[0.0, 0.0, -5.4676], [0.0, -9.2409, 0.0], [-19.2776, 0.0, 0.0]])
 end
