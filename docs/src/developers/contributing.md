@@ -133,15 +133,15 @@ The next step is to check out a development branch. In a terminal (or command
 prompt on Windows), run:
 
 ```bash
-cd ~/.julia/dev/Spglib
+$ cd ~/.julia/dev/Spglib
 
-git remote add GITHUB_ACCOUNT https://github.com/GITHUB_ACCOUNT/Spglib.jl.git
+$ git remote add GITHUB_ACCOUNT https://github.com/GITHUB_ACCOUNT/Spglib.jl.git
 
-git checkout main
+$ git checkout main
 
-git pull
+$ git pull
 
-git checkout -b my_new_branch
+$ git checkout -b my_new_branch
 ```
 
 ### Step 5: make changes
@@ -218,13 +218,13 @@ After a while, a folder `PKGROOT/docs/build` will appear. Open
 Once you've made changes, you're ready to push the changes to GitHub. Run:
 
 ```bash
-cd ~/.julia/dev/Spglib
+$ cd ~/.julia/dev/Spglib
 
-git add .
+$ git add .
 
-git commit -m "A descriptive message of the changes"
+$ git commit -m "A descriptive message of the changes"
 
-git push -u GITHUB_ACCOUNT my_new_branch
+$ git push -u GITHUB_ACCOUNT my_new_branch
 ```
 
 Then go to [our pull request page](https://github.com/singularitti/Spglib.jl/pulls)
@@ -247,11 +247,11 @@ Once the PR is merged, clean-up your Git repository, ready for the
 next contribution!
 
 ```bash
-cd ~/.julia/dev/Spglib
+$ cd ~/.julia/dev/Spglib
 
-git checkout main
+$ git checkout main
 
-git pull
+$ git pull
 ```
 
 !!! note

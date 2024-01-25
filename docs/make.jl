@@ -6,10 +6,8 @@ DocMeta.setdocmeta!(Spglib, :DocTestSetup, :(using Spglib); recursive=true)
 makedocs(;
     modules=[Spglib],
     authors="singularitti <singularitti@outlook.com> and contributors",
-    repo="https://github.com/singularitti/Spglib.jl/blob/{commit}{path}#{line}",
     sitename="Spglib.jl",
     format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://singularitti.github.io/Spglib.jl",
         edit_link="main",
         assets=String[],

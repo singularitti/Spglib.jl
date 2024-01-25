@@ -1,3 +1,7 @@
+```@meta
+CurrentModule = Spglib
+```
+
 # Spglib
 
 Documentation for [Spglib](https://github.com/singularitti/Spglib.jl).
@@ -13,8 +17,18 @@ This repository is created and maintained by
 
 ## Package features
 
-- It enables the finding and handling of crystal symmetries.
-- The design of the package includes new naming conventions, input types, and return types of functions.
+`Spglib.jl` is a Julia wrapper of the C library [Spglib](https://github.com/spglib/spglib).
+See [this page](https://spglib.readthedocs.io/en/latest/interface.html#julia-interface).
+It is used for finding and handling crystal symmetries.
+
+There was a package [`LibSymspg.jl`](https://juliahub.com/ui/Packages/LibSymspg/D1i7g)
+thanks to [@unkcpz](https://github.com/unkcpz).
+However, it is no longer actively maintained.
+
+This package:
+
+- enables the finding and handling of crystal symmetries;
+- includes new naming conventions, input types, and return types of functions.
 
 ## Installation
 
