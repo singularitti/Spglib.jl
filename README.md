@@ -63,6 +63,6 @@ please open an [issue](https://github.com/singularitti/Spglib.jl/issues).
 The [Contributing](@ref) page has
 a few guidelines that should be followed when opening pull requests and contributing code.
 
-## Star History
+## Stargazers over time
 
-[![Star History Chart](https://api.star-history.com/svg?repos=singularitti/Spglib.jl&type=Date)](https://star-history.com/#singularitti/Spglib.jl&Date)
+[![Stargazers over time](https://starchart.cc/singularitti/Spglib.jl.svg?variant=adaptive)](https://starchart.cc/singularitti/Spglib.jl)
