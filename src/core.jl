@@ -101,7 +101,7 @@ julia> cell = SpglibCell(lattice, positions, atoms, magmoms);
     atoms::Vector{T}
     magmoms::Vector{M}
 end
-function SpglibCell(lattice, positions, atoms, magmoms=[])
+function SpglibCell(lattice, positions, atoms, magmoms=Float64[])
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
     end
