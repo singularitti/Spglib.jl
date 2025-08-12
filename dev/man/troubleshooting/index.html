@@ -32,12 +32,12 @@ types = [1, 1, 2, 2]
 symprec = 1e-5
 cell = (lattice, positions, types)
 dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
-assert dataset[&#39;number&#39;] == 186</code></pre><p>Note that in Python, the <code>lattice</code> is transposed, as explained in its <a href="https://spglib.readthedocs.io/en/latest/variable.html#lattice">official documentation</a>.</p><p>However, the corresponding code in Julia should be written as follows:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Spglib</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
+assert dataset[&#39;number&#39;] == 186</code></pre><p>Note that in Python, the <code>lattice</code> is transposed, as explained in its <a href="https://spglib.readthedocs.io/en/latest/variable.html#lattice">official documentation</a>.</p><p>However, the corresponding code in Julia should be written as follows:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Spglib</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
            [1.0 / 3, 2.0 / 3, 0.0],
            [2.0 / 3, 1.0 / 3, 0.5],
            [1.0 / 3, 2.0 / 3, 0.6181],
            [2.0 / 3, 1.0 / 3, 0.1181],
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
+       ];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
  lattice:
    3.111  -1.5555  0.0
    0.0  2.6942050311733885  0.0
@@ -80,7 +80,7 @@ assert dataset[&#39;number&#39;] == 186</code></pre><p>Note that in Python, the 
            3.111  -1.5555  0.0
            0.0  2.6942050311733885  0.0
            0.0  0.0  4.988
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>If you are not careful when writing these matrices, you may encounter unexpected results:</p><pre><code class="language-python hljs">import spglib
+       ];</code></pre><p>If you are not careful when writing these matrices, you may encounter unexpected results:</p><pre><code class="language-python hljs">import spglib
 
 lattice = [
     [3.111, -1.5555, 0],
@@ -102,7 +102,7 @@ dataset = spglib.get_symmetry_dataset(cell, symprec=symprec)
 &gt;&gt;&gt; dataset[&#39;number&#39;]
 4
 &gt;&gt;&gt; dataset[&#39;international&#39;]
-&#39;P2_1&#39;</code></pre><p>Or this:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
+&#39;P2_1&#39;</code></pre><p>Or this:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, -1.5555, 0], [0, 2.6942050311733885, 0], [0, 0, 4.988]];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
  lattice:
    3.111  0.0  0.0
    -1.5555  2.6942050311733885  0.0
@@ -155,20 +155,20 @@ array([[ 3.111     ,  0.        ,  0.        ],
            3.111   0.0      0.0
            -1.5555  2.69421  0.0
            0.0     0.0      4.988
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; [
+       ];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; [
            3.111   0.0      0.0
            -1.5555  2.69421  0.0
            0.0     0.0      4.988
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; [
+       ];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; [
            3.111   0.0      0.0
            -1.5555  2.69421  0.0
            0.0     0.0      4.988
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>However, the actual Julia results should be:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Spglib</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
+       ];</code></pre><p>However, the actual Julia results should be:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Spglib</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lattice = [[3.111, 0, 0], [-1.5555, 2.6942050311733885, 0], [0, 0, 4.988]];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; positions = [
            [1.0 / 3, 2.0 / 3, 0.0],
            [2.0 / 3, 1.0 / 3, 0.5],
            [1.0 / 3, 2.0 / 3, 0.6181],
            [2.0 / 3, 1.0 / 3, 0.1181],
-       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
+       ];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atoms = [1, 1, 2, 2];</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cell = Cell(lattice, positions, atoms)</code><code class="nohighlight hljs ansi" style="display:block;">SpglibCell{Float64, Float64, Int64, Float64}
  lattice:
    3.111  -1.5555  0.0
    0.0  2.6942050311733885  0.0
@@ -213,4 +213,4 @@ array([[ 3.111     ,  0.        ,  0.        ],
            convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
  3.111  -1.5555   0.0
  0.0     2.69421  0.0
- 0.0     0.0      4.988</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Saturday 15 March 2025 00:40">Saturday 15 March 2025</span>. Using Julia version 1.11.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 0.0     0.0      4.988</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><a class="docs-footer-nextpage" href="../../lib/public/">Public API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 12 August 2025 08:27">Tuesday 12 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
