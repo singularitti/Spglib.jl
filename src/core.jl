@@ -1,6 +1,6 @@
 using CrystallographyCore:
     ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
-using StaticArrays: MVector, SMatrix, SVector
+using StaticArrays: SMatrix, SVector
 using StructEquality: @struct_hash_equal_isequal
 
 import CrystallographyCore: Lattice, natoms, atomtypes
