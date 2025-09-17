@@ -1,6 +1,6 @@
 name = "Spglib"
 uuid = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
-version = "0.9.5"
+version = "0.9.6"
 authors = ["singularitti <singularitti@outlook.com> and contributors"]
 
 [deps]
