@@ -6,11 +6,9 @@ task:
     folder: ~/.julia/artifacts
   env:
     matrix:
+      - JULIA_VERSION: 1.11
       - JULIA_VERSION: 1.6
-      - JULIA_VERSION: 1.8
       - JULIA_VERSION: 1.9
-      - JULIA_VERSION: 1.10
-      - JULIA_VERSION: nightly
   allow_failures: $JULIA_VERSION == 'nightly'
   install_script:
     - sh -c "$(fetch https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh -o -)"
