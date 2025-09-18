@@ -1574,6 +1574,17 @@ end
     ])
 end
 
+# From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_magnetic_dataset.py#L686-L718
+@testset "Test primitive lattice" begin
+    lattice = [[10.6949, 0, 0], [0, 6.2875, 0], [0, 0, 5.056]]
+    positions = [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.5, 0.5], [0.0, 0.5, 0.0]]
+    atoms = [0, 0, 0, 0]
+    magmoms = [[3.0, 0.4, 0.0], [-3.0, -0.4, 0.0], [-3.0, 0.4, 0.0], [3.0, -0.4, 0.0]]
+    cell = SpglibCell(lattice, positions, atoms, magmoms)
+    @test get_magnetic_dataset(cell).primitive_lattice ≈
+        Lattice([[0, 0, -5.056], [0, -6.2875, 0], [-10.6949, 0, 0]])
+end
+
 # From https://github.com/spglib/spglib/blob/f6abb97/test/functional/fortran/test_fortran_spg_get_symmetry_with_site_tensors.F90#L46-L97
 @testset "Test site tensors for rutile (type III)" begin
     lattice = [
