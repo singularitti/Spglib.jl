@@ -36,11 +36,11 @@ MSG. XSG is a space group obtained by picking out non time-reversal operations i
 
 ### `hall_number`
 
-
+For type-I, II, III, hall number of FSG; for type-IV, that of XSG
 
 ### `tensor_rank`
 
-0 for collinear spins, 1 for non-collinear spins
+``0`` for collinear spins, ``1`` for non-collinear spins
 
 ## Magnetic symmetry operations
 
@@ -54,19 +54,18 @@ Rotation (matrix) parts of symmetry operations
 
 ### `translations`
 
-
 Translation (vector) parts of symmetry operations
 
 ### `time_reversals`
 
-Time reversal part of magnetic symmetry operations. 1 indicates time reversal operation, and
-0 indicates an ordinary operation.
+Time reversal part of magnetic symmetry operations. ``1`` indicates time reversal operation,
+and ``0`` indicates an ordinary operation.
 
 ## Symmetrically equivalent atoms
 
 ### `n_atoms` and `equivalent_atoms`
 
-
+See [`equivalent_atoms`](@ref).
 
 ## Transformation to standardized setting
 
@@ -82,10 +81,13 @@ See [Standardized crystal structure after idealization](@ref).
 
 ### `std_tensors`
 
-
+Site tensors of the standardized crystal structure [idealization](@ref idealization).
 
 ## Intermediate data in symmetry search
 
 ### `primitive_lattice`
 
-
+See [`primitive_lattice`](@ref primitive).
+`primitive_lattice` generates pure translations without time reversals.
+Thus, for type-IV magnetic space groups, a unit cell spanned by `primitive_lattice` contains
+an anti-translation lattice point.

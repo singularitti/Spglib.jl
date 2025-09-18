@@ -205,7 +205,7 @@ A primitive cell is searched from the translational symmetry. This
 primitive cell is given by `primitive_lattice` and
 `mapping_to_primitive` below.
 
-### `primitive_lattice`
+### [`primitive_lattice`](@id primitive)
 
 Non-standardized basis vectors of a primitive cell in the input
 cell.
