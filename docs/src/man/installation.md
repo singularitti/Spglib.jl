@@ -2,7 +2,7 @@
 
 ```@contents
 Pages = ["installation.md"]
-Depth = 2
+Depth = 2:3
 ```
 
 Here are the installation instructions for package
