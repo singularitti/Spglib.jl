@@ -2,7 +2,7 @@
 
 ```@contents
 Pages = ["contributing.md"]
-Depth = 2
+Depth = 2:3
 ```
 
 Welcome! This document explains some ways you can contribute to Spglib.

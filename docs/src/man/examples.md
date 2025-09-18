@@ -2,7 +2,7 @@
 
 ```@contents
 Pages = ["examples.md"]
-Depth = 2
+Depth = 2:2
 ```
 
 ## Creating a `Cell`

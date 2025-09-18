@@ -2,7 +2,7 @@
 
 ```@contents
 Pages = ["design-principles.md"]
-Depth = 2
+Depth = 2:2
 ```
 
 We adopt some [SciML](https://sciml.ai/) design [guidelines](https://github.com/SciML/SciMLStyle)
