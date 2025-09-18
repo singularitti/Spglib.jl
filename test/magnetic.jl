@@ -612,7 +612,7 @@ end
         0.0 0.0 -1.0
         1.0 1.0 0.0
     ]
-    @test dataset.origin_shift ≈ [-2.77555756e-17, 2.77555756e-17, 6.16297582e-33]
+    @test dataset.origin_shift ≈ [0, 0, 0]
     @test dataset.n_std_atoms == 16
     @test dataset.std_lattice ≈
         Lattice([[8.627, -8.627, 0.0], [0.0, 0.0, -13.822], [0.0, 8.627, 0.0]])
