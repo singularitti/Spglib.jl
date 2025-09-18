@@ -16,7 +16,8 @@ Check if the spins (magmoms) in the given `cell` are collinear.
 function is_spin_collinear(cell::SpglibCell)
     if isempty(cell.magmoms)
         throw(ArgumentError("`cell.magmoms` is empty!"))
-    elseif eltype(cell.magmoms) <: AbstractVector
+    elseif eltype(cell.magmoms) <: AbstractVector &&
+        all(length(site) == 3 for site in cell.magmoms)
         return false
     else
         return true
