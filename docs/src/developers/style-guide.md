@@ -1,7 +1,7 @@
 # Style Guide
 
 ```@contents
-Pages = ["design-principles.md"]
+Pages = ["style-guide.md"]
 Depth = 2:3
 ```
 
