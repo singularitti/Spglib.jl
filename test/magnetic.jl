@@ -26,6 +26,7 @@
             rotations, translations, equivalent_atoms = get_symmetry_with_collinear_spin(
                 cell, 1e-5
             )
+            @test is_spin_collinear(cell) == true
             @test size(rotations) == (96,)
             @test size(translations) == (96,)
             @test all(iszero(translation) for translation in translations[1:48])
@@ -47,6 +48,7 @@
             rotations, translations, equivalent_atoms = get_symmetry_with_collinear_spin(
                 cell, 1e-5
             )
+            @test is_spin_collinear(cell) == true
             @test size(rotations) == (96,)
             @test all(iszero(translation) for translation in translations[1:48])
             @test all(
@@ -132,6 +134,7 @@ end
     ]
     cell = Cell(lattice, positions, atoms, magmoms)
     rotations, translations, spin_flips = get_symmetry_with_site_tensors(cell, 1e-5)
+    @test is_spin_collinear(cell) == false
     @test length(rotations) == length(translations) == length(spin_flips) == 8
     @test rotations == [
         [
