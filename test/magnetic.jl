@@ -1581,7 +1581,52 @@ end
     atoms = [0, 0, 0, 0]
     magmoms = [[3.0, 0.4, 0.0], [-3.0, -0.4, 0.0], [-3.0, 0.4, 0.0], [3.0, -0.4, 0.0]]
     cell = SpglibCell(lattice, positions, atoms, magmoms)
-    @test get_magnetic_dataset(cell).primitive_lattice ≈
+    dataset = get_magnetic_dataset(cell)
+    @test dataset.uni_number == 529
+    @test dataset.msg_type == 4
+    @test dataset.hall_number == 284
+    @test dataset.tensor_rank == 1
+    @test dataset.n_operations == 16
+    @test dataset.time_reversals == [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+    ]  # Compared with Python results
+    @test dataset.n_atoms == 4
+    @test dataset.equivalent_atoms == [0, 0, 0, 0] .+ 1  # Compared with Python results
+    @test dataset.transformation_matrix == [
+        0 0 1
+        1 0 0
+        0 1 0
+    ]
+    @test dataset.origin_shift == [0, 0, 0]
+    @test dataset.n_std_atoms == 4
+    @test dataset.std_lattice ==
+        Lattice([[0.0, 0.0, 5.056], [10.6949, 0.0, 0.0], [0.0, 6.2875, 0.0]])
+    @test dataset.std_types == [1, 1, 1, 1]
+    @test dataset.std_positions ==
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.0], [0.5, 0.5, 0.5], [0.0, 0.0, 0.5]]
+    @test dataset.std_tensors ==
+        [[3.0, 0.4, 0.0], [-3.0, -0.4, 0.0], [-3.0, 0.4, 0.0], [3.0, -0.4, 0.0]]
+    @test dataset.std_rotation_matrix == [
+        1 0 0
+        0 1 0
+        0 0 1
+    ]
+    @test dataset.primitive_lattice ≈
         Lattice([[0, 0, -5.056], [0, -6.2875, 0], [-10.6949, 0, 0]])
 end
 
