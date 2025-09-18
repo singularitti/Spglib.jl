@@ -2,7 +2,7 @@
 
 ```@contents
 Pages = ["definitions.md"]
-Depth = 3
+Depth = 2:3
 ```
 
 !!! warning

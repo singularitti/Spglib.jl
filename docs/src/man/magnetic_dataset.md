@@ -1,8 +1,8 @@
 # Magnetic dataset (experimental)
 
 ```@contents
-Pages = ["definitions.md"]
-Depth = 2
+Pages = ["magnetic_dataset.md"]
+Depth = 2:3
 ```
 
 ```@setup dataset

@@ -1,8 +1,8 @@
 # Spglib dataset
 
 ```@contents
-Pages = ["definitions.md"]
-Depth = 2
+Pages = ["dataset.md"]
+Depth = 2:3
 ```
 
 ```@setup dataset
