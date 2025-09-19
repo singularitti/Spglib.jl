@@ -1460,8 +1460,8 @@ end
         "6/mmm",
         "D6h",
         58,
-        "6/mmm",
-    )  # Compared with Python results
+        "6/mmmP",
+    )  # Compared with Python results,  see https://github.com/spglib/spglib/pull/360
     @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
         dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
