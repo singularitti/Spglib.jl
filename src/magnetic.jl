@@ -139,24 +139,63 @@ Represent `MagneticDataset`, see its [official documentation](https://spglib.rea
 See also [`get_magnetic_dataset`](@ref).
 """
 @struct_hash_equal_isequal struct MagneticDataset <: AbstractDataset
+    "UNI number, from ``1`` to ``1651``"
     uni_number::Int32
+    """Magnetic space groups (MSG) are classified by their family space group (FSG) and
+    maximal space subgroup (XSG).
+
+    The FSG is the nonmagnetic space group obtained by ignoring time-reversal in the MSG.
+    The XSG is the space group obtained by removing time-reversal operations from the MSG.
+
+    - msg_type == 1 (type I):
+        MSG, XSG, and FSG are all isomorphic.
+    - msg_type == 2 (type II):
+        XSG and FSG are isomorphic; the MSG is generated from the XSG and pure time-reversal operations.
+    - msg_type == 3 (type III):
+        The XSG is a proper subgroup of the MSG with isomorphic translational subgroups.
+    - msg_type == 4 (type IV):
+        The XSG is a proper subgroup of the MSG with an isomorphic point group.
+    """
     msg_type::Int32
+    "Hall number of the FSG (types I–III) or of the XSG (type IV)"
     hall_number::Int32
+    "Rank of magmoms"
     tensor_rank::Int32
+    "Number of magnetic symmetry operations"
     n_operations::Int32
+    "Rotation matrices of the magnetic symmetry operations"
     rotations::Vector{SMatrix{3,3,Int32,9}}
+    "Translation vectors of the magnetic symmetry operations"
     translations::Vector{SVector{3,Float64}}
+    """Time-reversal flags for the magnetic symmetry operations.
+
+    `true` indicates a time-reversal operation, and `false` indicates an ordinary operation.
+    """
     time_reversals::BitVector
+    "Number of atoms in the input cell"
     n_atoms::Int32
+    "Symmetrically equivalent atoms, where 'symmetrically equivalent' refers to the found symmetry operations."
     equivalent_atoms::Vector{Int32}
+    "Transformation matrix (``3 \times 3``) from the input lattice to the standardized lattice."
     transformation_matrix::SMatrix{3,3,Float64,9}
+    "Origin shift from the standardized origin to the input origin."
     origin_shift::SVector{3,Float64}
+    "Number of atoms in the standardized unit cell"
     n_std_atoms::Int32
+    "Lattice vectors of the standardized unit cell"
     std_lattice::Lattice{Float64}
+    "Identity numbers of atoms in the standardized unit cell"
     std_types::Vector{Int32}
+    "Fractional coordinates of atoms in the standardized unit cell"
     std_positions::Vector{SVector{3,Float64}}
+    """Magnetic moments in the standardized unit cell: a length-`n_std_atoms` vector
+    of scalars for collinear moments, or a length-`n_std_atoms` vector of 3-vectors
+    for noncollinear moments.
+    """
     std_tensors::Vector{Union{Float64,SVector{3,Float64}}}
+    "Rigid rotation matrix from the standardized basis vectors to an idealized, standardized, orthonormal basis."
     std_rotation_matrix::SMatrix{3,3,Float64,9}
+    "Basis vectors of a primitive cell"
     primitive_lattice::Lattice{Float64}
 end
 function MagneticDataset(dataset::SpglibMagneticDataset)
