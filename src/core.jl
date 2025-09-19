@@ -311,29 +311,72 @@ Represent `SpglibDataset`, see its [official documentation](https://spglib.githu
 See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
 """
 @struct_hash_equal_isequal struct Dataset <: AbstractDataset
+    "International space group number"  # See https://github.com/spglib/spglib/blob/v2.6.0/python/spglib/spglib.py#L108-L251
     spacegroup_number::Int32
+    """Hall number
+
+    This number is used in [`get_symmetry_from_database`](@ref) and [`get_spacegroup_type`](@ref).
+    """
     hall_number::Int32
+    "International symbol"
     international_symbol::String
+    "Hall symbol"
     hall_symbol::String
+    "Centering, origin, and basis-vector setting"
     choice::String
+    raw"""Transformation matrix (``3 \times 3``) from the input lattice to the standardized lattice.
+
+    See details at [Transformation matrix and origin shift](@ref).
+    """
     transformation_matrix::SMatrix{3,3,Float64,9}
+    raw"""Origin shift from the standardized origin to the input origin.
+
+    See details at [Transformation matrix and origin shift](@ref).
+    """
     origin_shift::SVector{3,Float64}
     n_operations::Int32
+    "Rotation matrices of the space group operations"
     rotations::Vector{SMatrix{3,3,Int32,9}}
+    "Translation vectors of the space group operations"
     translations::Vector{SVector{3,Float64}}
     n_atoms::Int32
+    "Wyckoff letters corresponding to the space group type"
     wyckoffs::Vector{Char}
+    "Site-symmetry symbols corresponding to the space group type"
     site_symmetry_symbols::Vector{String}
+    """Symmetrically equivalent atoms, where 'symmetrically equivalent' refers to the found symmetry operations.
+
+    In this code, symmetry operations are given for the input cell.
+    When a non-primitive cell is provided and the lattice defined by the non-primitive
+    basis vectors breaks its point group, the found symmetry operations may not
+    correspond to the crystallographic space group type.
+    """
     equivalent_atoms::Vector{Int32}
+    "Symmetrically equivalent atoms determined by the space group operations corresponding to the crystallographic space group type"
     crystallographic_orbits::Vector{Int32}
+    """Basis vectors of a primitive cell
+
+    This is the primitive cell found before applying standardization.
+    Therefore, the values are distorted with respect to the identified space group type.
+    """
     primitive_lattice::Lattice{Float64}
+    "Atom indices mapping from the original cell to the primitive cell of `primitive_lattice`"
     mapping_to_primitive::Vector{Int32}
     n_std_atoms::Int32
+    "Basis vectors of a standardized cell"
     std_lattice::Lattice{Float64}
+    "Identity numbers of atoms in the standardized cell"
     std_types::Vector{Int32}
+    "Atomic positions in the standardized cell, in fractional coordinates"
     std_positions::Vector{SVector{3,Float64}}
+    """Rigid rotation matrix from the standardized basis vectors to an idealized, standardized, orthonormal basis.
+
+    See details at [Idealization of unit cell structure](@ref idealization).
+    """
     std_rotation_matrix::SMatrix{3,3,Float64,9}
+    "Indices of `std_positions` mapping to atoms of the primitive cell in the standardized cell"
     std_mapping_to_primitive::Vector{Int32}
+    "Point-group symbol in Hermann–Mauguin notation"
     pointgroup_symbol::String
 end
 function Dataset(dataset::SpglibDataset)
