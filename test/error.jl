@@ -5,6 +5,7 @@ using Spglib:
     DELAUNAY_FAILED,
     CELL_STANDARDIZATION_FAILED,
     ATOMS_TOO_CLOSE,
+    SpglibError,
     get_error_code
 
 @testset "Test when no error occurs" begin
