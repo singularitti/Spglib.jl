@@ -1531,7 +1531,7 @@ end
         -2.0 0.0 0.0
         0.0 -1.0 0.0
         1.0 0.0 1.0
-    ]  # TODO: Check this
+    ]
     @test dataset.origin_shift ≈ [-5.55111512e-17, -0.5, 0.0]
     @test dataset.n_std_atoms == 12
     @test dataset.std_lattice ==
