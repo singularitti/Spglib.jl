@@ -44,7 +44,7 @@
         72,
         "m-3mF",
     )
-    @test get_spacegroup_type(481) == SpaceGroupType(
+    @test get_spacegroup_type(481) == SpacegroupType(
         187,
         "P-6m2",
         "P -6 m 2",
@@ -58,7 +58,7 @@
         57,
         "-6m2P",
     )  # See https://github.com/spglib/spglib/pull/367
-    @test get_spacegroup_type(482) == SpaceGroupType(
+    @test get_spacegroup_type(482) == SpacegroupType(
         188,
         "P-6c2",
         "P -6 c 2",
@@ -72,7 +72,7 @@
         57,
         "-6m2P",
     )  # See https://github.com/spglib/spglib/pull/367
-    @test get_spacegroup_type(483) == SpaceGroupType(
+    @test get_spacegroup_type(483) == SpacegroupType(
         189,
         "P-62m",
         "P -6 2 m",
@@ -86,7 +86,7 @@
         56,
         "-62mP",
     )  # See https://github.com/spglib/spglib/pull/367
-    @test get_spacegroup_type(484) == SpaceGroupType(
+    @test get_spacegroup_type(484) == SpacegroupType(
         190,
         "P-62c",
         "P -6 2 c",
