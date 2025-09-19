@@ -141,7 +141,7 @@ end
     @test dataset.international_symbol == "Cmce"
     @test get_international(cell, 1e-5) == "Cmce"
     @test dataset.hall_number == 304  # Compared with Python results
-    @test dataset.hall_symbol == "-C 2bc 2"  # Compared with Python results
+    @test dataset.hall_symbol == "-C 2ac 2"  # Compared with Python results, see https://github.com/spglib/spglib/pull/317
     @test dataset.transformation_matrix ≈ [  # Compared with documented results
         1 0 0
         0 1 0
@@ -199,24 +199,24 @@ end
     )
     @test all(
         dataset.translations .≈ [
-            [0.0, 0.0, 0.0],
-            [-1.11022302e-16, 2.46519033e-32, 0.0],
-            [-1.11022302e-16, 0.5, 0.5],
-            [0.0, 0.5, 0.5],
-            [0.0, 0.0, 0.0],
-            [-1.11022302e-16, 2.46519033e-32, 0.0],
-            [-1.11022302e-16, 0.5, 0.5],
-            [0.0, 0.5, 0.5],
-            [0.5, 0.5, 0.0],
-            [0.5, 0.5, 0.0],
-            [0.5, 0.0, 0.5],
-            [0.5, 0.0, 0.5],
-            [0.5, 0.5, 0.0],
-            [0.5, 0.5, 0.0],
-            [0.5, 0.0, 0.5],
-            [0.5, 0.0, 0.5],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0.5, -1.1102230246251565e-16, 0.5],
+            [0.5, -1.1102230246251565e-16, 0.5],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0.5, -1.1102230246251565e-16, 0.5],
+            [0.5, -1.1102230246251565e-16, 0.5],
+            [0.5, 0.5, 0],
+            [0.5, 0.5, 0],
+            [0, 0.49999999999999989, 0.5],
+            [0, 0.49999999999999989, 0.5],
+            [0.5, 0.5, 0],
+            [0.5, 0.5, 0],
+            [0, 0.49999999999999989, 0.5],
+            [0, 0.49999999999999989, 0.5],
         ],
-    )
+    )  # Compared with Python results, see https://github.com/spglib/spglib/pull/317
     python_rotations = [
         [1 0 0; 0 1 0; 0 0 1],
         [-1 0 0; 0 -1 0; 0 0 -1],
@@ -242,21 +242,21 @@ end
     @test get_symmetry_from_database(dataset.hall_number)[2] == [
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0],
-        [0.0, 0.5, 0.5],
-        [0.0, 0.5, 0.5],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.0, 0.5],
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.0, 0.5],
+        [0.5, 0.5, 0.0],
+        [0.5, 0.5, 0.0],
         [0.0, 0.5, 0.5],
         [0.0, 0.5, 0.5],
         [0.5, 0.5, 0.0],
         [0.5, 0.5, 0.0],
-        [0.5, 0.0, 0.5],
-        [0.5, 0.0, 0.5],
-        [0.5, 0.5, 0.0],
-        [0.5, 0.5, 0.0],
-        [0.5, 0.0, 0.5],
-        [0.5, 0.0, 0.5],
-    ]  # Compared with Python results
+        [0.0, 0.5, 0.5],
+        [0.0, 0.5, 0.5],
+    ]  # Compared with Python results, see https://github.com/spglib/spglib/pull/317
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
     ) == SpacegroupType(
@@ -266,13 +266,13 @@ end
         "C m c e",
         "D2h^18",
         304,
-        "-C 2bc 2",
+        "-C 2ac 2",
         "",
         "mmm",
         "D2h",
         19,
         "mmmC",
-    )  # Compared with Python results
+    )  # Compared with Python results, see https://github.com/spglib/spglib/pull/317
     @test get_hall_number_from_symmetry(dataset.rotations, dataset.translations, 1e-5) ==
         dataset.hall_number
     @test get_multiplicity(cell, 1e-5) == length(dataset.translations)
