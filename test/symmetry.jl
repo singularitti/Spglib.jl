@@ -1556,7 +1556,7 @@ end
     @test dataset.equivalent_atoms .- 1 == [0, 0, 2, 2]
     @test dataset.primitive_lattice ≈
         Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
-    @test dataset.mapping_to_primitive .- 1 == 0:3  # FIXME: should I +1?
+    @test dataset.mapping_to_primitive .- 1 == 0:3
     @test dataset.std_lattice ≈
         Lattice([[3.111, 0, 0], [-1.5555, 2.69420503, 0], [0, 0, 4.988]])  # Compared with Python results, the Python version is a transposed version of this
     @test dataset.std_positions ≈ [
@@ -1576,7 +1576,7 @@ end
         @test dataset.std_lattice ≈
             dataset.std_rotation_matrix * std_lattice_before_idealization
     end
-    @test dataset.std_mapping_to_primitive .- 1 == 0:3  # FIXME: should I +1?
+    @test dataset.std_mapping_to_primitive .- 1 == 0:3
     @test get_spacegroup_type_from_symmetry(
         dataset.rotations, dataset.translations, Lattice(cell), 1e-5
     ) == SpacegroupType(
