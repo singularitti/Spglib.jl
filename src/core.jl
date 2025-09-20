@@ -121,6 +121,11 @@ function SpglibCell(lattice, positions, atoms, magmoms=Float64[])
     if length(positions) != length(atoms)
         throw(DimensionMismatch("the number of atomic positions ≠ number of atoms!"))
     end
+    if !isempty(magmoms)
+        if length(magmoms) != length(atoms)
+            throw(DimensionMismatch("the number of magnetic moments ≠ number of atoms!"))
+        end
+    end
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
