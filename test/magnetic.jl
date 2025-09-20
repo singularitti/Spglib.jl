@@ -2511,3 +2511,22 @@ end
         @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2] .+ 1  # FIXME: This is `mag_symprec=1e-2` in Python code?
     end
 end
+
+# From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_site_tensors.py#L107-L120
+@testset "Test type-IV MSG" begin
+    lattice = Lattice([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+    positions = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.5]]
+    numbers = [0, 0]
+    magmoms = [[0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
+    dataset = get_dataset(SpglibCell(lattice, positions, numbers), 1e-5)
+    dataset2 = get_magnetic_dataset(SpglibCell(lattice, positions, numbers, magmoms), 1e-5)
+    @test dataset.rotations == dataset2.rotations
+    @test dataset.translations == dataset2.translations
+    @test dataset2.primitive_lattice == lattice
+    @test dataset2.uni_number == 371
+    @test dataset2.msg_type == 4
+    @test dataset2.hall_number == 230
+    @test dataset2.tensor_rank == 1
+    @test dataset2.n_operations == 16
+    @test dataset2.n_std_atoms == 2
+end
