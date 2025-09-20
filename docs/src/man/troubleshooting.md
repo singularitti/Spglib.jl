@@ -264,3 +264,20 @@ dataset.std_lattice
 std_lattice_before_idealization =
     convert(Matrix{Float64}, Lattice(cell)) * inv(dataset.transformation_matrix)
 ```
+
+## Upgrading from v0.9+ to v1.0+
+
+`Spglib.jl` relies on a [JLL package wrapper](https://docs.binarybuilder.org/stable/jll/)
+([`spglib_jll.jl`](https://github.com/JuliaBinaryWrappers/spglib_jll.jl)).
+
+- Up to v0.9, `Spglib.jl` used `spglib_jll.jl` v2.1.0.
+- Starting with v1.0, it uses `spglib_jll.jl` v2.2+.
+
+Between v2.1 and v2.2, `spglib` introduced some changes
+(see the [official release notes](https://spglib.readthedocs.io/en/stable/releases.html#v2-2-0-6-dec-2023)).
+As a result, code that worked with `Spglib.jl` v0.9+ may behave differently when upgraded to v1.0+.
+
+The API itself has not changed, but some returned values may differ.
+
+Please be aware of these differences. If you notice inconsistencies between the Julia API
+and the C API, check the upstream PR history and update your code accordingly.
