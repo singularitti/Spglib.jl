@@ -1619,3 +1619,24 @@ end
     dataset = get_dataset(cell)
     @test dataset.wyckoffs == ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']  # Compared with Python results
 end
+
+# Example is from here: https://github.com/spglib/spglib/blob/v2.6.0/test/functional/fortran/test_fortran_spg_get_dataset.F90#L79-L111
+@testset "Test zincblende" begin
+    lattice = [
+        3.2871687359128612 -1.6435843679564306 0.0
+        0.0 2.8467716318265182 0.0
+        0.0 0.0 5.3045771064003047
+    ]
+    positions =
+        [
+            [0.3333333333333357, 0.6666666666666643, 0.9996814330926364],
+            [0.6666666666666643, 0.3333333333333357, 0.4996814330926362],
+            [0.3333333333333357, 0.6666666666666643, 0.3787615522102606],
+            [0.6666666666666643, 0.3333333333333357, 0.8787615522102604],
+        ] .+ Ref([0.1, 0.1, 0])
+    atoms = [1, 1, 2, 2]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell, 1e-5)
+    @test dataset.spacegroup_number == 186
+    @test dataset.n_operations == 12
+end
