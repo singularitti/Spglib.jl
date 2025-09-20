@@ -279,5 +279,6 @@ As a result, code that worked with `Spglib.jl` v0.9+ may behave differently when
 
 The API itself has not changed, but some returned values may differ.
 
-Please be aware of these differences. If you notice inconsistencies between the Julia API
-and the C API, check the upstream PR history and update your code accordingly.
+Please be aware of these differences. If you have already updated your code but still
+observe results that differ between the Julia API and the C/Python APIs, let me know so I
+can investigate.
