@@ -2366,12 +2366,21 @@ end
     end
 end
 
-# From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_spglib.py#L257-L292
 @testset "Test `get_magnetic_spacegroup_type`" begin
+    # From https://github.com/spglib/spglib/blob/v2.1.0/test/functional/python/test_spglib.py#L257-L292
     @test get_magnetic_spacegroup_type(1279) ==
         MagneticSpacegroupType(1279, 1279, "156.49", "156.1.1279", 156, 1)
     @test get_magnetic_spacegroup_type(452) ==
         MagneticSpacegroupType(452, 442, "55.354", "55.2.442", 55, 2)
     @test get_magnetic_spacegroup_type(1262) ==
         MagneticSpacegroupType(1262, 1270, "151.32", "153.4.1270", 151, 4)
+    @testset "Test Cr" begin  # From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/fortran/test_fortran_spg_get_magnetic_spacegroup_type.F90#L38-L48
+        magspg_type = get_magnetic_spacegroup_type(1599)
+        @test magspg_type.uni_number == 1599
+        @test magspg_type.litvin_number == 1643
+        @test magspg_type.bns_number == "221.97"
+        @test magspg_type.og_number == "229.6.1643"
+        @test magspg_type.number == 221
+        @test magspg_type.type == 4
+    end
 end
