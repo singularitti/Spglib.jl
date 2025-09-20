@@ -2384,3 +2384,130 @@ end
         @test magspg_type.type == 4
     end
 end
+
+@testset "Test CrCl₂" begin
+    lattice = [[6.8257, 0, 0], [0, 6.2139, 0], [0, 0, 3.4947]]
+    positions = [
+        # Cr (2a), site symmetry: < -x,-y,-z; -x,-y,z >
+        [0, 0, 0],
+        [0.5, 0.5, 0.5],
+        # Cl (4g)
+        [0.3586, 0.2893, 0],
+        [-0.3586, -0.2893, 0],
+        [-0.3586 + 0.5, 0.2893 + 0.5, 0.5],
+        [0.3586 + 0.5, -0.2893 + 0.5, 0.5],
+    ]
+    numbers = [1, 1, 2, 2, 2, 2]
+    cell = SpglibCell(lattice, positions, numbers)
+    rotations, translations = get_symmetry(cell, 1e-5)
+    @test length(rotations) == 8
+    # From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_site_tensors.py#L56-L68
+    @testset "Test type-I magnetic space group (MSG)" begin
+        # Type-I magnetic space group (MSG)
+        magmoms = [[0, 0, 1], [0, 0, -1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        dataset = get_magnetic_dataset(
+            SpglibCell(lattice, positions, numbers, magmoms), 1e-5
+        )
+        @test dataset.uni_number == 491  # Compared with Python results
+        @test dataset.msg_type == 1
+        @test dataset.hall_number == 275
+        @test dataset.tensor_rank == 1
+        @test all(dataset.time_reversals .== false)
+        @test all(dataset.rotations .== rotations)
+        @test all(dataset.translations .== translations)
+    end
+    # From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_site_tensors.py#L70-L89
+    @testset "Test type-II MSG" begin
+        # Type-II MSG
+        # 58.394, -P 2 2n 1'
+        magmoms = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        cell = SpglibCell(lattice, positions, numbers, magmoms)
+        dataset = get_magnetic_dataset(cell, 1e-5)
+        @test dataset.uni_number == 492
+        @test dataset.msg_type == 2
+        @test dataset.hall_number == 275
+        @test dataset.tensor_rank == 1
+        @test dataset.n_operations == 16
+        @test length(dataset.rotations) == 16
+        @test dataset.time_reversals == Bool[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+        @test dataset.origin_shift == [0.0, 0.0, 0.0]
+        @test all(
+            dataset.std_positions .== [
+                [1.1102230246251570e-16, 1.1102230246251570e-16, 0.0],
+                [4.9999999999999989e-1, 4.9999999999999989e-1, 0.5],
+                [3.5860000000000003e-1, 2.893e-1, 0.0],
+                [6.4139999999999997e-1, 7.107e-1, 0.0],
+                [1.4139999999999997e-1, 7.893e-1, 0.5],
+                [8.5860000000000003e-1, 2.1069999999999989e-1, 0.5],
+            ],
+        )
+        @test dataset.std_tensors == [
+            [0.000, 0.000, 0.000],
+            [0.000, 0.000, 0.000],
+            [0.000, 0.000, 0.000],
+            [0.000, 0.000, 0.000],
+            [0.000, 0.000, 0.000],
+            [0.000, 0.000, 0.000],
+        ]
+        rotations2, translations2, _ = get_symmetry_with_site_tensors(
+            cell, 1e-5; with_time_reversal=false
+        )
+        @test all(rotations2 .== rotations)
+        @test all(translations2 .== translations)
+    end
+    # From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_site_tensors.py#L91-L105
+    @testset "Test type-III MSG" begin
+        # Type-III MSG
+        # 58.397: -P 2 2n'
+        # Generators: -x,-y,-z; -x,-y,z; -x+1/2,y+1/2,-z+1/2'
+        magmoms = [[0, 0, 1], [0, 0, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        dataset = get_magnetic_dataset(
+            SpglibCell(lattice, positions, numbers, magmoms), 1e-5
+        )
+        @test dataset.uni_number == 495
+        @test dataset.msg_type == 3
+        @test dataset.hall_number == 275
+        @test dataset.tensor_rank == 1
+        @test dataset.n_operations == 8
+        @test length(dataset.rotations) == 8
+        @test dataset.n_atoms == 6
+        @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2] .+ 1
+        @test dataset.origin_shift == [0.0, 0.0, 0.0]
+        @test all(
+            dataset.std_tensors .≈ [
+                [0.000, 0.000, 1.000],
+                [0.000, 0.000, 1.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+            ],
+        )
+        @test all(dataset.rotations .== rotations)
+        @test all(dataset.translations .== translations)
+        @test sum(dataset.time_reversals) == 4
+    end
+    # From https://github.com/spglib/spglib/blob/v2.6.0/test/functional/python/test_site_tensors.py#L122-L133
+    @testset "Test with distorted magmoms" begin
+        magmoms = [[0, 0, 1.001], [0, 0, 0.999], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        dataset = get_magnetic_dataset(
+            SpglibCell(lattice, positions, numbers, magmoms), 1e-2
+        )
+        @test dataset.uni_number == 495
+        @test dataset.msg_type == 3
+        @test dataset.hall_number == 275
+        @test dataset.tensor_rank == 1
+        @test dataset.n_operations == 8
+        @test all(
+            dataset.std_tensors .≈ [
+                [0.000, 0.000, 1.000],
+                [0.000, 0.000, 1.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+                [0.000, 0.000, 0.000],
+            ],
+        )
+        @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2] .+ 1  # FIXME: This is `mag_symprec=1e-2` in Python code?
+    end
+end
