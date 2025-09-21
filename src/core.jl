@@ -125,6 +125,11 @@ function SpglibCell(lattice, positions, atoms, magmoms=Float64[])
         if length(magmoms) != length(atoms)
             throw(DimensionMismatch("the number of magnetic moments ≠ number of atoms!"))
         end
+        if eltype(magmoms) <: AbstractVector
+            if any(length(magmom) != 3 for magmom in magmoms)
+                throw(DimensionMismatch("each magnetic moment must be a 3-vector!"))
+            end
+        end
     end
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
