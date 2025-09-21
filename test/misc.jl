@@ -1,6 +1,6 @@
 @test get_version() == v"2.5.0"
 
-@testset "Constructors" begin
+@testset "Test constructors" begin
     lattice = [
         [5.0759761474456697, 5.0759761474456697, 0],
         [-2.8280307701821314, 2.8280307701821314, 0],
@@ -24,5 +24,18 @@
             5.07597614744567 2.8280307701821314 0.0
             0.0 0.0 8.57154746
         ],
+    )
+    @test_throws DimensionMismatch Cell(lattice, positions[1:3], atoms)
+    @test_throws DimensionMismatch Cell(
+        lattice, positions, atoms, fill(1.0, length(positions) + 1)
+    )
+    @test_throws DimensionMismatch Cell(
+        lattice, positions, atoms, fill([-1, 1, 0], length(positions) + 1)
+    )
+    @test_throws DimensionMismatch Cell(lattice, positions, atoms, zeros(length(atoms), 3))
+    @test_throws DimensionMismatch Cell(lattice, positions, atoms, zeros(length(atoms), 2))
+    @test_throws MethodError Cell(lattice, positions, atoms, zeros(length(atoms), 1))
+    @test_throws DimensionMismatch Cell(
+        lattice, positions, atoms, fill([1], length(positions))
     )
 end
