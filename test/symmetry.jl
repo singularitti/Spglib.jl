@@ -1640,3 +1640,27 @@ end
     @test dataset.spacegroup_number == 186
     @test dataset.n_operations == 12
 end
+
+# From https://github.com/spglib/spglib/blob/v2.7.0/test/functional/c/test_spacegroup_type_search.cpp#L43-L72
+@testset "Test diamond structure" begin
+    lattice = [
+        0.0 5.245 0.0
+        6.4345 -6.4345 0.0
+        1.8319 0.0 -3.6638
+    ]
+    positions = [
+        [0.6416, 0.7350, 0.0708],
+        [0.8284, 0.2350, 0.4142],
+        [0.3584, 0.2650, 0.4292],
+        [0.1716, 0.7650, 0.5858],
+        [0.6994, 0.5334, 0.2150],
+        [0.3674, 0.0334, 0.2990],
+        [0.3006, 0.4666, 0.5156],
+        [0.0000, 0.0000, 0.5902],
+        [0.0000, 0.5000, 0.8402],
+        [0.6326, 0.9666, 0.9316],
+    ]
+    atoms = [1, 1, 1, 1, 6, 6, 6, 6, 6, 6]
+    cell = Cell(lattice, positions, atoms)
+    dataset = get_dataset(cell, 1e-5)
+end
