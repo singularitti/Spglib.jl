@@ -1,7 +1,7 @@
 using CrystallographyCore:
     ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
 using StaticArraysCore: SMatrix, SVector
-using StructEquality: @struct_hash_equal_isequal
+using StructEqualHash: @struct_equal_hash
 
 import CrystallographyCore: Lattice, natoms, atomtypes
 
@@ -95,7 +95,7 @@ julia> magmoms = [1.0, 1.0];
 julia> cell = SpglibCell(lattice, positions, atoms, magmoms);
 ```
 """
-@struct_hash_equal_isequal struct SpglibCell{L,P,T,M} <: AbstractCell
+struct SpglibCell{L,P,T,M} <: AbstractCell
     lattice::Lattice{L}
     positions::Vector{ReducedCoordinates{P}}
     atoms::Vector{T}
@@ -136,6 +136,7 @@ function SpglibCell(lattice, positions, atoms, magmoms=Float64[])
 end
 SpglibCell(cell::CrystallographyCell, magmoms=Float64[]) =
     SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
+@struct_equal_hash SpglibCell
 const Cell = SpglibCell
 
 """
@@ -320,7 +321,7 @@ Represent `SpglibDataset`, see its [official documentation](https://spglib.githu
 
 See also [`get_dataset`](@ref), [`get_dataset_with_hall_number`](@ref).
 """
-@struct_hash_equal_isequal struct Dataset <: AbstractDataset
+struct Dataset <: AbstractDataset
     "International space group number"  # See https://github.com/spglib/spglib/blob/v2.6.0/python/spglib/spglib.py#L108-L251
     spacegroup_number::Int32
     """Hall number
@@ -455,6 +456,7 @@ function Dataset(dataset::SpglibDataset)
         pointgroup_symbol,
     )
 end
+@struct_equal_hash Dataset
 
 _convert(::Type{SMatrix{N,N,T}}, tuple::NTuple{N,NTuple{N,T}}) where {N,T} =
     SMatrix{N,N,T}(Tuple(Iterators.flatten(tuple)))

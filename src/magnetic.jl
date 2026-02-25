@@ -167,7 +167,7 @@ Represent `MagneticDataset`, see its [official documentation](https://spglib.rea
 
 See also [`get_magnetic_dataset`](@ref).
 """
-@struct_hash_equal_isequal struct MagneticDataset <: AbstractDataset
+struct MagneticDataset <: AbstractDataset
     "UNI number, from ``1`` to ``1651``"
     uni_number::Int32
     """Magnetic space groups (MSG) are classified by their family space group (FSG) and
@@ -293,6 +293,7 @@ function MagneticDataset(dataset::SpglibMagneticDataset)
         primitive_lattice,
     )
 end
+@struct_equal_hash MagneticDataset
 
 """
     get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
