@@ -27,7 +27,7 @@ Julia 1.11:
     - .script
     - .coverage
 Julia 1.6:
-  image: julia:1.6
+  image: julia:1.12
   extends:
     - .script
     - .coverage
