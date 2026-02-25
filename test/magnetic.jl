@@ -1,3 +1,5 @@
+using LinearAlgebra: diagm
+
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
 @testset "Get symmetry operations" begin
     @testset "Normal symmetry" begin
@@ -2509,6 +2511,54 @@ end
             ],
         )
         @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2] .+ 1  # FIXME: This is `mag_symprec=1e-2` in Python code?
+    end
+end
+
+# From https://github.com/spglib/spglib/pull/612/changes
+# Fixed in spglib v2.7: https://github.com/spglib/spglib/pull/612
+if get_version() >= v"2.7"
+    @testset "Test better choice of orientation" begin
+        a = 5.6903014761756712
+        lattice = Lattice(diagm([a, a, a]))
+        positions = [
+            [0.0, 0.0, 0.0],
+            [0.0, 0.5, 0.5],
+            [0.5, 0.0, 0.5],
+            [0.5, 0.5, 0.0],
+            [0.5, 0.5, 0.5],
+            [0.5, 0.0, 0.0],
+            [0.0, 0.5, 0.0],
+            [0.0, 0.0, 0.5],
+        ]
+        shift = [0.1, 0.2, 0.3]
+        positions += shift
+        numbers = [1, 1, 1, 1, 2, 2, 2, 2]
+        magmoms = [1, 1, 1, 1, -1, -1, -1, -1]
+        dataset = get_magnetic_dataset(
+            SpglibCell(lattice, positions, numbers, magmoms), 1e-5
+        )
+        P = dataset.transformation_matrix  # Change-of-basis matrix: A = A_s · P
+        p = dataset.origin_shift
+        # Standardized lattice: A_s = A · P⁻¹ (columns = basis vectors convention)
+        std_lattice = lattice * inv(P)
+        # Standardized positions: x_s = P·x + p (mod 1, shifted into [0, 1))
+        std_positions = [P * x + p for x in positions]
+        std_positions = [x_s - round.(x_s) for x_s in std_positions]  # wrap to (-0.5, 0.5]
+        std_positions = [
+            x_s + [x < -1e-8 ? 1.0 : 0.0 for x in x_s] for x_s in std_positions
+        ]  # shift negative coords into [0, 1)
+        @test std_lattice ≈ dataset.std_lattice
+        # For each computed std_position, find the matching atom index in dataset.std_positions
+        indices = map(std_positions) do x_s
+            periodic_diffs = [q - x_s for q in dataset.std_positions]
+            periodic_diffs = [d - round.(d) for d in periodic_diffs]  # Fold differences into (-0.5, 0.5]
+            distances = norm.(periodic_diffs)
+            findfirst(<(1e-8), distances)
+        end
+        @test numbers == dataset.std_types[indices]
+        @test magmoms == dataset.std_tensors[indices]
+        # The standardized lattice should match the input (orientation is preserved)
+        @test std_lattice ≈ lattice
     end
 end
 
