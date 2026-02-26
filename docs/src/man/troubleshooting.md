@@ -282,3 +282,15 @@ The API itself has not changed, but some returned values may differ.
 Please be aware of these differences. If you have already updated your code but still
 observe results that differ between the Julia API and the C/Python APIs, let me know so I
 can investigate.
+
+## Upgrading from v1.1+ to v1.2+
+
+In version `Spglib.jl` v1.1.0, I constrained the backend package `spglib_jll.jl` to versions
+v2.2 to v2.5, since they introduced breaking changes in
+[PR #610](https://github.com/spglib/spglib/pull/610) and
+[PR #612](https://github.com/spglib/spglib/pull/612).
+
+After v1.2, I removed this constraint since there is no API change either.
+As a result, code that worked with `Spglib.jl` v1.1+ may behave differently when upgraded to v1.2+.
+
+Please be aware of this. If you meet any trouble, let me know so I can investigate.
