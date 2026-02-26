@@ -1,4 +1,4 @@
-using LinearAlgebra: diagm
+using LinearAlgebra: I, diagm, norm
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
 @testset "Get symmetry operations" begin
@@ -310,7 +310,7 @@ end
     @test dataset.time_reversals == falses(8)
     @test dataset.n_atoms == 8
     @test dataset.equivalent_atoms == zeros(Int32, 8) .+ 1
-    @test dataset.transformation_matrix == [
+    @test dataset.transformation_matrix ≈ [
         1 0 0
         0 1 0
         0 0 1
@@ -413,7 +413,7 @@ end
     @test dataset.time_reversals == [false, false, false, false, true, true, true, true]  # Compared with Python results
     @test dataset.n_atoms == 8
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 4, 4, 4, 4] .+ 1  # Compared with Python results
-    @test dataset.transformation_matrix == [
+    @test dataset.transformation_matrix ≈ [
         1 0 0
         0 1 0
         0 0 1
@@ -612,10 +612,10 @@ end
     @test dataset.time_reversals == [false, true, true, false, false, true, true, false]
     @test dataset.n_atoms == 16
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8] .+ 1
-    @test dataset.transformation_matrix == [
-        1.0 0.0 0.0
-        0.0 0.0 -1.0
-        1.0 1.0 0.0
+    @test dataset.transformation_matrix ≈ [
+        1 0 0
+        0 0 -1
+        1 1 0
     ]
     @test dataset.origin_shift ≈ [0, 0, 0]
     @test dataset.n_std_atoms == 16
@@ -995,31 +995,59 @@ end
     ]  # Compared with Python results
     @test dataset.n_atoms == 12
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4] .+ 1  # Compared with Python results
-    @test dataset.transformation_matrix == [
-        -1.0 0.0 0.0
-        0.0 1.0 0.0
-        0.0 0.0 -1.0
-    ]
-    @test dataset.origin_shift == [0.0, 0.0, 0.75]
+    # See spglib v2.7: https://github.com/spglib/spglib/pull/612
+    if get_version() >= v"2.7"
+        @test dataset.transformation_matrix ≈ I
+        @test dataset.origin_shift == [0.0, 0.0, 0.25]
+    else
+        @test dataset.transformation_matrix == [
+            -1.0 0.0 0.0
+            0.0 1.0 0.0
+            0.0 0.0 -1.0
+        ]
+        @test dataset.origin_shift == [0.0, 0.0, 0.75]
+    end
     @test dataset.n_std_atoms == 12
-    @test dataset.std_lattice ≈ Lattice([
-        [-16.0831, 0.0, 0.0], [0.0, 4.3887, 0.0], [5.97205829, 0.0, -12.38135828]
-    ])
+    # See spglib v2.7: https://github.com/spglib/spglib/pull/612
+    if get_version() >= v"2.7"
+        @test dataset.std_lattice ≈ Lattice([
+            [16.0831, 0.0, 0.0], [0.0, 4.3887, 0.0], [-5.97205829, 0.0, 12.38135828]
+        ])
+        @test dataset.std_positions ≈ [
+            [0.0, 0.0, 0.5],
+            [0.5, 0.5, 0.5],
+            [0.0, 0.0, 0.0],
+            [0.5, 0.5, 0.0],
+            [0.629, 0.5, 0.3085],
+            [0.129, 0.0, 0.3085],
+            [0.129, 0.0, 0.8085],
+            [0.629, 0.5, 0.8085],
+            [0.871, 0.0, 0.6915],
+            [0.371, 0.5, 0.6915],
+            [0.371, 0.5, 0.1915],
+            [0.871, 0.0, 0.1915],
+        ]
+    else
+        @test dataset.std_lattice ≈ Lattice([
+            [-16.0831, 0.0, 0.0], [0.0, 4.3887, 0.0], [5.97205829, 0.0, -12.38135828]
+        ])
+        @test dataset.std_positions ≈ [
+            [1.38777878e-17, 1.38777878e-17, 0.5],
+            [0.5, 0.5, 0.5],
+            [0.0, 0.0, 1.11022302e-16],
+            [0.5, 0.5, 2.22044605e-16],
+            [0.371, 0.5, 0.6915],
+            [0.871, 0.0, 0.6915],
+            [0.871, 0.0, 0.1915],
+            [0.371, 0.5, 0.1915],
+            [0.129, 2.77555756e-17, 0.3085],
+            [0.629, 0.5, 0.3085],
+            [0.629, 0.5, 0.8085],
+            [0.129, 0.0, 0.8085],
+        ]
+    end
     @test dataset.std_types == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    @test dataset.std_positions ≈ [
-        [1.38777878e-17, 1.38777878e-17, 0.5],
-        [0.5, 0.5, 0.5],
-        [0.0, 0.0, 1.11022302e-16],
-        [0.5, 0.5, 2.22044605e-16],
-        [0.371, 0.5, 0.6915],
-        [0.871, 0.0, 0.6915],
-        [0.871, 0.0, 0.1915],
-        [0.371, 0.5, 0.1915],
-        [0.129, 2.77555756e-17, 0.3085],
-        [0.629, 0.5, 0.3085],
-        [0.629, 0.5, 0.8085],
-        [0.129, 0.0, 0.8085],
-    ]
+
     @test dataset.std_tensors ≈ [
         [0.0, 8.86, 0.0],
         [0.0, 8.86, 0.0],
@@ -1102,10 +1130,10 @@ end
     @test dataset.time_reversals == [false, false, true, true, true, true, false, false]  # Compared with Python results
     @test dataset.n_atoms == 10
     @test dataset.equivalent_atoms == [0, 0, 2, 2, 2, 2, 2, 2, 2, 2] .+ 1  # Compared with Python results
-    @test dataset.transformation_matrix == [
-        0.0 -1.0 0.0
-        -1.0 0.0 0.0
-        0.0 0.0 -1.0
+    @test dataset.transformation_matrix ≈ [
+        0 -1 0
+        -1 0 0
+        0 0 -1
     ]
     @test dataset.origin_shift == [0.0, 0.0, 0.0]
     @test dataset.n_std_atoms == 10
@@ -1195,7 +1223,7 @@ end
     @test dataset.time_reversals == [false, true, true, false]  # Compared with Python results
     @test dataset.n_atoms == 12
     @test dataset.equivalent_atoms == [0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8] .+ 1  # Compared with Python results
-    @test dataset.transformation_matrix == [
+    @test dataset.transformation_matrix ≈ [
         -1.0 0.0 0.0
         0.0 0.0 -1.0
         0.0 -1.0 0.0
@@ -1208,8 +1236,8 @@ end
     @test dataset.std_positions ≈ [
         [0.25, 0.5, 0.25],
         [0.25, 0.5, 0.75],
-        [0.75, -5.55111512e-17, 0.75],
-        [0.75, -5.55111512e-17, 0.25],
+        [0.75, 0, 0.75],
+        [0.75, 0, 0.25],
         [0.9114, 0.8574, 0.0],
         [0.5886, 0.1426, 0.5],
         [0.4114, 0.6426, 0.0],
@@ -2433,16 +2461,27 @@ end
         @test length(dataset.rotations) == 16
         @test dataset.time_reversals == Bool[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
         @test dataset.origin_shift == [0.0, 0.0, 0.0]
-        @test all(
-            dataset.std_positions .== [
-                [1.1102230246251570e-16, 1.1102230246251570e-16, 0.0],
-                [4.9999999999999989e-1, 4.9999999999999989e-1, 0.5],
-                [3.5860000000000003e-1, 2.893e-1, 0.0],
-                [6.4139999999999997e-1, 7.107e-1, 0.0],
-                [1.4139999999999997e-1, 7.893e-1, 0.5],
-                [8.5860000000000003e-1, 2.1069999999999989e-1, 0.5],
-            ],
-        )
+        if get_version() >= v"2.7.0"
+            @test dataset.std_positions ≈ [
+                [0.0, 0.0, 0.0],
+                [0.5, 0.5, 0.5],
+                [0.3586, 0.2893, 0.0],
+                [0.6414, 0.7107, 0.0],
+                [0.1414, 0.7893, 0.5],
+                [0.8586, 0.2107, 0.5],
+            ]
+        else
+            @test all(
+                dataset.std_positions .== [
+                    [1.1102230246251570e-16, 1.1102230246251570e-16, 0.0],
+                    [4.9999999999999989e-1, 4.9999999999999989e-1, 0.5],
+                    [3.5860000000000003e-1, 2.893e-1, 0.0],
+                    [6.4139999999999997e-1, 7.107e-1, 0.0],
+                    [1.4139999999999997e-1, 7.893e-1, 0.5],
+                    [8.5860000000000003e-1, 2.1069999999999989e-1, 0.5],
+                ],
+            )
+        end
         @test dataset.std_tensors == [
             [0.000, 0.000, 0.000],
             [0.000, 0.000, 0.000],

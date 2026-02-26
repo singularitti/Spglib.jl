@@ -1,4 +1,4 @@
-@test get_version() == v"2.5.0"
+@test get_version() >= v"2.2.0"
 
 @testset "Test constructors" begin
     lattice = [
