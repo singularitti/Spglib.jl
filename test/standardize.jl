@@ -1,3 +1,4 @@
+using CrystallographyCore: StandardizedToPrimitive
 using Spglib: SPACEGROUP_SEARCH_FAILED, SpglibError, get_error_code
 
 # This example is from https://spglib.github.io/spglib/definition.html#transformation-to-a-primitive-cell
@@ -16,18 +17,18 @@ using Spglib: SPACEGROUP_SEARCH_FAILED, SpglibError, get_error_code
     atoms = fill(8, length(positions))
     cell = Cell(lattice, positions, atoms)
     primitive_cell = find_primitive(cell)
-    # Write transformation matrix directly
+    trans = StandardizedToPrimitive([
+        1//2 1//2 0
+        -1//2 1//2 0
+        0 0 1
+    ])
     @test primitive_cell.lattice ==
-        cell.lattice * [
-            1//2 1//2 0
-            -1//2 1//2 0
-            0 0 1
-        ] ==
-        [
+        trans(cell.lattice) ==
+        Lattice([
             3.589257155 3.589257155 0.0
             -1.999719735 1.999719735 0.0
             0.0 0.0 8.57154746
-        ]
+        ])
     @test reduce(hcat, primitive_cell.positions) ≈ [  # Python results
         0.15311561 0.34688439 0.65311561 0.84688439
         0.84688439 0.65311561 0.34688439 0.15311561
@@ -55,12 +56,13 @@ end
     atoms = fill(8, length(positions))
     cell = Cell(lattice, positions, atoms)
     primitive_cell = find_primitive(cell)
-    # Compare with documented results
-    @test cell.lattice * [
+    trans = StandardizedToPrimitive([
         1//2 1//2 0
         -1//2 1//2 0
         0 0 1
-    ] ≈ [
+    ])
+    # Compare with documented results
+    @test trans(cell.lattice) ≈ [
         3.95200346 1.12397269 0.0
         1.12397269 3.95200346 0.0
         0.0 0.0 8.57154746
