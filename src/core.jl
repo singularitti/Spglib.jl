@@ -1,5 +1,4 @@
-using CrystallographyCore:
-    ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
+using CrystallographyCore: ReducedCoordinates, AbstractCell, basisvectors
 using StaticArraysCore: SMatrix, SVector
 using StructEqualHash: @struct_equal_hash
 
