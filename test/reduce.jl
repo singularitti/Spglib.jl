@@ -48,7 +48,7 @@ end
         cell = Cell(lattice, [[0.0, 0.0, 0.0], [0.05, 0.05, 0.05]], [1, 1])
         cell′ = niggli_reduce(cell)
         # Cartesian coordinates should remain the same before and after basis vectors changes
-        @test Ref(cell.lattice) .* cell.positions == Ref(cell′.lattice) .* cell′.positions
+        @test cell.lattice.(cell.positions) == cell′.lattice.(cell′.positions)
     end
     # From https://github.com/unkcpz/LibSymspg.jl/blob/f342e72/test/runtests.jl#L87-89
     @testset "Test Delaunay reduction" begin
@@ -60,7 +60,7 @@ end
         cell = Cell(lattice, [[0.0, 0.0, 0.0], [0.05, 0.05, 0.05]], [1, 1])
         cell′ = delaunay_reduce(cell)
         # Cartesian coordinates should remain the same before and after basis vectors changes
-        @test Ref(cell.lattice) .* cell.positions == Ref(cell′.lattice) .* cell′.positions
+        @test cell.lattice.(cell.positions) == cell′.lattice.(cell′.positions)
     end
 end
 
