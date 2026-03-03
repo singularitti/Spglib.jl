@@ -25,7 +25,7 @@ and the matrix elements have to be almost integers.
 See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function niggli_reduce(lattice::Lattice, symprec=1e-5)
-    niggli_lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    niggli_lattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
     @ccall libsymspg.spg_niggli_reduce(niggli_lattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
     check_error()
     return Lattice(transpose(niggli_lattice))
@@ -63,7 +63,7 @@ and the matrix elements have to be almost integers.
 See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function delaunay_reduce(lattice::Lattice, symprec=1e-5)
-    delaunay_lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    delaunay_lattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
     @ccall libsymspg.spg_delaunay_reduce(
         delaunay_lattice::Ptr{Cdouble}, symprec::Cdouble
     )::Cint

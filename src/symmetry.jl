@@ -325,7 +325,7 @@ function get_spacegroup_type_from_symmetry(
     num_sym = length(translations)
     rotations = Base.cconvert(Array{Cint,3}, cat(transpose.(rotations)...; dims=3))
     translations = Base.cconvert(Matrix{Cdouble}, reduce(hcat, translations))
-    lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))   # `transpose` must before `cconvert`!
+    lattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
     spgtype = @ccall libsymspg.spg_get_spacegroup_type_from_symmetry(
         rotations::Ptr{Cint},
         translations::Ptr{Cdouble},
