@@ -32,8 +32,8 @@ function niggli_reduce(lattice::Lattice, symprec=1e-5)
 end
 function niggli_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    new_lattice = Matrix(niggli_reduce(lattice, symprec))
-    𝐏⁻¹ = inv(new_lattice) * Matrix(lattice)  # Keep cartesian coordinates, see #106
+    new_lattice = niggli_reduce(lattice, symprec)
+    𝐏⁻¹ = inv(new_lattice) * lattice  # Keep cartesian coordinates, see #106
     new_positions = [𝐏⁻¹ * position for position in cell.positions]
     return Cell(new_lattice, new_positions, cell.atoms)
 end
@@ -72,8 +72,8 @@ function delaunay_reduce(lattice::Lattice, symprec=1e-5)
 end
 function delaunay_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    new_lattice = Matrix(delaunay_reduce(lattice, symprec))
-    𝐏⁻¹ = inv(new_lattice) * Matrix(lattice)  # Keep cartesian coordinates, see #106
+    new_lattice = delaunay_reduce(lattice, symprec)
+    𝐏⁻¹ = inv(new_lattice) * lattice  # Keep cartesian coordinates, see #106
     new_positions = [𝐏⁻¹ * position for position in cell.positions]
     return Cell(new_lattice, new_positions, cell.atoms)
 end
