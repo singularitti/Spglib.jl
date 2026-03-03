@@ -134,8 +134,6 @@ function SpglibCell(lattice, positions, atoms, magmoms=Float64[])
     L, T, M = eltype(lattice), eltype(atoms), eltype(magmoms)
     return SpglibCell{L,P,T,M}(lattice, positions, atoms, magmoms)
 end
-SpglibCell(cell::CrystallographyCell, magmoms=Float64[]) =
-    SpglibCell(cell.lattice, cell.positions, cell.atoms, magmoms)
 @struct_equal_hash SpglibCell
 const Cell = SpglibCell
 
