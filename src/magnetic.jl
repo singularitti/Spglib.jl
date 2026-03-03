@@ -36,7 +36,7 @@ array is the same of number of atoms in the cell.
 """
 function get_symmetry_with_collinear_spin(cell::AbstractCell, symprec=1e-5)
     lattice, positions, atoms, magmoms = unwrap_convert(cell)
-    num_atom = length(cell.magmoms)
+    num_atom = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 96num_atom  # 96 = 48 × 2 since we have spins
     rotations = Array{Cint,3}(undef, 3, 3, max_size)
