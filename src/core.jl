@@ -1,5 +1,4 @@
-using CrystallographyCore:
-    ReducedCoordinates, AbstractCell, Cell as CrystallographyCell, basisvectors
+using CrystallographyCore: ReducedCoordinates, AbstractCell, basisvectors
 using StaticArraysCore: SMatrix, SVector
 using StructEqualHash: @struct_equal_hash
 
@@ -13,7 +12,8 @@ export Lattice,
     basisvectors,
     basis_vectors,
     natoms,
-    atomtypes
+    atomtypes,
+    unwrap_convert
 
 const basis_vectors = basisvectors  # For backward compatibility
 const WYCKOFF_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"  # See https://github.com/spglib/spglib/blob/v2.2.0/python/spglib/spglib.py#L364
@@ -158,8 +158,7 @@ Get the lattice from a `cell`.
 """
 Lattice(cell::SpglibCell) = cell.lattice
 
-# This is an internal function, do not export!
-function _unwrap_convert(cell::SpglibCell)
+function unwrap_convert(cell::SpglibCell)
     lattice, positions, atoms, magmoms = cell.lattice, cell.positions, cell.atoms, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
@@ -172,14 +171,6 @@ function _unwrap_convert(cell::SpglibCell)
         Base.cconvert(Vector{Cdouble}, magmoms)  # `magmoms` could be empty!
     end
     return clattice, cpositions, catoms, cmagmoms
-end
-function _unwrap_convert(cell::CrystallographyCell)
-    lattice, positions, atoms = cell.lattice, cell.positions, cell.atoms
-    clattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
-    cpositions = Base.cconvert(Matrix{Cdouble}, reduce(hcat, positions))
-    atomtypes = unique(atoms)
-    catoms = collect(Cint, findfirst(==(atom), atomtypes) for atom in atoms)  # Mapping between unique atom types and atom indices
-    return clattice, cpositions, catoms
 end
 
 abstract type AbstractSpacegroupType end

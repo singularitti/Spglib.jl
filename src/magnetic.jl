@@ -35,7 +35,7 @@ But as an output, `equivalent_atoms` are obtained as the last returned value. Th
 array is the same of number of atoms in the cell.
 """
 function get_symmetry_with_collinear_spin(cell::SpglibCell, symprec=1e-5)
-    lattice, positions, atoms, magmoms = _unwrap_convert(cell)
+    lattice, positions, atoms, magmoms = unwrap_convert(cell)
     num_atom = length(cell.magmoms)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 96num_atom  # 96 = 48 × 2 since we have spins
@@ -73,7 +73,7 @@ Returned `spin_flips` represents sign of site tensors after applying time-revers
 function get_symmetry_with_site_tensors(
     cell::SpglibCell, symprec=1e-5; with_time_reversal=true
 )
-    lattice, positions, atoms, magmoms = _unwrap_convert(cell)
+    lattice, positions, atoms, magmoms = unwrap_convert(cell)
     num_atom = natoms(cell)
     # See https://github.com/spglib/spglib/blob/42527b0/python/spglib/spglib.py#L270
     max_size = 96num_atom  # 96 = 48 × 2 since we have spins
@@ -303,7 +303,7 @@ Return magnetic symmetry operations and standardized structure of given structur
 The description of returned dataset is given at [Magnetic dataset (experimental)](@ref).
 """
 function get_magnetic_dataset(cell::SpglibCell, symprec=1e-5)
-    lattice, positions, atoms, magmoms = _unwrap_convert(cell)
+    lattice, positions, atoms, magmoms = unwrap_convert(cell)
     tensor_rank = ndims(magmoms) - 1  # See https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L275-L276 & https://github.com/spglib/spglib/blob/v2.1.0/python/spglib/spglib.py#L615
     is_axial = iszero(tensor_rank) ? false : true  # Collinear spin & non-collinear spin
     ptr = @ccall libsymspg.spg_get_magnetic_dataset(
