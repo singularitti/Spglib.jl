@@ -25,15 +25,15 @@ and the matrix elements have to be almost integers.
 See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function niggli_reduce(lattice::Lattice, symprec=1e-5)
-    niggli_lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    niggli_lattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
     @ccall libsymspg.spg_niggli_reduce(niggli_lattice::Ptr{Cdouble}, symprec::Cdouble)::Cint
     check_error()
     return Lattice(transpose(niggli_lattice))
 end
 function niggli_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    new_lattice = Matrix(niggli_reduce(lattice, symprec))
-    𝐏⁻¹ = inv(new_lattice) * Matrix(lattice)  # Keep cartesian coordinates, see #106
+    new_lattice = niggli_reduce(lattice, symprec)
+    𝐏⁻¹ = inv(new_lattice) * lattice  # Keep cartesian coordinates, see #106
     new_positions = [𝐏⁻¹ * position for position in cell.positions]
     return Cell(new_lattice, new_positions, cell.atoms)
 end
@@ -63,7 +63,7 @@ and the matrix elements have to be almost integers.
 See also [Computing rigid rotation introduced by idealization](@ref).
 """
 function delaunay_reduce(lattice::Lattice, symprec=1e-5)
-    delaunay_lattice = Base.cconvert(Matrix{Cdouble}, transpose(lattice))  # `transpose` must before `cconvert`!
+    delaunay_lattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
     @ccall libsymspg.spg_delaunay_reduce(
         delaunay_lattice::Ptr{Cdouble}, symprec::Cdouble
     )::Cint
@@ -72,8 +72,8 @@ function delaunay_reduce(lattice::Lattice, symprec=1e-5)
 end
 function delaunay_reduce(cell::Cell, symprec=1e-5)
     lattice = Lattice(cell)
-    new_lattice = Matrix(delaunay_reduce(lattice, symprec))
-    𝐏⁻¹ = inv(new_lattice) * Matrix(lattice)  # Keep cartesian coordinates, see #106
+    new_lattice = delaunay_reduce(lattice, symprec)
+    𝐏⁻¹ = inv(new_lattice) * lattice  # Keep cartesian coordinates, see #106
     new_positions = [𝐏⁻¹ * position for position in cell.positions]
     return Cell(new_lattice, new_positions, cell.atoms)
 end

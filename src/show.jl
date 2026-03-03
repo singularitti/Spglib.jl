@@ -2,7 +2,7 @@ function Base.show(io::IO, ::MIME"text/plain", cell::SpglibCell)
     summary(io, cell)
     println(io)
     println(io, " lattice:")
-    for row in eachrow(cell.lattice)
+    for row in eachrow(parent(cell.lattice))
         println(io, "   ", join(row, "  "))
     end
     num_atom = natoms(cell)
