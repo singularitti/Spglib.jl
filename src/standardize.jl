@@ -37,7 +37,7 @@ space group type is as explained for [`get_dataset`](@ref).
 function standardize_cell(
     cell::AbstractCell, symprec=1e-5; to_primitive=false, no_idealize=false
 )
-    lattice, _positions, _atoms = _unwrap_convert(cell)
+    lattice, _positions, _atoms = unwrap_convert(cell)
     num_atom = natoms(cell)
     allocations = 4  # See https://github.com/spglib/spglib/blob/77a8e5d/src/spglib.h#L440
     positions = Matrix{Cdouble}(undef, 3, num_atom * allocations)

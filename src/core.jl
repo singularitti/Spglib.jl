@@ -12,7 +12,8 @@ export Lattice,
     basisvectors,
     basis_vectors,
     natoms,
-    atomtypes
+    atomtypes,
+    unwrap_convert
 
 const basis_vectors = basisvectors  # For backward compatibility
 const WYCKOFF_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"  # See https://github.com/spglib/spglib/blob/v2.2.0/python/spglib/spglib.py#L364
@@ -157,8 +158,7 @@ Get the lattice from a `cell`.
 """
 Lattice(cell::SpglibCell) = cell.lattice
 
-# This is an internal function, do not export!
-function _unwrap_convert(cell::SpglibCell)
+function unwrap_convert(cell::SpglibCell)
     lattice, positions, atoms, magmoms = cell.lattice, cell.positions, cell.atoms, cell.magmoms
     # Reference: https://github.com/mdavezac/spglib.jl/blob/master/src/spglib.jl#L32-L35 and https://github.com/spglib/spglib/blob/444e061/python/spglib/spglib.py#L953-L975
     clattice = Base.cconvert(Matrix{Cdouble}, permutedims(lattice))
