@@ -10,7 +10,7 @@ StructEqualHash = "8bd03d06-bfef-4aaf-8250-1a26cbb401bf"
 spglib_jll = "ac4a9f1e-bdb2-5204-990c-47c8b2f70d4e"
 
 [compat]
-CrystallographyCore = "0.7"
+CrystallographyCore = "0.7, 1"
 StaticArraysCore = "1"
 StructEqualHash = "0.1"
 julia = "1.3"
