@@ -44,6 +44,7 @@
         72,
         "m-3mF",
     )
+    # spglib v2.8.0 corrected these class numbers: https://github.com/spglib/spglib/pull/632
     @test get_spacegroup_type(481) == SpacegroupType(
         187,
         "P-6m2",
@@ -55,7 +56,7 @@
         "",
         "-6m2",
         "D3h",
-        57,
+        get_version() >= v"2.8.0" ? 56 : 57,
         "-6m2P",
     )  # See https://github.com/spglib/spglib/pull/367
     @test get_spacegroup_type(482) == SpacegroupType(
@@ -69,7 +70,7 @@
         "",
         "-6m2",
         "D3h",
-        57,
+        get_version() >= v"2.8.0" ? 56 : 57,
         "-6m2P",
     )  # See https://github.com/spglib/spglib/pull/367
     @test get_spacegroup_type(483) == SpacegroupType(
@@ -83,7 +84,7 @@
         "",
         "-6m2",
         "D3h",
-        56,
+        get_version() >= v"2.8.0" ? 57 : 56,
         "-62mP",
     )  # See https://github.com/spglib/spglib/pull/367
     @test get_spacegroup_type(484) == SpacegroupType(
@@ -97,7 +98,7 @@
         "",
         "-6m2",
         "D3h",
-        56,
+        get_version() >= v"2.8.0" ? 57 : 56,
         "-62mP",
     )  # See https://github.com/spglib/spglib/pull/367
     @test get_spacegroup_type(485) == SpacegroupType(
