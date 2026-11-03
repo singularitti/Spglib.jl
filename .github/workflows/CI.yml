@@ -29,14 +29,14 @@ jobs:
           - '1.9'
           - 'nightly'
         os:
-          - ubuntu-latest
-          - macOS-latest
+          - ubuntu-24.04 # Keep older Julia releases on a compatible system image.
+          - macos-15-intel # Match the x64 Julia architecture in this matrix.
           - windows-latest
         arch:
           - x64
           - x86
         exclude:
-          - os: macOS-latest
+          - os: macos-15-intel
             arch: x86
     steps:
       - uses: actions/checkout@v7
