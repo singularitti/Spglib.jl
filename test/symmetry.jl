@@ -562,22 +562,21 @@ end
         [1 0 0; -1 -1 0; 0 0 1],
     ]
     @test dataset.rotations == python_rotations
-    @test all(
-        dataset.translations .≈ [
-            [0.0, 0.0, 0.0],
-            [1 / 3, 1 / 3, 1 / 3],
-            [0.0, 0.0, 0.0],
-            [1 / 3, 1 / 3, 1 / 3],
-            [0.0, 0.0, 0.0],
-            [1 / 3, 1 / 3, 1 / 3],
-            [1 / 3, 1 / 3, 1 / 3],
-            [0.0, 0.0, 0.0],
-            [1 / 3, 1 / 3, 1 / 3],
-            [0.0, 0.0, 0.0],
-            [1 / 3, 1 / 3, 1 / 3],
-            [0.0, 0.0, 0.0],
-        ],
-    )
+    # Include an absolute tolerance for operations with zero translation.
+    @test dataset.translations ≈ [
+        [0.0, 0.0, 0.0],
+        [1 / 3, 1 / 3, 1 / 3],
+        [0.0, 0.0, 0.0],
+        [1 / 3, 1 / 3, 1 / 3],
+        [0.0, 0.0, 0.0],
+        [1 / 3, 1 / 3, 1 / 3],
+        [1 / 3, 1 / 3, 1 / 3],
+        [0.0, 0.0, 0.0],
+        [1 / 3, 1 / 3, 1 / 3],
+        [0.0, 0.0, 0.0],
+        [1 / 3, 1 / 3, 1 / 3],
+        [0.0, 0.0, 0.0],
+    ] atol = 1e-12 rtol = 0
     @test size(dataset.rotations) == size(dataset.translations) == (12,)
     @test get_symmetry(cell) == (dataset.rotations, dataset.translations)
     @test get_symmetry_from_database(dataset.hall_number)[1] == [
@@ -1504,7 +1503,8 @@ end
         @test std_lattice_before_idealization * dataset.transformation_matrix ≈
             Lattice(cell)
     end
-    @test dataset.origin_shift ≈ [-5.55111512e-17, 0, 0]  # Compared with Python results
+    # The expected shift is zero; tiny Python values are floating-point roundoff.
+    @test dataset.origin_shift ≈ [0.0, 0.0, 0.0] atol = 1e-12 rtol = 0
     python_rotations = [
         [1 0 0; 0 1 0; 0 0 1],
         [1 -1 0; 1 0 0; 0 0 1],

@@ -315,7 +315,8 @@ end
         0 1 0
         0 0 1
     ]
-    @test dataset.origin_shift ≈ [5.55111512e-17, -1.66533454e-16, 0]
+    # Absolute tolerance handles platform-dependent roundoff around zero.
+    @test dataset.origin_shift ≈ [0.0, 0.0, 0.0] atol = 1e-12 rtol = 0
     @test dataset.n_std_atoms == 8
     @test dataset.std_lattice ≈ Lattice([
         6.8083 0 0
@@ -498,8 +499,10 @@ end
         [-1 0 0; 0 -1 0; 0 0 1],
         [1 0 0; 0 1 0; 0 0 -1],
     ]  # Compared with Python results
-    @test dataset.translations ==
-        [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.0, 0.5]]  # Compared with Python results
+    # Standardization can introduce roundoff even for exact half-cell shifts.
+    @test dataset.translations ≈
+        [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.5, 0.0, 0.5]] atol = 1e-12 rtol =
+        0  # Compared with Python results
     @test dataset.time_reversals == [false, false, false, false]  # Compared with Python results
     @test dataset.n_atoms == 8
     @test dataset.equivalent_atoms == [0, 0, 2, 2, 4, 4, 4, 4] .+ 1  # Compared with Python results
@@ -508,10 +511,11 @@ end
         0.0 0.0 1.0
         1.0 0.0 0.0
     ]
-    @test dataset.origin_shift == [0.0, 0.0, 0.0]
+    @test dataset.origin_shift ≈ [0.0, 0.0, 0.0] atol = 1e-12 rtol = 0
     @test dataset.n_std_atoms == 8
-    @test dataset.std_lattice ==
-        Lattice([[0.0, 6.2851, 0.0], [0.0, 0.0, 5.0557], [10.6926, 0.0, 0.0]])
+    @test dataset.std_lattice ≈
+        Lattice([[0.0, 6.2851, 0.0], [0.0, 0.0, 5.0557], [10.6926, 0.0, 0.0]]) atol = 1e-12 rtol =
+        0
     @test dataset.std_types == [1, 1, 1, 1, 1, 1, 1, 1]  # Python results are all zeros?
     @test dataset.std_positions ≈ [
         [0.0, 0.0, 0.0],
@@ -523,7 +527,7 @@ end
         [0.75, 0.0097, 0.7206],
         [0.25, 0.5097, 0.7794],
     ]
-    @test dataset.std_tensors == [
+    @test dataset.std_tensors ≈ [
         [1.9, 2.8, 0.3],
         [-1.9, -2.8, 0.3],
         [1.7, 2.4, -0.3],
@@ -532,12 +536,12 @@ end
         [-2.9, -3.4, 0.0],
         [2.9, 3.4, 0.0],
         [-2.9, -3.4, 0.0],
-    ]
-    @test dataset.std_rotation_matrix == [
+    ] atol = 1e-12 rtol = 0
+    @test dataset.std_rotation_matrix ≈ [
         1 0 0
         0 1 0
         0 0 1
-    ]
+    ] atol = 1e-12 rtol = 0
     @test dataset.primitive_lattice ==
         Lattice([[0.0, 0.0, -5.0557], [0.0, -6.2851, 0.0], [-10.6926, 0.0, 0.0]])
 end
@@ -2096,7 +2100,7 @@ end
         0 1 0
         0 0 1
     ]
-    @test dataset.origin_shift == [0.9, 0.9, 0]
+    @test dataset.origin_shift ≈ [0.9, 0.9, 0] atol = 1e-12 rtol = 0
     @test dataset.n_std_atoms == 2
     @test dataset.std_lattice == Lattice([
         4 0 0
