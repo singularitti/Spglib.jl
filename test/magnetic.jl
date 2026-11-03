@@ -1,4 +1,4 @@
-using LinearAlgebra: I, diagm, norm
+using LinearAlgebra: I, det, diagm, norm
 
 # From https://github.com/unkcpz/LibSymspg.jl/blob/53d2f6d/test/test_api.jl#L34-L77
 @testset "Get symmetry operations" begin
@@ -2841,4 +2841,141 @@ end
     @test dataset2.tensor_rank == 1
     @test dataset2.n_operations == 16
     @test dataset2.n_std_atoms == 2
+end
+
+# From https://github.com/spglib/spglib/blob/v2.8.0/test/functional/python/test_magnetic_dataset.py
+# Fixed in spglib v2.8: https://github.com/spglib/spglib/pull/635
+# Ports `ccc2_type4_operations`, `test_ccc2_type4_database`, and `test_ccc2_type4_dataset`.
+if get_version() >= v"2.8"
+    @testset "Test magnetic operations for BNS 37.184-37.186" begin
+        # UNI identifies the magnetic group. These half-cell shifts distinguish the
+        # three groups; an anti-translation combines a shift with time reversal.
+        for (uni_number, anti_translation) in
+            [(282, [0.0, 0.0, 0.5]), (283, [0.5, 0.0, 0.0]), (284, [0.0, 0.5, 0.5])]
+            # The same group is tested in three axis settings. These are Python's
+            # axis permutations converted from zero-based to one-based indices.
+            for (hall_number, axes) in [
+                (182, [1, 2, 3]),  # Ccc2, abc
+                (183, [3, 1, 2]),  # A2aa, cab
+                (184, [2, 3, 1]),  # Bb2b, bca
+            ]
+                @testset "Test UNI $uni_number in Hall setting $hall_number" begin
+                    rotations = Matrix{Int}[]
+                    translations = Vector{Float64}[]
+                    time_reversals = Bool[]
+                    # Each binary switch includes or omits one generator: 2^4 = 16 operations.
+                    for twofold in 0:1, glide in 0:1, centering in 0:1, time_reversal in 0:1
+                        # 2z is a 180-degree rotation about z: diag(-1, -1, 1).
+                        # The c-glide reflects x: diag(-1, 1, 1), then shifts by c/2.
+                        # Their linear parts multiply: x flips for either switch,
+                        # y flips only for twofold, and z never flips. Thus, with
+                        # a = twofold and b = glide, R = diag((-1)^(a+b), (-1)^a, 1).
+                        # For a = b = 1, the two x flips cancel: R = diag(1, -1, 1).
+                        rotation = diagm([(-1)^(twofold + glide), (-1)^twofold, 1])
+                        # C centering adds (1/2, 1/2, 0); the c-glide adds (0, 0, 1/2).
+                        # These sums represent composition modulo whole lattice vectors.
+                        translation = [centering / 2, centering / 2, glide / 2]
+                        # Only this extra half-cell translation is paired with time reversal.
+                        translation += time_reversal * anti_translation
+                        # For an axis permutation P, R becomes P*R*P^-1 and t becomes P*t.
+                        # Permute both matrix indices, and wrap translations into [0, 1).
+                        push!(rotations, rotation[axes, axes])
+                        push!(translations, mod.(translation[axes], 1))
+                        push!(time_reversals, time_reversal)
+                    end
+                    # Check the stored operations against the independent construction,
+                    # then identify the magnetic group from the stored operations.
+                    @testset "Test magnetic symmetry database" begin
+                        rotations2, translations2, time_reversals2 = get_magnetic_symmetry_from_database(
+                            uni_number, hall_number
+                        )
+                        @test length(rotations2) ==
+                            length(translations2) ==
+                            length(time_reversals2) ==
+                            16
+                        # Set ignores operation order; Tuple makes each operation a value key.
+                        # Integer lattice shifts are equivalent, hence mod(..., 1).
+                        # Include time reversal: spatial parts alone miss the bug fixed in v2.8.
+                        @test Set(
+                            (Tuple(rotation), Tuple(mod.(translation, 1)), time_reversal)
+                            for (rotation, translation, time_reversal) in
+                            zip(rotations2, translations2, time_reversals2)
+                        ) == Set(
+                            (Tuple(rotation), Tuple(mod.(translation, 1)), time_reversal)
+                            for (rotation, translation, time_reversal) in
+                            zip(rotations, translations, time_reversals)
+                        )
+                        # Python omits lattice here, which defaults to the identity matrix.
+                        # Julia requires it explicitly; use the same default as Python.
+                        spgtype = get_magnetic_spacegroup_type_from_symmetry(
+                            rotations2,
+                            translations2,
+                            time_reversals2,
+                            Lattice(diagm([1.0, 1.0, 1.0])),
+                            1e-5,
+                        )
+                        @test spgtype.uni_number == uni_number
+                    end
+                    @testset "Test magnetic dataset" begin
+                        # Unequal orthorhombic axis lengths avoid extra metric symmetries.
+                        lattice = Lattice(diagm([4.0, 5.0, 6.0]))
+                        positions = Vector{Float64}[]
+                        numbers = Int[]
+                        magmoms = Vector{Float64}[]
+                        # An orbit contains the 16 images of one seed under the expected
+                        # operations. Two distinct species give 32 sites and prevent
+                        # exchanging the two orbits. Generic coordinates and moments
+                        # avoid accidental additional symmetries.
+                        for (number, position, moment) in [
+                            (1, [0.137, 0.219, 0.317], [0.41, 0.53, 0.67]),
+                            (2, [0.271, 0.113, 0.419], [0.37, -0.61, 0.43]),
+                        ]
+                            for (rotation, translation, time_reversal) in
+                                zip(rotations, translations, time_reversals)
+                                # Fractional positions transform as x' = R*x + t, modulo 1.
+                                push!(positions, mod.(rotation * position + translation, 1))
+                                push!(numbers, number)
+                                # A magnetic moment is an axial vector:
+                                # m' = (-1)^time_reversal * det(R) * R*m.
+                                # det(R) supplies the extra sign for reflections;
+                                # time reversal independently changes m to -m.
+                                # Here R and the lattice are diagonal, so R also acts
+                                # directly on Cartesian magnetic-moment components.
+                                push!(
+                                    magmoms,
+                                    (-1)^time_reversal *
+                                    det(rotation) *
+                                    (rotation * moment),
+                                )
+                            end
+                        end
+                        # Shift every site together to test identification with a different
+                        # coordinate origin, then wrap fractional positions into [0, 1).
+                        positions = [
+                            mod.(position + [0.173, 0.287, 0.391], 1) for
+                            position in positions
+                        ]
+                        dataset = get_magnetic_dataset(
+                            SpglibCell(lattice, positions, numbers, magmoms), 1e-5
+                        )
+                        # Recover the known group from the constructed sites and moments.
+                        @test dataset.uni_number == uni_number
+                        # Type IV has an extra translation paired with time reversal;
+                        # that translation alone is not a symmetry of the magnetic structure.
+                        @test dataset.msg_type == 4
+                        @test dataset.n_operations == 16
+                        # The operations found from the structure must identify the same group.
+                        spgtype = get_magnetic_spacegroup_type_from_symmetry(
+                            dataset.rotations,
+                            dataset.translations,
+                            dataset.time_reversals,
+                            lattice,
+                            1e-5,
+                        )
+                        @test spgtype.uni_number == uni_number
+                    end
+                end
+            end
+        end
+    end
 end
