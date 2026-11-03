@@ -145,7 +145,7 @@ The symmetry operation transfers ``\mathbf{x}`` to
 \tilde{\mathbf{x}} = \mathbf{W} \mathbf{x} + \mathbf{w}.
 ```
 
-### Transformation matrix ``\mathbf{P}`` and origin shift ``\mathbf{p}``
+### [Transformation matrix ``\mathbf{P}`` and origin shift ``\mathbf{p}``](@id transformation-matrix-and-origin-shift)
 
 The transformation matrix ``\mathbf{P}`` changes choice of
 basis vectors as follows

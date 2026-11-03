@@ -290,7 +290,7 @@ std_lattice_before_idealization = convert(Matrix{Float64}, lattice) * inv(datase
 ```
 
 This is based on formula in
-[Transformation matrix ``\mathbf{P}`` and origin shift ``\mathbf{p}``](@ref)
+[Transformation matrix ``\mathbf{P}`` and origin shift ``\mathbf{p}``](@ref transformation-matrix-and-origin-shift)
 and [Passive/forward/alias transformation](@ref):
 
 ```math
