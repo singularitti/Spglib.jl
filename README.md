@@ -50,7 +50,7 @@ julia> import Pkg; Pkg.add("Spglib")
 
 ## Project status
 
-The package is developed for and tested against Julia `v1.6` and above on Linux, macOS, and
+The package is developed for and tested against Julia `v1.8` and above on Linux, macOS, and
 Windows.
 
 ## Questions and contributions
