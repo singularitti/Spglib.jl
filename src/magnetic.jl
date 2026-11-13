@@ -176,13 +176,13 @@ struct MagneticDataset <: AbstractDataset
     The FSG is the nonmagnetic space group obtained by ignoring time-reversal in the MSG.
     The XSG is the space group obtained by removing time-reversal operations from the MSG.
 
-    - msg_type == 1 (type I):
+    - `msg_type == 1` (type I):
         MSG, XSG, and FSG are all isomorphic.
-    - msg_type == 2 (type II):
+    - `msg_type == 2` (type II):
         XSG and FSG are isomorphic; the MSG is generated from the XSG and pure time-reversal operations.
-    - msg_type == 3 (type III):
+    - `msg_type == 3` (type III):
         The XSG is a proper subgroup of the MSG with isomorphic translational subgroups.
-    - msg_type == 4 (type IV):
+    - `msg_type == 4` (type IV):
         The XSG is a proper subgroup of the MSG with an isomorphic point group.
     """
     msg_type::Int32
