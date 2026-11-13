@@ -366,7 +366,7 @@ struct SpglibMagneticSpacegroupType <: AbstractSpacegroupType
 end
 
 """
-   MagneticSpacegroupType(uni_number, litvin_number, bns_number, og_number, number, type)
+    MagneticSpacegroupType(uni_number, litvin_number, bns_number, og_number, number, type)
 
 Represent `SpglibMagneticSpacegroupType`, see its [official documentation](https://spglib.readthedocs.io/en/latest/api.html#spg-get-magnetic-spacegroup-type).
 
